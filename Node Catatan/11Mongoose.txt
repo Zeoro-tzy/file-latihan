@@ -1,0 +1,543 @@
+Tutorial Express Mongodb
+
+1.Menginstall modul yang diperlukan
+=> Untuk bisa menghubungkan antara express dengan mongodb kita harus menginstall berapa modul dan berikut perintahnya :
+- Pertama harus install node js dulu
+- Jika sudah di install selanjutnya membuat sebuah folder baru dan masuk kedalam folder tersebut
+- Jalankan perintah : npm init -y. 
+- Jalankan di terminal vscode dan pastikan pada saat menjalankan perintah kita sudah berada di lokasi folder yang dibuat tadi.
+- Ketik perintah : npm install express
+
+Modul Tambahan :
+- Untuk menginstall express,nodemon,mongoose(Untuk mongoDB) Khusus jika ingin pakai Database Mongodb :
+- Ketik perintah di terminal vscode : npm install express nodemon dotenv mongoose
+- Untuk menjalankan API bisa menggunakan postman atau juga Thunder client yang ada pada vscode
+
+
+2.Mongodb Atlas 
+=> Kita bisa menggunakan MongoDb atlas sebagai database kita.MongoDb atlas merupakan database yang bertipe cloud atau data akan tersimpan melalui internet.
+Cara menggunakan :
+- Pergi ke Websitenya mongodb atlas.https://account.mongodb.com/account/login
+- Lalu Create akun jika belum punya akun.
+- Isi forum sebelum memasuki databasenya dan Pilih yang gratis
+- Selanjutnya kita bisa isi data seperti Ip adress,dll.
+- Jika sudah saatnya kita menghubungkan dengan Express
+
+
+3.Cara menghubungkan Express dengan mongodb
+1.MongoDb Atlas
+- Pertama pergi ke atlas lalu pergi ke halaman database.
+- Kemudian pilih connect.
+- Kemudian pilih connect using mongodb compass.
+- Lalu copy data connection string yang no 2.Seperti ini : mongodb+srv://kielfernandes:<password>@cluster0.fuxh3ps.mongodb.net/test
+- Untuk <password> itu diganti dengan password mongodb kita.Contoh : mongodb+srv://kielfernandes:fyRH2wjxsjIo3nw6@cluster0.fuxh3ps.mongodb.net/test
+- Untuk bisa melihat password kita bisa pergi ke bagian : Database Access
+- Lalu pergi ke username yang kita inginkan.
+- Disana ada tulisan Edit,klik itu.
+- Pergi ke Edit Password
+- Lalu Klik Autogenerate
+- Lalu copy dan jangan lupa update User.
+- Kemudian Password yang kita copy barusan itu kita gantikan dengan <password> yang ini.
+
+
+2.Express
+- Untuk menyimpan data mongoDb yang sudah kita buat diatas kita bisa menyimpan datanya di file ".env"
+- Lalu kita letakkan di variabel.Contoh : DATABASE_URL = mongodb+srv://kielfernandes:fyRH2wjxsjIo3nw6@cluster0.fuxh3ps.mongodb.net/test
+- Nah langkah ini kita masukan ke dalam bagian express Oleh karena itu kita bisa menginstall expressnya dulu seperti penjelasan di 9RestfulApiExpress di folder Backend.
+- Jika sudah melakukan langkah pembuatan express kita bisa meletakan file .env nya di bagian express tersebut.
+- Selanjutnya kita require file .env dan disimpan di js express yang sudah kita buat tersebut.
+
+
+Source :
+https://medium.com/@ekaprasasti/mongoose-mongodb-object-modeling-buat-nodejs-83627f521e26
+
+https://code.tutsplus.com/id/articles/an-introduction-to-mongoose-for-mongodb-and-nodejs--cms-29527
+
+https://www.freecodecamp.org/news/build-a-restful-api-using-node-express-and-mongodb/
+
+https://www.freecodecamp.org/news/introduction-to-mongoose-for-mongodb-d2a7aa593c57/
+
+https://mongoosejs.com/docs/guides.html
+
+
+
+3.Pengenalan Mongoose
+=> Mongoose adalah pustaka JavaScript populer yang menyediakan solusi sederhana berbasis skema untuk data model di MongoDB. Ini sering digunakan bersamaan dengan kerangka web Express.js, yang dibangun di atas Node.js.
+
+Di aplikasi Express.js, Mongoose dapat digunakan untuk menentukan skema dokumen dalam koleksi MongoDB, lalu membuat objek model yang sesuai dengan dokumen dalam koleksi tersebut. Objek model ini menyediakan antarmuka sederhana untuk melakukan operasi CRUD (buat, baca, perbarui, hapus) pada koleksi, serta untuk menentukan middleware dan fungsi lain yang khusus untuk model.
+
+Misalnya, Anda mungkin menggunakan Mongoose untuk menentukan skema kumpulan pengguna, dengan kolom untuk nama, email, dan kata sandi. Anda kemudian dapat menggunakan objek model untuk membuat dokumen pengguna baru dalam koleksi, mengambil dokumen yang ada, memperbarui nilai bidangnya, atau menghapusnya.
+
+Secara keseluruhan, Mongoose adalah alat yang berguna untuk menyederhanakan proses bekerja dengan MongoDB di lingkungan Node.js, terutama bila digunakan dengan kerangka kerja Express.js.
+
+Mongoose menyediakan jumlah fungsionalitas yang luar biasa yang berkaitan dengan pembuatan dan pengerjaan skema. Mongoose saat ini memiliki delapan tipe skema dimana propertinya disimpan seperti saat berada di MongoDB. Diantaranya:
+1.String
+2.Number
+3.Date
+4.Buffer
+5.Boolean
+6.Mixed
+7.ObjectId
+8.Array
+
+Setiap tipe data memungkinkan Anda untuk menentukan:
+- sebuah nilai default
+- sebuah fungsi validasi custom
+- menunjukan field yang dibutuhkan
+- fungsi get yang memungkinkan Anda untuk memanipulasi data sebelum dikembalikan sebagai obyek
+- sebuah set fungsi yang memungkinkan Anda untuk memanipulasi data sebelum disimpan ke database
+- membuat indeks yang memungkinkan data agar ditarik secara lebih cepat
+
+Selanjutnya untuk opsi umum ini, tipe data tertentu memungkinkan Anda untuk menyesuaikan lebih lanjut bagaimana data disimpan dan diambil dari database. Sebagai contoh, sebuah tipe data String juga memungkinkan Anda untuk menentukan pilihan tambahan sebagai berikut:
+- mengubah menjadi huruf kecil
+- mengubah menjadi huruf besar
+- memangkas data sebelum disimpan
+- regular-expression yang dapat membatasi data yang diizinkan untuk disimpan selama dalam proses validasi
+- sebuah enum yang dapat menentukan daftar string yang valid
+
+Properti Number dan Date keduanya mendukung penentuan nilai minimal dan maksimal yang diizinkan untuk field tersebut.
+
+Sebagian besar dari delapan jenis data yang diizinkan seharusnya cukup familiar untuk Anda. Namun, ada beberapa pengecualian yang mungkin menjadi pengecualian bagi Anda, seperti Buffer, Mixed, ObjectId, dan Array.
+
+Tipe data Buffer memungkinkan Anda untuk menyipan data biner. Contoh yang umum untuk data biner seperti gambar atau file encodem seperti dokumen PDF.
+
+Tipe data Mixed mengubah properti menjadi field "dapat menjadi apa saja". Field ini menyerupai berapa banyak pengembang yang menggunakan MongoDB karena tidak ada struktur yang jelas. Berhati-hatilah menggunakan tipe data ini karena tipe ini kehilangan banyak fitur hebat yang disediakan oleh Mongoose, seperti validasi data dan pendeteksi perubahan entitas untuk dapat mengetahui secara otomatis dalam memperbarui properti saat menyimpan.
+
+Tipe data ObjectId umumnya menentukan sebuah tautan ke dokumen yang lain di dalam database Anda. Sebagai contoh, jika anda memiliki sebuah koleksi buku dan penulis, dokumen buku kemungkinan berisi sebuah properti ObjectId yang menunjuk ke penulis tertentu dari dokumen.
+
+Tipe data Array memungkinkan anda untuk menyimpan array yang seperti JavaScript. Dengan sebuah tipe data Array, anda dapat melakukan operasi array Javascript yang umum, seperti push, pop, shift, slice, dll.
+
+
+4.Kesimpulan
+=> MongoDB adalah database yang memungkinkan Anda menyimpan dokumen dengan struktur dinamis. Dokumen-dokumen ini disimpan di dalam koleksi.
+
+Mongoose adalah pustaka JavaScript yang memungkinkan Anda menentukan skema dengan data yang strongly-typed.  Setelah skema didefinisikan, Mongoose memungkinkan Anda membuat Model berdasarkan skema tertentu. Model Mongoose kemudian dipetakan ke Dokumen MongoDB melalui definisi skema Model.
+
+Setelah Anda menentukan skema dan model Anda, Mongoose berisi banyak fungsi berbeda yang memungkinkan Anda untuk memvalidasi, menyimpan, menghapus, dan men-query data Anda menggunakan fungsi MongoDB yang umum. Saya akan membicarakan hal ini lebih dengan contoh kode yang konkrit untuk diikuti.
+
+
+
+5.Terminologi
+1.Koleksi
+=> 'Koleksi' di Mongo setara dengan tabel di database relasional. Mereka dapat menyimpan banyak dokumen JSON.
+
+2.Dokumen
+=> 'Dokumen' setara dengan catatan atau baris data dalam SQL. Sementara baris SQL dapat mereferensikan data di tabel lain, dokumen Mongo biasanya menggabungkannya dalam dokumen.
+
+3.Fields(Bidang)
+=> 'Bidang' atau atribut serupa dengan kolom dalam tabel SQL.
+
+4.Skema
+=> Sementara Mongo tanpa skema, SQL mendefinisikan skema melalui definisi tabel. 'Skema' Mongoose adalah struktur data dokumen (atau bentuk dokumen) yang ditegakkan melalui lapisan aplikasi.
+
+5.Model
+=> 'Model' adalah konstruktor tingkat tinggi yang mengambil skema dan membuat turunan dokumen yang setara dengan catatan dalam database relasional.
+
+
+6.Konsep Inti Mongoose
+- Schemas
+- Schemas Type
+- Connections
+- Models
+- Document
+- Subdocument
+- Queries
+- Validation
+- Middleware
+- Populate
+- Discriminators
+- Plugins
+- Faster Mongoose Queries With Lean
+- Query Casting
+- findOneAndUpdate
+- Getters and Setters
+- Virtuals
+
+
+7.Topik Lanjutan
+- Working with Dates
+- Custom Casting For Built-in Types
+- Custom SchemaTypes
+- Advanced Schemas
+
+
+8.Integrasi
+- Promises
+- Lodash
+- AWS Lambda
+- Browser Library
+- GeoJSON
+- Transactions
+- MongoDb Driver Deprecation Warnings
+- Testing With Jest
+- SSL Connections
+
+
+9.Skema
+=> Di aplikasi Express.js, Anda bisa menggunakan skema mongoose untuk menentukan struktur koleksi di database MongoDB. Skema terdiri dari bidang, yang masing-masing memiliki nama dan tipe data.
+
+Untuk menentukan skema, Anda dapat menggunakan konstruktor mongoose.Schema. 
+Contoh:
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  age: Number
+});
+
+=> Skema ini mendefinisikan koleksi dengan tiga bidang: nama, email, dan usia. Bidang nama dan email adalah string, dan bidang usia adalah angka.
+
+Setelah Anda menentukan skema, Anda dapat menggunakannya untuk membuat model menggunakan fungsi mongoose.model. Model ini memungkinkan Anda melakukan operasi CRUD pada koleksi di database.
+Contoh :
+const User = mongoose.model('User', userSchema);
+
+=> Anda kemudian dapat menggunakan model untuk membuat, membaca, memperbarui, dan menghapus dokumen dalam koleksi. 
+Contoh :
+// Create a new user
+const newUser = new User({ name: 'John', email: 'john@example.com', age: 30 });
+newUser.save((error) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('User saved successfully!');
+  }
+});
+
+// Find all users
+User.find((error, users) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log(users);
+  }
+});
+
+
+10.Mongoose.on
+=> Di Mongoose, fungsi "on" digunakan untuk mendaftarkan pendengar acara untuk acara tertentu. Pendengar peristiwa adalah fungsi yang dipanggil sebagai respons terhadap peristiwa tertentu, seperti saat dokumen baru disimpan ke database atau saat terjadi kesalahan.
+
+Berikut adalah contoh bagaimana Anda dapat menggunakan fungsi on di aplikasi Mongoose:
+Contoh :
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+User.on('index', (error) => {
+  if (error) {
+    console.log('An error occurred while creating the index:', error);
+  } else {
+    console.log('Index created successfully');
+  }
+});
+
+
+=> Dalam contoh ini, fungsi on digunakan untuk mendaftarkan event listener untuk index event, yang dikeluarkan saat indeks baru dibuat untuk model User. Fungsi pendengar acara dipanggil dengan objek kesalahan jika terjadi kesalahan saat membuat indeks, atau tanpa argumen jika indeks berhasil dibuat.
+
+Ada banyak event lain yang dapat Anda dengarkan dengan fungsi aktif di Mongoose, seperti save, update, dan remove. Anda dapat menggunakan event listener untuk melakukan tugas seperti mencatat perubahan pada data Anda, mengirim notifikasi, atau memperbarui data terkait di koleksi lain.
+
+
+11.mongoose.once
+=> Di Mongoose, fungsi once digunakan untuk mendaftarkan pendengar acara yang dipanggil hanya sekali untuk acara tertentu. Pendengar peristiwa adalah fungsi yang dipanggil sebagai respons terhadap peristiwa tertentu, seperti saat dokumen baru disimpan ke database atau saat terjadi kesalahan.
+
+Fungsi once mirip dengan fungsi on, kecuali bahwa event listener yang didaftarkan dengan sekali once dipanggil sekali dan kemudian dihapus secara otomatis. Ini bisa berguna jika Anda ingin melakukan tugas sebagai respons terhadap suatu peristiwa, tetapi hanya ingin tugas dilakukan sekali.
+
+Berikut adalah contoh bagaimana Anda dapat menggunakan fungsi sekali di aplikasi Mongoose:
+Contoh :
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+User.once('index', (error) => {
+  if (error) {
+    console.log('An error occurred while creating the index:', error);
+  } else {
+    console.log('Index created successfully');
+  }
+});
+
+=> Dalam contoh ini, fungsi once digunakan untuk mendaftarkan pendengar acara untuk acara indeks, yang dikeluarkan saat indeks baru dibuat untuk model Pengguna. Fungsi pendengar acara dipanggil dengan objek kesalahan jika terjadi kesalahan saat membuat indeks, atau tanpa argumen jika indeks berhasil dibuat.
+
+Pendengar acara yang terdaftar dengan fungsi once hanya akan dipanggil satu kali, lalu dihapus secara otomatis. Ini berarti bahwa jika acara indeks dipancarkan beberapa kali, pendengar acara hanya akan dipanggil pertama kali.
+
+Ada banyak acara lain yang bisa Anda dengarkan dengan fungsi sekali di Mongoose, seperti simpan, perbarui, dan hapus. Anda dapat menggunakan event listener untuk melakukan tugas seperti mencatat perubahan pada data Anda, mengirim notifikasi, atau memperbarui data terkait di koleksi lain.
+
+=> Di Mongoose, fungsi set digunakan untuk mengatur nilai bidang tertentu dalam dokumen. Itu dapat digunakan untuk memperbarui nilai bidang dalam dokumen sebelum disimpan ke database.
+
+Berikut adalah contoh bagaimana Anda dapat menggunakan fungsi set di aplikasi Mongoose.
+Contoh :
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+const user = new User({ name: 'John', email: 'john@example.com', password: 'password' });
+
+user.set('name', 'Jane');  // Set the value of the "name" field to "Jane"
+
+console.log(user.name);  // Outputs "Jane"
+
+=> Dalam contoh ini, fungsi set digunakan untuk memperbarui nilai bidang nama di dokumen pengguna. Fungsi set membutuhkan dua argumen: bidang yang akan diperbarui dan nilai baru untuk bidang tersebut.
+
+Fungsi set juga dapat digunakan untuk memperbarui beberapa bidang sekaligus dengan meneruskan objek dengan pasangan nilai bidang untuk diperbarui sebagai argumen pertama.
+Contoh :
+user.set({ name: 'Jane', email: 'jane@example.com' });  // Update the "name" and "email" fields
+
+=> Penting untuk diperhatikan bahwa fungsi set hanya memperbarui nilai bidang dalam dokumen, tidak menyimpan perubahan ke database. Untuk menyimpan perubahan ke database, Anda perlu memanggil fungsi save pada dokumen.
+
+
+
+12.express.Router()
+=> Di Express, fungsi Router digunakan untuk membuat objek router baru yang dapat digunakan untuk menentukan rute untuk aplikasi Anda. Rute adalah pemetaan antara jalur URL dan fungsi tertentu yang akan dijalankan saat jalur diminta.
+
+Berikut adalah contoh bagaimana Anda dapat menggunakan fungsi Router di aplikasi Express:
+Contoh :
+const express = require('express');
+
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+router.get('/users', (req, res) => {
+  res.json([{ name: 'John' }, { name: 'Jane' }]);
+});
+
+module.exports = router;
+
+=> Dalam contoh ini, fungsi Router digunakan untuk membuat objek router baru dan menentukan dua rute: satu untuk jalur root '/' dan satu lagi untuk jalur '/pengguna'. Fungsi router.get digunakan untuk menentukan rute untuk permintaan HTTP GET.
+
+Fungsi Router sering digunakan untuk membuat penangan rute modular dan dapat digunakan kembali yang dapat diimpor dan digunakan di bagian lain aplikasi. Ini memungkinkan Anda untuk mengatur rute Anda menjadi unit yang lebih kecil dan lebih mudah dikelola dan membuat kode Anda lebih mudah dipelihara
+
+
+13.async 
+=> Di Express, kata kunci async digunakan untuk mendefinisikan fungsi async. Fungsi asinkron adalah jenis fungsi khusus dalam JavaScript yang memungkinkan Anda menulis kode asinkron menggunakan sintaks yang terlihat sinkron.
+
+Fungsi asinkron dirancang untuk memudahkan bekerja dengan kode asinkron, terutama saat menggunakan promise dan pola asinkron lainnya. Mereka memungkinkan Anda menggunakan kata kunci await untuk menjeda eksekusi fungsi hingga janji diselesaikan, lalu melanjutkan eksekusi dengan nilai yang diselesaikan.
+
+Contoh :
+const express = require('express');
+
+const app = express();
+
+app.get('/users', async (req, res) => {
+  try {
+    const users = await fetchUsers();
+    res.json(users);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+async function fetchUsers() {
+  // Fetch users from the database
+  const users = await User.find({});
+  return users;
+}
+
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+=> Dalam contoh ini, fungsi app.get digunakan untuk menentukan rute permintaan HTTP GET ke jalur '/users'. Fungsi route handler didefinisikan sebagai fungsi async, yang memungkinkan kita menggunakan kata kunci await untuk menjeda eksekusi fungsi hingga fungsi fetchUsers mengembalikan hasilnya.
+
+Fungsi fetchUsers juga didefinisikan sebagai fungsi async, yang memungkinkan kita menggunakan kata kunci await untuk menjeda eksekusi fungsi hingga metode User.find mengembalikan hasilnya.
+
+Fungsi asinkron memudahkan untuk bekerja dengan kode asinkron di Express dan dapat membantu meningkatkan keterbacaan dan pemeliharaan kode Anda
+
+
+14.app.put()
+=> 
+Contoh :
+
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+
+// Connect to the MongoDB database
+mongoose.connect('mongodb://localhost/mydatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// Define a schema for the user model
+const userSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+});
+
+// Create a model for the user
+const User = mongoose.model('User', userSchema);
+
+app.put('/users/:id', async (req, res) => {
+  try {
+    // Find the user with the specified ID
+    const user = await User.findById(req.params.id);
+
+    // Update the user with the request body
+    user.name = req.body.name;
+    user.age = req.body.age;
+
+    // Save the updated user to the database
+    await user.save();
+
+    // Send a response to the client
+    res.send({ message: 'User updated successfully' });
+  } catch (error) {
+    // Send an error response to the client
+    res.status(500).send({ message: 'Error updating user' });
+  }
+});
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+=> Dalam contoh ini, metode put digunakan untuk memperbarui pengguna dengan ID yang ditentukan. Pengguna ditemukan di database menggunakan metode findById, dan kemudian badan permintaan digunakan untuk memperbarui nama dan usia pengguna. Terakhir, pengguna yang diperbarui disimpan ke database menggunakan metode simpan.
+
+
+15.app.deleteAll()
+=> 
+
+Contoh :
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+
+// Connect to the MongoDB database
+mongoose.connect('mongodb://localhost/mydatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// Define a schema for the user model
+const userSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+});
+
+// Create a model for the user
+const User = mongoose.model('User', userSchema);
+
+app.delete('/users', async (req, res) => {
+  try {
+    // Delete all users from the database
+    await User.deleteMany({});
+
+    // Send a response to the client
+    res.send({ message: 'All users deleted successfully' });
+  } catch (error) {
+    // Send an error response to the client
+    res.status(500).send({ message: 'Error deleting users' });
+  }
+});
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+=> Dalam contoh ini, metode delete digunakan untuk menghapus semua pengguna dari database dengan memanggil metode deleteMany dengan objek kueri kosong. Ini akan menghapus semua pengguna dari koleksi.
+
+Alternatifnya, Anda dapat menggunakan metode hapus dari Mongoose untuk menghapus semua sumber daya dari koleksi.
+Contoh :
+app.delete('/users', async (req, res) => {
+  try {
+    // Delete all users from the database
+    await User.remove({});
+
+    // Send a response to the client
+    res.send({ message: 'All users deleted successfully' });
+  } catch (error) {
+    // Send an error response to the client
+    res.status(500).send({ message: 'Error deleting users' });
+  }
+});
+
+
+
+16.app.postAll()
+=> Berikut adalah contoh bagaimana Anda bisa menggunakan metode post di aplikasi Express.js untuk membuat banyak pengguna di database MongoDB.
+Contoh :
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+
+// Connect to the MongoDB database
+mongoose.connect('mongodb://localhost/mydatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
+// Define a schema for the user model
+const userSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+});
+
+// Create a model for the user
+const User = mongoose.model('User', userSchema);
+
+app.post('/users', async (req, res) => {
+  try {
+    // Create a new array of users with the request body
+    const users = req.body.map(user => new User(user));
+
+    // Save the new users to the database
+    await User.insertMany(users);
+
+    // Send a response to the client
+    res.send({ message: 'Users created successfully' });
+  } catch (error) {
+    // Send an error response to the client
+    res.status(500).send({ message: 'Error creating users' });
+  }
+});
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+=> Dalam contoh ini, metode post digunakan untuk membuat banyak pengguna di database. Badan permintaan dipetakan ke array objek Pengguna, dan kemudian metode insertMany dipanggil untuk menyimpan pengguna ke database.
+
+Anda juga bisa menggunakan metode app.post() untuk menentukan middleware yang akan dijalankan sebelum handler rute. Ini dapat berguna untuk tugas-tugas seperti otentikasi atau validasi data
+Contoh :
+app.post('/users', authenticate, async (req, res) => {
+  try {
+    // Create a new array of users with the request body
+    const users = req.body.map(user => new User(user));
+
+    // Save the new users to the database
+    await User.insertMany(users);
+
+    // Send a response to the client
+    res.send({ message: 'Users created successfully' });
+  } catch (error) {
+    // Send an error response to the client
+    res.status(500).send({ message: 'Error creating users' });
+  }
+});
+

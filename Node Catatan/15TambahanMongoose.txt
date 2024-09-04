@@ -1,0 +1,617 @@
+Mongoose
+- require("dotenv").config()
+- const mongoString = process.env.DATABASE_URL
+- mongoose.set
+- bodyParser
+- app.use
+- cors
+- mongoose.connect
+- database.on
+- dabatase.once
+- express.urlencoded
+- new mongoose.Schema
+- mongoose.model
+- dotenv
+
+Login Sign :
+- bcryptjs
+- Joi.object
+- schema.validate
+- req.header
+- jwt.verify
+- process.env.SECRET_Key
+
+
+1.require("dotenv").config()
+=> Library ini digunakan untuk memuat variabel lingkungan (environment variables) dari file .env ke dalam aplikasi Node.js.
+
+- Pertama-tama, kita memanggil fungsi require() untuk mengimpor library dotenv. Setelah itu, kita memanggil metode config() pada library dotenv. 
+
+- Fungsi config() akan membaca variabel lingkungan dari file ".env" pada root direktori aplikasi dan menyimpannya sebagai variabel lingkungan pada sistem operasi.
+
+Dengan menggunakan library dotenv, kita dapat menyimpan informasi rahasia seperti kunci API atau kredensial basis data dalam file .env yang tidak dimasukkan ke dalam kontrol versi, sehingga tidak terlihat oleh pengguna lain atau tersimpan pada repositori publik. Kemudian, kita dapat mengakses variabel lingkungan yang telah dimuat menggunakan process.env.VARIABLE_NAME pada aplikasi Node.js kita.
+
+
+TAMBAHAN : Environment Variabel 
+
+- Variabel lingkungan atau environment variables adalah variabel yang disimpan pada sistem operasi dan dapat diakses oleh aplikasi yang berjalan pada sistem tersebut. Variabel ini umumnya digunakan untuk menyimpan informasi konfigurasi seperti kunci API, URL koneksi database, dan sebagainya.
+
+Beberapa kegunaan variabel lingkungan adalah:
+
+- Konfigurasi aplikasi: Variabel lingkungan dapat digunakan untuk menyimpan konfigurasi aplikasi seperti URL koneksi database, port server, dan sebagainya. Dengan menggunakan variabel lingkungan, kita dapat memisahkan konfigurasi dari kode aplikasi sehingga memudahkan untuk mengubah konfigurasi tanpa harus memodifikasi kode aplikasi secara langsung.
+
+- Keamanan: Variabel lingkungan dapat digunakan untuk menyimpan informasi rahasia seperti kredensial basis data, kunci API, dan sebagainya. Dengan menyimpan informasi ini pada variabel lingkungan, kita dapat menghindari mengekspos informasi penting seperti kredensial basis data secara tidak sengaja pada repositori publik atau sistem kontrol versi.
+
+- Penyesuaian: Variabel lingkungan dapat digunakan untuk menyesuaikan perilaku aplikasi tergantung pada lingkungan yang berbeda. Contohnya, kita dapat menggunakan variabel lingkungan untuk menentukan apakah aplikasi berjalan pada mode pengembangan atau produksi dan mengubah perilaku aplikasi tergantung pada mode tersebut.
+
+Dalam aplikasi Node.js, variabel lingkungan dapat diakses menggunakan objek process.env. Untuk mengambil nilai dari variabel lingkungan, kita dapat menggunakan sintaks process.env.VARIABLE_NAME, di mana VARIABLE_NAME adalah nama variabel lingkungan yang ingin diambil.
+
+
+
+2.Kode const mongoString = process.env.DATABASE_URL digunakan untuk mengambil nilai dari variabel lingkungan DATABASE_URL dan menyimpannya dalam variabel mongoString.
+
+TAMBAHAN : 
+- bagaimana process.env bisa terhubung dengan require("dotenv") padahal dotenv tidak dipanggil di variabel tersebut ?
+
+=> dotenv adalah sebuah package Node.js yang digunakan untuk mengonfigurasi variabel lingkungan (environment variables) pada aplikasi Node.js. dotenv membaca file .env pada direktori root aplikasi dan menambahkan setiap variabel lingkungan yang didefinisikan di dalam file .env ke dalam process.env.
+
+Ketika kita memanggil require("dotenv").config() pada file JavaScript yang digunakan sebagai entry point untuk aplikasi Node.js, dotenv akan membaca file .env dan menambahkan setiap variabel lingkungan yang didefinisikan di dalam file .env ke dalam process.env.
+
+Setelah variabel lingkungan ditambahkan ke dalam process.env, variabel lingkungan tersebut dapat diakses pada aplikasi Node.js dengan menggunakan process.env. process.env adalah objek global pada Node.js yang menyimpan semua variabel lingkungan yang diatur pada sistem operasi.
+
+Dengan demikian, process.env dapat terhubung dengan dotenv karena dotenv bertugas untuk mengonfigurasi variabel lingkungan pada aplikasi Node.js dan menambahkannya ke dalam process.env. Sedangkan process.env adalah objek global pada Node.js yang menyimpan semua variabel lingkungan yang diatur pada sistem operasi.
+
+
+Variabel lingkungan (process.env) pada Node.js adalah kumpulan variabel yang dapat diakses oleh aplikasi yang berjalan pada sistem operasi. Variabel ini umumnya digunakan untuk menyimpan informasi konfigurasi seperti URL koneksi database, API key, dan sebagainya.
+
+Dalam contoh ini, kode tersebut mengambil nilai dari variabel lingkungan DATABASE_URL dan menyimpannya dalam variabel mongoString. Variabel ini kemudian dapat digunakan untuk menghubungkan aplikasi Node.js ke database MongoDB.
+
+Dengan menggunakan variabel lingkungan, kita dapat menyimpan informasi konfigurasi penting di luar kode aplikasi, sehingga memudahkan untuk mengubah konfigurasi tanpa harus memodifikasi kode aplikasi secara langsung. Selain itu, dengan cara ini, kita dapat menghindari mengekspos informasi penting seperti kredensial database secara tidak sengaja pada repositori publik atau sistem kontrol versi.
+
+
+
+
+3.mongoose.set()
+=> Digunakan untuk mengatur opsi dan konfigurasi untuk library Mongoose pada aplikasi Node.js.
+
+Library Mongoose adalah salah satu library populer pada Node.js yang digunakan untuk menghubungkan aplikasi Node.js ke database MongoDB. Dengan menggunakan library ini, kita dapat melakukan operasi CRUD (Create, Read, Update, Delete) pada data yang disimpan dalam database MongoDB.
+
+Fungsi mongoose.set() biasanya digunakan untuk mengatur beberapa opsi dan konfigurasi seperti:
+
+- useNewUrlParser: Opsi ini digunakan untuk memberitahu Mongoose agar menggunakan parser URL baru MongoDB. Opsi ini diperlukan ketika kita menggunakan versi MongoDB terbaru yang menggunakan URL koneksi baru.
+
+- useCreateIndex: Opsi ini digunakan untuk memberitahu Mongoose agar menggunakan metode createIndex() dari MongoDB untuk membuat indeks pada database. Metode ini digunakan untuk menghindari peringatan DeprecationWarning yang dikeluarkan oleh MongoDB.
+
+- useUnifiedTopology: Opsi ini digunakan untuk mengaktifkan pengaturan topologi baru pada MongoDB. Opsi ini disarankan untuk digunakan pada aplikasi yang menjalankan MongoDB versi 3.0 ke atas.
+
+- set(): Fungsi ini digunakan untuk mengatur opsi dan konfigurasi kustom lainnya untuk library Mongoose. Contohnya, kita dapat menggunakan fungsi ini untuk mengatur nilai debug untuk menampilkan log operasi yang dilakukan oleh Mongoose pada konsol.
+
+- debug: Opsi ini digunakan untuk menampilkan log operasi yang dilakukan oleh Mongoose pada konsol.
+
+- toJSON: Opsi ini digunakan untuk mengontrol format data yang dihasilkan saat menggunakan metode toJSON() pada model Mongoose. Kita dapat mengatur opsi seperti virtuals untuk menampilkan properti virtual pada hasil output.
+
+- useFindAndModify: Opsi ini digunakan untuk mengatur perilaku fungsi findOneAndUpdate() dan findOneAndDelete(). Jika opsi ini diatur menjadi false, maka Mongoose akan menggunakan metode baru MongoDB (findOneAndUpdate(), findOneAndDelete()) dan mematikan penggunaan fungsi lama MongoDB (findAndModify()). Pengaturan ini disarankan untuk digunakan pada MongoDB versi 4.0 ke atas.
+
+Dan masih banyak opsi lainnya yang dapat diatur menggunakan fungsi mongoose.set(). Informasi lebih lengkap mengenai opsi-opsi yang dapat diatur pada fungsi ini dapat dilihat pada dokumentasi resmi Mongoose.
+
+
+Sintaks : 
+mongoose.set(key, value);
+
+
+Keterangan :
+- key: Parameter ini merupakan string yang menyatakan opsi yang ingin diatur.
+- value: Parameter ini merupakan nilai yang ingin diatur untuk opsi yang telah ditentukan dalam parameter key.
+
+Contoh Penggunaan :
+const mongoose = require('mongoose');
+
+// mengatur opsi untuk library Mongoose
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useCreateIndex', true);
+mongoose.set('debug', true);
+
+
+
+Tambahan : 
+- Bagaimana jika : mongoose.set('strictQuery', true) ?
+=> strictQuery bukanlah salah satu opsi yang tersedia pada mongoose.set(). Opsi strictQuery sebenarnya adalah bagian dari opsi strict yang dapat diatur pada skema Mongoose.
+
+Opsi strict pada skema Mongoose digunakan untuk menentukan apakah dokumen yang dibuat harus mematuhi struktur skema. Jika opsi ini diatur menjadi true, maka dokumen yang dibuat harus memiliki struktur yang sama dengan skema. Jika opsi ini diatur menjadi false, maka dokumen yang dibuat dapat memiliki struktur yang berbeda dengan skema.
+
+Sedangkan opsi strictQuery pada Mongoose tidak tersedia. Namun, Mongoose menyediakan opsi strict yang dapat diatur pada skema dan opsi strict ini juga memengaruhi bagaimana query Mongoose akan berperilaku terhadap dokumen. Misalnya, jika opsi strict diatur menjadi true, maka query Mongoose akan mematuhi struktur skema dan hanya memperbolehkan properti yang telah didefinisikan dalam skema. Jika opsi strict diatur menjadi false, maka query Mongoose akan memperbolehkan properti tambahan yang tidak didefinisikan dalam skema.
+
+
+- Opsi strict ini sebenarnya sudah disertakan dalam opsi bawaan Mongoose. Oleh karena itu, Anda tidak perlu menuliskan strict secara eksplisit pada fungsi mongoose.set(). Anda hanya perlu menetapkan opsi strict pada skema Mongoose. Berikut adalah contoh penggunaan opsi strict pada skema Mongoose :
+
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  age: {
+    type: Number,
+    required: true
+  }
+}, { strict: true });
+
+const User = mongoose.model('User', userSchema);
+
+Pada contoh di atas, opsi strict diatur menjadi true pada skema userSchema. Sehingga, ketika melakukan query terhadap dokumen pada model User, Mongoose hanya akan memperbolehkan properti name dan age yang telah didefinisikan dalam skema dan tidak memperbolehkan properti tambahan yang tidak didefinisikan dalam skema.
+
+
+
+
+
+4.body-parser
+=> Kode const bodyParser = require('body-parser'); mengimport library middleware Body-parser pada aplikasi Node.js. Body-parser adalah middleware yang memparsing body request pada aplikasi Node.js. Middleware ini dapat memparsing request dengan berbagai format, seperti JSON, text, raw, dan url-encoded form data.
+
+Dengan menggunakan Body-parser, kita dapat mengakses data dari request pada aplikasi Node.js dengan mudah, seperti request body, query parameter, cookies, dan header. Sehingga, Body-parser dapat membantu memudahkan proses pengolahan data pada aplikasi Node.js.
+
+- Memparsing (parsing) adalah proses penguraian suatu data atau teks yang kompleks menjadi bentuk yang lebih terstruktur atau lebih mudah dipahami oleh komputer atau oleh pengguna manusia.
+
+Dalam konteks aplikasi web, parsing biasanya merujuk pada proses mengambil data yang dikirimkan melalui permintaan (request) dari klien (client), seperti form input, data JSON, atau data XML, dan mengubahnya menjadi format yang dapat diakses dan diproses oleh aplikasi server.
+
+Memparsing data ini sangat penting dalam aplikasi web karena memungkinkan pengolahan dan manipulasi data lebih lanjut. Body-parser adalah contoh salah satu library di Node.js yang berguna untuk memparse data dari permintaan yang diterima oleh server sehingga mudah untuk diakses dan diolah oleh aplikasi.
+
+
+Contoh Penggunaan : 
+const bodyParser = require('body-parser');
+
+// Menggunakan bodyParser sebagai middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+Penjelasan :
+- app.use(bodyParser.urlencoded({ extended: false })): Menggunakan body-parser sebagai middleware untuk memparse data URL-encoded. urlencoded berarti data yang dikirim melalui permintaan akan di-parse menjadi objek JavaScript, dan extended yang bernilai false menandakan bahwa library tidak akan mem-parse objek yang kompleks.
+
+- app.use(bodyParser.json()): Menggunakan body-parser sebagai middleware untuk memparse data JSON. json berarti data yang dikirim melalui permintaan akan di-parse menjadi objek JavaScript.
+
+
+=> Beberapa nilai yang dapat dimasukan ke bodyParser :
+- json(): Memparsing data yang dikirimkan dalam format JSON.
+- urlencoded(): Memparsing data yang dikirimkan dalam format URL-encoded.
+- raw(): Memparsing data yang dikirimkan dalam format buffer.
+- text(): Memparsing data yang dikirimkan dalam format plain text.
+- xml(): Memparsing data yang dikirimkan dalam format XML.
+- multipart(): Memparsing data yang dikirimkan dalam format multipart/form-data.
+
+=> Selain itu, pada parameter urlencoded() dan json(), kita juga dapat memberikan opsi tambahan seperti limit untuk membatasi ukuran data yang dapat di-parse, extended untuk mengizinkan parsing objek yang lebih kompleks, dan inflate untuk mengizinkan dekompresi data yang dikirim dalam format gzip atau deflate.
+
+
+TAMBAHAN :
+1.urlEncoded
+=> urlEncoded adalah salah satu format data yang dapat dikirim melalui permintaan (request) pada aplikasi web. Format ini umumnya digunakan untuk mengirim data dalam bentuk pasangan "kunci-nilai" (key-value pairs), seperti data form atau query parameter.
+
+Data URL-encoded dikirim melalui permintaan HTTP dalam format application/x-www-form-urlencoded. Data ini dikirim dalam bentuk string, di mana setiap pasangan "kunci-nilai" dipisahkan dengan tanda &, dan setiap kunci dan nilainya dipisahkan dengan tanda =.
+
+Sebagai contoh, sebuah permintaan dengan data URL-encoded yang berisi nama, email, dan nomor telepon seseorang dapat terlihat seperti ini:
+
+POST /submit-form HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+
+name=John+Doe&email=john%40example.com&phone=1234567890
+
+
+=> Pada contoh di atas, data name, email, dan phone dikirim dalam format URL-encoded. Data name memiliki nilai John Doe, email memiliki nilai john@example.com, dan phone memiliki nilai 1234567890. Nilai pada data URL-encoded harus di-encode (dikonversi ke dalam bentuk khusus) sebelum dikirimkan, seperti pada contoh email di atas yang di-encode menjadi john%40example.com.
+
+
+2.Extended 
+=> extended adalah salah satu opsi yang dapat ditentukan pada middleware body-parser pada Node.js. Opsi ini digunakan untuk menentukan apakah library body-parser dapat mem-parse objek yang kompleks (nested object) pada data yang dikirimkan melalui permintaan (request).
+
+Jika opsi extended disetel menjadi false, body-parser hanya akan mem-parse objek sederhana (plain object) pada data yang dikirimkan melalui permintaan. Namun, jika opsi extended disetel menjadi true, body-parser akan mem-parse objek yang lebih kompleks, seperti array dan nested object.
+
+Sebagai contoh, jika kita memiliki data form yang berisi beberapa input field, dan salah satu input field memiliki nama user[name][first], maka jika extended disetel menjadi false, data user[name][first] tidak akan di-parse menjadi objek. Namun, jika extended disetel menjadi true, data user[name][first] akan di-parse menjadi objek yang nested, yaitu { user: { name: { first: 'value' } } }.
+
+Secara umum, pengaturan opsi extended menjadi true dapat memudahkan pengolahan data yang kompleks dalam aplikasi Node.js. Namun, pengaturan ini juga dapat memungkinkan terjadinya serangan XSS (cross-site scripting) pada aplikasi, sehingga perlu diperhatikan dengan cermat dalam menggunakannya.
+
+
+
+
+5.app.use()
+=> app.use() adalah sebuah metode pada framework Express untuk menambahkan middleware pada aplikasi web yang sedang dibuat. Middleware adalah fungsi-fungsi yang dipanggil secara berurutan saat permintaan HTTP diterima oleh aplikasi web, dan middleware ini dapat melakukan berbagai macam tugas seperti menangani permintaan, mengolah data, atau mengeksekusi kode tertentu.
+
+Metode app.use() digunakan untuk menambahkan middleware pada aplikasi Express. Middleware yang ditambahkan dengan app.use() akan dipanggil untuk setiap permintaan HTTP yang diterima oleh aplikasi, dan akan dijalankan secara berurutan sesuai dengan urutan penambahan middleware.
+
+Sebagai contoh, untuk menambahkan middleware untuk menangani permintaan HTTP GET pada path tertentu, kita dapat menggunakan kode seperti berikut:
+app.use('/path', function(req, res, next) {
+  // kode middleware
+  next();
+});
+
+=> Pada contoh di atas, middleware ditambahkan dengan menggunakan metode app.use(). Middleware ini akan menangani permintaan HTTP GET pada path /path, dan akan dijalankan sebelum permintaan HTTP tersebut diteruskan ke middleware selanjutnya. Pada kode middleware tersebut, kita dapat mengeksekusi kode tertentu, seperti mengolah data permintaan atau menentukan tindakan yang harus dilakukan pada permintaan tersebut. Setelah selesai, kita harus memanggil next() untuk meneruskan permintaan HTTP ke middleware selanjutnya.
+
+
+Sintaks :
+app.use([path], middleware)
+
+Penjelasan : 
+- app: variabel yang digunakan untuk membuat aplikasi Express.
+- path (opsional): path atau route yang digunakan untuk membatasi middleware yang akan dijalankan pada permintaan tertentu. Jika path tidak ditentukan, middleware akan dijalankan pada setiap permintaan HTTP.
+- middleware: fungsi middleware yang akan dipanggil pada setiap permintaan HTTP yang masuk ke dalam aplikasi. Middleware ini akan menerima tiga parameter, yaitu objek request (req), objek response (res), dan fungsi next().
+
+
+TAMBAHAN Middleware:
+- Middleware adalah sebuah fungsi di dalam aplikasi web yang berjalan sebelum atau sesudah sebuah permintaan HTTP. Middleware memungkinkan kita untuk menambahkan fungsionalitas tambahan ke dalam aplikasi web tanpa harus mengubah kode yang sudah ada. Middleware dapat melakukan berbagai tugas seperti verifikasi data, mengubah data permintaan atau respon, melogging permintaan, memeriksa otentikasi, dan lain-lain.
+
+Dalam framework Express, middleware adalah sebuah fungsi yang menerima tiga parameter, yaitu req (objek permintaan), res (objek respon), dan next (fungsi untuk memanggil middleware selanjutnya). Middleware akan dipanggil secara berurutan pada setiap permintaan HTTP yang masuk ke dalam aplikasi. Jika middleware memanggil fungsi next(), kontrol akan dijalankan ke middleware selanjutnya atau ke rute yang sesuai dengan permintaan HTTP.
+
+Contoh : 
+function authenticate(req, res, next) {
+  if (req.headers.authorization) {
+    // TODO: verifikasi token atau kredensial pengguna
+    next();
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+}
+
+function logger(req, res, next) {
+  console.log(`[${new Date()}] ${req.method} ${req.url}`);
+  next();
+}
+
+app.get('/admin', authenticate, logger, (req, res) => {
+  // TODO: tampilkan halaman admin
+});
+
+=> Pada contoh di atas, kita menggunakan dua middleware, yaitu authenticate dan logger. Middleware authenticate digunakan untuk memeriksa otentikasi pengguna dengan memeriksa header Authorization pada permintaan. Jika header Authorization ada, maka middleware akan memanggil fungsi next() untuk menjalankan middleware selanjutnya. Jika tidak, maka middleware akan mengirimkan respon dengan status 401 Unauthorized.
+
+Middleware logger digunakan untuk mencetak log ke konsol dengan format [timestamp] HTTP_METHOD URL. Setelah middleware selesai, kontrol akan dijalankan ke rute yang sesuai dengan permintaan HTTP.
+
+Dalam keseluruhan, middleware sangat berguna dalam membangun aplikasi web yang kompleks. Middleware memungkinkan kita untuk menambahkan fungsionalitas tambahan ke dalam aplikasi web dengan mudah, dan membantu mengurangi kode duplikat yang tidak perlu.
+
+
+
+
+6.Cors
+=> Sederhananya CORS membantu kita agar kita bisa melakukan CRUD dalam web browser.Jika kita tidak pakai cors maka browser akan menghalangi kita untuk membuat CRUD.
+
+Install Cors : npm i cors
+
+
+
+
+7.mongoose.connect
+=> mongoose.connect() untuk membuat koneksi ke database MongoDB dan melakukan operasi CRUD (Create, Read, Update, Delete) pada data.
+
+Contoh :
+const mongoose = require('mongoose');
+
+// membuat koneksi ke database MongoDB
+mongoose.connect('mongodb://localhost/myapp', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to database');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+
+=> mongoose.connect() adalah metode yang disediakan oleh pustaka Mongoose untuk membuat koneksi ke database MongoDB. MongoDB adalah salah satu jenis database NoSQL yang populer digunakan pada aplikasi web modern. Dalam konteks aplikasi Express, kita bisa menggunakan mongoose.connect() untuk membuat koneksi ke database MongoDB dan melakukan operasi CRUD (Create, Read, Update, Delete) pada data.
+
+Berikut adalah contoh penggunaan mongoose.connect():
+
+javascript
+
+const mongoose = require('mongoose');
+
+// membuat koneksi ke database MongoDB
+mongoose.connect('mongodb://localhost/myapp', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to database');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+=> Pada contoh di atas, mongoose.connect() digunakan untuk membuat koneksi ke database MongoDB dengan alamat mongodb://localhost/myapp. Metode ini mengembalikan promise, sehingga kita bisa menangani hasil koneksi dengan then() jika koneksi berhasil, atau catch() jika terjadi kesalahan. Parameter kedua dalam metode mongoose.connect() adalah objek opsi, di mana useNewUrlParser dan useUnifiedTopology adalah opsi yang disarankan oleh MongoDB untuk melakukan koneksi ke database.
+
+
+Sintaks : 
+mongoose.connect(uri, options)
+
+Penjelasan :
+- uri (String): URI koneksi ke database MongoDB.
+- options (Object, opsional): objek konfigurasi opsional untuk koneksi, seperti useNewUrlParser, useUnifiedTopology, ssl, auth, dan sebagainya.
+
+Contoh : 
+const mongoose = require('mongoose');
+
+const uri = 'mongodb://localhost/myapp';
+
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+};
+
+mongoose.connect(uri, options)
+  .then(() => {
+    console.log('Connected to database');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+=> Pada contoh di atas, kita menggunakan konfigurasi opsi yang disarankan oleh MongoDB, seperti useNewUrlParser, useUnifiedTopology, dan useFindAndModify. Opsi useFindAndModify disetel ke false agar kita bisa menggunakan metode findOneAndUpdate() di Mongoose tanpa menghasilkan pesan peringatan.
+
+
+
+
+8.mongoose.on & mongoose.connection
+1.mongoose.on
+=> mongoose.on adalah metode di Mongoose yang digunakan untuk mendaftarkan event listener pada koneksi database. Ketika sebuah event terjadi, seperti event koneksi terbuka atau event koneksi terputus, maka event listener yang telah didaftarkan akan dijalankan.
+
+Sintaks :
+mongoose.connection.on(eventName, callback);
+
+Penjelasan : 
+- eventName: Nama event yang akan didengarkan oleh event listener.
+- callback: Fungsi yang akan dijalankan ketika event terjadi. Fungsi ini biasanya digunakan untuk menangani event yang terjadi
+
+
+Berikut adalah contoh penggunaan mongoose.on untuk mendaftarkan event listener pada event open dan error.
+
+Contoh :
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/myapp', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+
+db.on('open', () => {
+  console.log('Connected to database');
+});
+
+db.on('error', (err) => {
+  console.error(err);
+});
+
+=> Pada contoh di atas, mongoose.connect() digunakan untuk membuat koneksi ke database MongoDB. Objek mongoose.connection digunakan untuk mendaftarkan event listener pada event open dan error. Ketika event open terjadi, maka fungsi callback yang dijadwalkan pada event listener akan dijalankan dan mencetak pesan "Connected to database". Sedangkan ketika event error terjadi, maka fungsi callback yang dijadwalkan pada event listener akan dijalankan dan mencetak pesan error pada konsol.
+
+Dengan menggunakan mongoose.on, kita bisa menangani event-event pada koneksi database dengan cara yang efektif dan terstruktur.
+
+- Beberapa nama event yang didukung oleh Mongoose antara lain:
+- connected: terjadi ketika koneksi berhasil dibuat.
+- error: terjadi ketika terjadi kesalahan dalam proses koneksi.
+- disconnected: terjadi ketika koneksi terputus.
+- reconnected: terjadi ketika Mongoose mencoba untuk melakukan koneksi ulang setelah koneksi terputus.
+- reconnectFailed: terjadi ketika Mongoose gagal melakukan koneksi ulang setelah beberapa kali mencoba.
+
+- Parameter kedua dari mongoose.on adalah fungsi callback yang akan dijalankan ketika event terjadi. Fungsi callback tersebut biasanya digunakan untuk menangani event yang terjadi, seperti mencetak pesan pada konsol atau melakukan proses lainnya.
+
+Berikut adalah contoh penggunaan mongoose.on untuk mendaftarkan event listener pada event connected dan error:
+
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/myapp', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+
+db.on('connected', () => {
+  console.log('Connected to database');
+});
+
+db.on('error', (err) => {
+  console.error(err);
+});
+
+
+
+2.mongoose.connection
+=> mongoose.connection adalah objek yang merepresentasikan koneksi ke database MongoDB yang dibuat menggunakan Mongoose. Objek ini digunakan untuk mengakses berbagai fitur yang disediakan oleh Mongoose untuk mengelola koneksi ke database, seperti metode on, once, dan close.
+
+Objek mongoose.connection juga digunakan untuk melakukan query ke database MongoDB menggunakan model yang telah didefinisikan. Kita bisa mengakses objek ini melalui metode mongoose.connection setelah kita melakukan koneksi ke database menggunakan metode mongoose.connect().
+
+Berikut adalah contoh penggunaan mongoose.connection untuk membuat query ke database MongoDB menggunakan model User:
+const mongoose = require('mongoose');
+
+const uri = 'mongodb://localhost/myapp';
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  age: Number
+});
+
+const User = mongoose.model('User', userSchema);
+
+db.on('open', async () => {
+  const users = await User.find();
+  console.log(users);
+});
+
+db.on('error', (err) => {
+  console.error(err);
+});
+
+
+
+9.mongoose.once
+=> Sama saja seperti mongoose on tapi bedanya adalah mongoose.once digunakan untuk mendaftarkan event listener pada objek koneksi MongoDB yang akan dieksekusi hanya sekali pada saat event terjadi. Listener akan dihapus setelah eksekusi pertama, sehingga tidak akan dieksekusi lagi pada event yang terjadi selanjutnya.
+
+=> Sebagai contoh, jika kita menggunakan mongoose.on pada event connected, maka fungsi callback yang dijadwalkan pada listener akan dieksekusi setiap kali koneksi ke MongoDB berhasil terhubung. Sedangkan jika kita menggunakan mongoose.once pada event yang sama, maka fungsi callback akan dieksekusi hanya sekali pada saat pertama kali koneksi berhasil terhubung, dan tidak akan dieksekusi lagi pada koneksi berikutnya.
+
+Secara umum, mongoose.on digunakan untuk event listener yang memerlukan eksekusi yang berulang-ulang pada setiap kali event terjadi, sedangkan mongoose.once digunakan untuk event listener yang hanya perlu dieksekusi sekali pada saat event terjadi.
+
+
+
+10.express.urlencoded
+=> express.urlencoded adalah salah satu middleware dari framework Express yang digunakan untuk memparsing data yang dikirimkan dari form HTML dalam format application/x-www-form-urlencoded. Middleware ini akan mengambil data dari request body dan mengekstrak nilainya menjadi sebuah objek JavaScript yang dapat diakses pada fungsi pengendali (handler) atau middleware selanjutnya.
+
+Berikut adalah contoh penggunaan express.urlencoded untuk memparsing data dari form HTML.
+Contoh : 
+const express = require('express');
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  
+  // lakukan autentikasi user
+  
+  res.send('Login berhasil');
+});
+
+=> Pada contoh di atas, express.urlencoded digunakan sebagai middleware untuk memparsing data yang dikirimkan melalui request body dari form HTML dengan method POST pada rute /login. Setelah middleware berhasil mengambil nilai data dari request body, kita dapat mengakses nilai dari data tersebut pada objek req.body di dalam fungsi pengendali /login. Dalam contoh ini, nilai dari input username dan password akan disimpan pada variabel username dan password dan selanjutnya dapat digunakan untuk melakukan proses autentikasi user.
+
+
+
+11.mongoose.Schema
+=> mongoose.Schema adalah sebuah konstruktor atau blueprint yang digunakan untuk mendefinisikan struktur atau skema dari sebuah dokumen pada MongoDB yang akan diolah menggunakan Mongoose. Schema berfungsi untuk menentukan tipe data dan nilai-nilai yang diizinkan pada setiap field atau properti dari dokumen.
+
+
+Sintaks : 
+const mongoose = require('mongoose');
+
+// Mendefinisikan skema dokumen
+const mySchema = new mongoose.Schema({
+  // Mendefinisikan field-field pada dokumen beserta tipe data dan opsi lainnya
+  field1: { type: String, required: true },
+  field2: { type: Number, default: 0 },
+  field3: { type: Date, required: true },
+  field4: { type: Boolean, default: false },
+  field5: { type: mongoose.Schema.Types.ObjectId, ref: 'OtherModel' }
+});
+
+// Membuat model dari skema dokumen
+const MyModel = mongoose.model('MyModel', mySchema);
+
+
+Penjelasan :
+Pada contoh di atas, kita membuat sebuah skema dokumen menggunakan mongoose.Schema yang memiliki beberapa field atau properti seperti field1, field2, field3, dan seterusnya. Untuk masing-masing field, kita dapat mendefinisikan tipe data, opsi seperti required, default, unique, dan sebagainya, serta tipe data yang terkait jika menggunakan referenced data.
+
+Setelah mendefinisikan skema dokumen, kita dapat membuat sebuah model dari skema tersebut menggunakan mongoose.model. Model ini nantinya akan digunakan untuk berinteraksi dengan dokumen di MongoDB melalui Mongoose.
+
+
+Contoh :
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
+});
+
+module.exports = mongoose.model('User', userSchema);
+
+
+=> mongoose.Schema adalah sebuah konstruktor atau blueprint yang digunakan untuk mendefinisikan struktur atau skema dari sebuah dokumen pada MongoDB yang akan diolah menggunakan Mongoose. Schema berfungsi untuk menentukan tipe data dan nilai-nilai yang diizinkan pada setiap field atau properti dari dokumen.
+
+Berikut adalah contoh sederhana penggunaan mongoose.Schema untuk mendefinisikan skema sebuah dokumen:
+
+javascript
+
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
+});
+
+module.exports = mongoose.model('User', userSchema);
+
+Pada contoh di atas, kita mendefinisikan skema userSchema dengan menggunakan mongoose.Schema. Skema ini memiliki tiga field, yaitu name, email, dan password, masing-masing dengan tipe data String. Field name dan email memiliki sifat required: true, yang berarti field tersebut wajib diisi pada saat membuat dokumen baru. Field email juga memiliki sifat unique: true, yang berarti tidak boleh ada dokumen lain dengan nilai email yang sama.
+
+Setelah skema terdefinisi, kita kemudian mengexport sebuah model dari skema tersebut menggunakan method mongoose.model. Model ini akan digunakan pada aplikasi Node.js kita untuk berinteraksi dengan dokumen pada database MongoDB yang telah terkoneksi melalui Mongoose.
+
+
+- TAMBAHAN :
+1.Kenapa mongoose.Schema pakai new?
+=> Ketika kita ingin membuat objek dari sebuah konstruktor di JavaScript, kita perlu menggunakan kata kunci new. Konstruktor mongoose.Schema juga merupakan sebuah fungsi konstruktor di JavaScript, sehingga kita perlu menggunakan kata kunci new ketika memanggilnya.
+
+Dalam kasus penggunaan mongoose.Schema, new digunakan untuk membuat instance baru dari konstruktor tersebut yang akan merepresentasikan skema dari sebuah dokumen pada MongoDB. Instance ini nantinya akan digunakan untuk menentukan tipe data dan nilai-nilai yang diizinkan pada setiap field atau properti dari dokumen, sebelum diolah menggunakan Mongoose.
+
+
+2.Apakah bisa tanpa new ? 
+=> Tidak, saat menggunakan mongoose.Schema, kita membutuhkan kata kunci new untuk membuat instance baru dari konstruktor tersebut. Jika kita tidak menggunakan new ketika memanggil konstruktor tersebut, maka mongoose.Schema akan mengembalikan sebuah object biasa, bukan instance dari konstruktor yang dibutuhkan.
+
+Sebagai contoh, jika kita memanggil mongoose.Schema({}) tanpa menggunakan new, maka yang akan dihasilkan adalah sebuah objek biasa yang kosong ({}). Objek tersebut bukanlah instance dari konstruktor mongoose.Schema, sehingga tidak dapat digunakan untuk mendefinisikan skema dokumen pada MongoDB menggunakan Mongoose.
+
+
+
+
+12.mongoose.model
+=> mongoose.model adalah sebuah fungsi yang digunakan untuk membuat sebuah model dokumen di MongoDB menggunakan Mongoose. Model ini digunakan untuk melakukan operasi CRUD (Create, Read, Update, Delete) pada dokumen di MongoDB, serta untuk melakukan validasi data dan berinteraksi dengan database MongoDB.
+
+Untuk membuat sebuah model, kita perlu menyediakan dua parameter pada fungsi mongoose.
+
+model: nama model dan skema dokumen yang akan digunakan. Skema dokumen biasanya dibuat menggunakan mongoose.Schema seperti contoh no 11. 
+
+Contoh Tambahan : 
+const mongoose = require('mongoose');
+
+// Mendefinisikan skema dokumen
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Membuat model dari skema dokumen
+const User = mongoose.model('User', userSchema);
+
+
+=> Pada contoh di atas, kita membuat sebuah model User dengan skema dokumen userSchema. Model ini nantinya dapat digunakan untuk melakukan operasi CRUD pada dokumen user di MongoDB. 
+Contohnya : 
+// Membuat user baru
+const newUser = new User({
+  name: 'John Doe',
+  email: 'johndoe@example.com',
+  password: 'password123'
+});
+await newUser.save();
+
+// Mencari user berdasarkan email
+const user = await User.findOne({ email: 'johndoe@example.com' });
+
+// Mengubah password user
+user.password = 'newpassword123';
+await user.save();
+
+// Menghapus user
+await User.deleteOne({ email: 'johndoe@example.com' });
+
+=> Dalam contoh tersebut, kita menggunakan model User untuk membuat user baru, mencari user berdasarkan email, mengubah password user, dan menghapus user.
+
+
+
+13.dotenv
+=> dotenv adalah sebuah package Node.js yang digunakan untuk mengonfigurasi variabel lingkungan (environment variables) pada aplikasi Node.js. dotenv membaca file .env pada direktori root aplikasi dan menambahkan setiap variabel lingkungan yang didefinisikan di dalam file .env ke dalam process.env.
+
+Variabel lingkungan pada aplikasi Node.js dapat digunakan untuk menyimpan informasi sensitif seperti kredensial, URL database, kunci API, dan lain sebagainya. Dengan menggunakan dotenv, pengembang aplikasi dapat menyimpan variabel lingkungan pada file .env dan menghindari menyimpan informasi sensitif tersebut pada kode sumber aplikasi Node.js.
+
+dotenv sangat berguna ketika Anda ingin menyimpan informasi sensitif pada aplikasi Node.js dan menjaga keamanannya. Dengan menggunakan dotenv, pengembang dapat mengatur variabel lingkungan pada aplikasi Node.js dengan mudah dan menghindari penggunaan hardcoded values pada kode sumber aplikasi Node.js.

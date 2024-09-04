@@ -1,0 +1,486 @@
+Restful API
+1.Restful API
+2.Design RESful API
+3.Express Js 
+4.Alasan Menggunakan Express
+5.Cara Menjalankan Express JS 
+6.Middleware
+7.Menghubungkan Postman dengan Express
+8.Routes Express
+9.Routes menggunakan modul
+
+
+
+Tambahan :
+Modul yang sering digunkaan di node js :
+- fs(file system)
+- http
+- express(harus install lagi)
+- react (harus install lagi)
+
+
+
+
+1.Restful API
+=> Gaya arsitektural perangkat lunak yang didalamnya mendefinisikan aturan-aturan untuk membuat web service.Rest Api itu adalah style gaya ngoding aja.Jadi walau kita tidak mengikuti gaya penulisannya API tetap bisa jalan tapi ada resikonya.Dalam API kita bisa mengembangkan website yang mudah diberbagai platform lalu juga bisa mengintegrasikan website dengan aplikasi yang berbeda bahasa pemrograman.Untuk Membuat API arsitektur paling populer adalah RESTful API.
+
+- REST(REpresentational State Transfer) adalah suatu arsitektur metode komunikasi yang menggunakan protocol HTTP untuk pertukaran data dan metode ini sering diterapkan dalam pengembangan aplikasi.
+
+Cara Kerja :
+Client Mengirim request ke server melalui HTTP request dan server memberikan response melalui HTTP response.Response yang diberikan oleh server biasanya berformat html.Nah, bayangkan jika Anda harus mengembangkan website Anda ke aplikasi Mobile seperti Android atau iOS.Anda tahu aplikasi Android ataupun iOS tidak membutuhkan HTML sebagai response dari server.Karena Android dan iOS menggunakan bahasa pemrograman yang berbeda dan tidak mengenal HTML.Oleh sebab itu, kita perlu membuat RESTful API.RESTful API ini akan menjadi jembatan komunikasi data antara client dan server.Sehingga, server tidak lagi mengirimkan HTML sebagai response, melainkan hanya data.Response dalam bentuk data ini, biasanya berformat JSON atau XML.Akan tetapi, yang paling umum digunakan adalah JSON.Dimana client dapat dari berbagai macam platform, seperti aplikasi web, desktop, ataupun mobile app.
+
+
+
+2.Design RESful API
+=> Sebelum membuat RESTful API kita harus defisinikan EndPoint dari RESTful API yang akan dibuat.EndPoint merupakan routes dari API yang akan dibuat.RESTful API menggunakan HTTP verbs.HTTP verbs yang umum digunakan adalah GET,POST,PUT dan DELETE.
+
+- GET untuk mendapatkan data dari server atau lebih dikenal dengan istilah READ.
+- POST untuk meng-CREATE new data
+- PUT untuk UPDATE data
+- DELETE untuk menghapus data.
+
+
+
+3.Express Js 
+=> Express.js adalah framework back end. Artinya, ia bertanggung jawab untuk mengatur fungsionalitas website, seperti pengelolaan routing dan session, permintaan HTTP, penanganan error, serta pertukaran data di server. 
+
+- Nah, framework yang satu ini punya arsitektur MVC (Model View Controller). Dengan begitu, setiap data diolah pada Model, dihubungkan melalui Controller, lalu ditampilkan menjadi informasi melalui View.
+
+- Express merupakan web framework atau kerangka kerja web yang cepat, tidak beropini, dan minimalis untuk node.js.
+
+- Express adalah “server-side” atau “backend” framework yang sangat handal dalam membangun API (Application Programming Interface).
+
+
+
+4.Alasan Menggunakan Express
+- Express memberikan kemudahan dalam membangun aplikasi berbasis web dengan node.js
+- Sangat ringan, cepat, dan gratis.
+- Memberikan kemudahan dalam membangun route.
+- Memberikan kontrol penuh terdapat request dan response.
+- Express merupakan web framework paling populer untuk node.js
+
+ 
+
+
+Tambahan !!! :
+1.Express js tutorial
+https://www-digitalocean-com.translate.goog/community/tutorials/nodejs-express-basics?_x_tr_sl=auto&_x_tr_tl=id&_x_tr_hl=id
+
+2.Nodemon Tutorial
+https://www.digitalocean.com/community/tutorials/workflow-nodemon-id
+
+
+
+5.Cara Menjalankan Express JS : 
+1.Menginstall Express
+- Pertama harus install node js dulu
+- Membuat sebuah folder baru dan masuk kedalam folder tersebut
+- Jalankan perintah : npm init -y. 
+- Jalankan di terminal vscode dan pastikan pada saat menjalankan perintah kita sudah berada di lokasi folder yang dibuat tadi.
+- Ketik perintah : npm install express
+
+
+Tambahan!!!
+Install Nodemon 
+=> Dengan memakai nodemon kita tidak perlu restart server lagi.Nodemon auto tersave tanpa restart server.
+
+1.Ketik perintah di terminal vscode : npm install nodemon --save-dev
+2.Pergi ke package-json nya di folder yang sama
+3.Pergi ke "scripts"
+4.Tambahkan perintah => "start" : "nodemon namafileutama.js"
+5.Untuk menjalankan pergi ke terminal
+6.Ketik : npm start
+
+
+
+TAMBAHAN 2 :
+Untuk menginstall express,nodemon,mongoose(Untuk mongoDB) Khusus jika ingin pakai Database Mongodb :
+- Ketik perintah di terminal vscode : npm install express nodemon dotenv mongoose
+- Untuk menjalankan API bisa menggunakan postman atau juga Thunder client yang ada pada vscode
+- Cara ini bisa berjalan jika terhubung dengan mongodb.Jika tidak terhubung lebih baik jangan gunakan ini.
+
+
+2.Membuat Server Express
+- Pertama membuat file js.2
+- Lalu tambahkan baris kode : 
+   const express = require('express')
+   const app = express()
+
+### Baris pertama mengambil modul express utama.Baris kedua digunakan untuk menjalankan kode baris pertama tadi.
+
+- app.get('/',(req,res)=>{
+	res.send('Succesful Response');
+})
+
+Penjelasan : 
+1.Baris kode ini adalah tempat kita memberi tahu server Express cara kita menangani GET permintaan ke server kami. Express menyertakan fungsi serupa untuk POST, PUT, dll. menggunakan app.post(...), app.put(...), dll.
+
+2.Fungsi-fungsi ini mengambil dua parameter utama. Yang pertama adalah URL untuk fungsi ini untuk ditindaklanjuti. Dalam hal ini, kami menargetkan '/', yang merupakan akar dari situs web kami: dalam hal ini, localhost:3000.
+
+3.Parameter kedua adalah fungsi dengan dua argumen: req, dan res. req mewakili permintaan yang dikirim ke server; Kita dapat menggunakan objek ini untuk membaca data tentang apa yang diminta klien untuk dilakukan. res mewakili respon yang akan kami kirimkan kembali ke klien.
+
+Di sini, kami memanggil fungsi pada res untuk mengirim kembali respons: 'Successful response.'.
+
+
+- Perintah selanjutnya adalah menambahkan : 
+   app.listen(3000, () => console.log('Example app is listening on port 3000.'));
+
+Penjelasan : Akhirnya, setelah kami mengatur permintaan kami, kami harus memulai server kami! Kami melewati 3000 fungsi listen, yang memberi tahu aplikasi port mana yang harus didengarkan. Fungsi yang diteruskan sebagai parameter kedua adalah opsional dan berjalan saat server dinyalakan. Ini memberi kami beberapa umpan balik di konsol untuk mengetahui bahwa aplikasi kami sedang berjalan.
+
+- Lalu pergi ke-terminal dan ketik node namaFile.Cth : node index.js 
+- Jika : 'Example app is listening on port 3000.' Sudah jalan artinya server sudah dibuat
+- Selanjutnya pergi ke url di web browser.
+- Ketik perintah : localhost:3000.
+
+
+
+
+6.Middleware
+=> Middleware adalah fungsi yang digunakan untuk mengakses permintaan object (req), respons object (res), dan setiap siklus permintaan dan respon tersebut (next).
+
+- Dengan Express, kita dapat menulis dan menggunakan fungsi middleware , yang memiliki akses ke semua permintaan HTTP yang datang ke server. Fungsi-fungsi ini dapat:
+- Jalankan kode apa pun.
+- Buat perubahan pada permintaan dan objek respons.
+- Akhiri siklus permintaan-tanggapan.
+- Panggil fungsi middleware berikutnya di tumpukan.
+
+- Kita dapat menulis fungsi middleware kita sendiri atau menggunakan middleware pihak ketiga dengan mengimpornya dengan cara yang sama seperti yang kita lakukan dengan paket lain.
+
+- Mari kita mulai dengan menulis middleware kita sendiri, kemudian kita akan mencoba menggunakan beberapa middleware yang ada untuk melayani file statis.
+
+- Untuk mendefinisikan fungsi middleware, kita memanggil app.use() dan memberikannya sebuah fungsi. Berikut adalah fungsi middleware dasar untuk mencetak waktu saat ini di konsol selama setiap permintaan:
+
+Cth :
+Kita dapat menulis fungsi middleware kita sendiri atau menggunakan middleware pihak ketiga dengan mengimpornya dengan cara yang sama seperti yang kita lakukan dengan paket lain.
+
+Mari kita mulai dengan menulis middleware kita sendiri, kemudian kita akan mencoba menggunakan beberapa middleware yang ada untuk melayani file statis.
+
+Untuk mendefinisikan fungsi middleware, kita memanggil app.use()dan memberikannya sebuah fungsi. Berikut adalah fungsi middleware dasar untuk mencetak waktu saat ini di konsol selama setiap permintaan:
+
+
+Arti Sederhana Midleware :
+Source : https://medium.easyread.co/memahami-middleware-nodejs-secara-singkat-dan-mudah-di-pahami-c34e4e087e88
+
+=> Middleware pada dasarnya adalah ‘penengah’. Kalau dalam aplikasi middleware adalah sebuah aturan yang harus dilewati terlebih dahulu sebelum masuk kedalam sebuah sistem atau keluar dari sebuah sistem.
+
+
+
+7.Postman
+Source : https://iq-opengenus-org.translate.goog/routing-with-express-and-postman/?_x_tr_sl=auto&_x_tr_tl=id&_x_tr_hl=id
+
+=> Postman adalah software yang digunakan untuk pengujian API dan banyak lagi.Bisa di download di websitenya.
+
+=>  Alasan menggunakan Postman : 
+- Postman memungkinkan kita untuk melakukan berbagai macam request (seperti GET, POST, PATCH, UPDATE, DELETE dan masih banyak lagi), sedangkan di browser kita hanya diperbolehkan GET request.
+- Ini memungkinkan kami menyimpan permintaan kami di koleksi dan folder untuk mengaturnya.
+- Kami dapat menentukan lingkungan pengembangan/produksi, mengirim badan untuk permintaan POST/PATCH.
+- Kami juga dapat menentukan header HTTP untuk permintaan kami.
+- Singkatnya, Postman memberi kami setiap layanan dasar yang diperlukan untuk membangun API.
+- Jadi mari kita mulai membangun API kita dan menggunakan Postman untuk mengujinya. Selain Postman, ada alat serupa lainnya yang memungkinkan Anda menguji API Anda, seperti RapidAPI atau Apigee.
+
+
+
+
+7.Menghubungkan Postman dengan Express
+1.Get
+1.Kita sudah menjalankan proses express yang kita buat sebelumnya seperti kode diatas tadi.
+2.Dapatkan permintaan Get : Sebelumnya kita sudah buat get-nya yaitu : app.get('/',(req,res) => {
+    res.send("Install berhasil ");
+})
+
+=> Di sini,Kita telah menentukan Header http (GET), dan memberi tahu Express bahwa setiap kali seseorang membuat permintaan pada /rute (yang merupakan rute root pada dasarnya), dengan GETheader, kirim a response(res)dengan status - 200 that means (OK)dan jsonrespons dengan bidang pesan.
+
+3.Simpan file dan mari kita coba di Postman. Buka Postman dan masukkan URL 127.0.0.1:3000 atau localhost:3000 dan tentukan GET sebagai header HTTP.Lalu klik send.Jika error maka ada yang salah dalam kode atau setingan.
+
+Cth 1 :
+const express = require('express');
+const app = express();
+
+app.get('/',(req,res) => {
+    res.send("Js Berhasil di node ");
+})
+
+app.listen(3000,function(){
+    console.log("Ex app is listening on p 3000")
+})
+
+=> Sedang menjalankan file html
+
+
+Cth 2 :
+const express = require('express');
+const app = express();
+
+app.get('/',(req,res) => {
+res.status(200)
+ .json({
+     message : "Express terhubung dengan Postman",
+     app : "Jalur express"
+ })
+})
+
+app.listen(3000,function(){
+    console.log("Ex app is listening on p 3000")
+})
+
+=> Sedang menjalankan file json.
+
+
+
+2.POST
+=> POST adalah metode yang digunakan untuk mengirim data dari client ke server. Data yang dikirim dalam format JSON. Pada sisi server, data akan berada dalam request object. Agar express.js bisa mengakses data tersebut, perlu menambahkan middleware.
+
+- Pada sisi server, data akan berada dalam request object. Agar express.js bisa mengakses data tersebut, perlu menambahkan middleware.
+
+- Middleware adalah suatu fungsi yang berada diantara object request dan response yang berguna untuk melakukan tugas tertentu. 
+
+Cth : 
+const express = require("express")
+const app = express();
+
+app.post("/",(req,res) => {
+    res
+    .status(200)
+    .json({
+        message : "You can post to this endpoint !",
+        app : "Express-Routes"
+    })
+})
+
+app.listen(3000,function(){
+    console.log("Server 3000")
+})
+
+
+- Tambahan untuk bisa menjalankan kode diatas dengan postman,adalah : 
+- Di tampilan halaman pergi ke body
+- Lalu pergi ke raw
+- Lalu Disamping kanan raw ada Text ganti menjadi json.
+- Lalu ganti juga permintaan GET ke POST
+- Lalu send
+
+
+
+3.Menangani Permintaan POST dengan beberapa Data
+Dengan permintaan POST kita dapat mengirim data dari klien ke server, dan data ini ada di request(req)objek.
+
+Untuk menggunakan data yang tersedia di req.body kita harus menggunakan middleware express.json().
+Jadi, tentukan middleware tepat setelah konfigurasi ekspres yaitu tepat setelah baris const app = express();
+
+- Di sini, kami akan membaca data dari klien yang ada di req.body dan mengirimkan data sebagai respons juga.
+
+- Anda dapat mengirim data di Postman di bawah Body bidang. Jadi, di sini kita akan mengirimkan data dalam format JSON, jadi kita akan menentukan tipe Konten di badan sebagai JSON juga.
+
+Cth :
+const express = require("express")
+const app = express();
+
+app.use(express.json())
+
+app.post("/data",(req,res) => {
+    console.log(req.body);
+    res.status(200).json({
+        status : "Success !",
+        data : {
+            body : req.body
+        }
+    })
+});
+
+app.listen(3000,function(){
+    console.log("Server 3000")
+})
+
+
+- Lalu kita pergi ke postman
+- Konfigurasinya sama seperti teknik Post sebelumnya.
+- Coba ketikan perintah : 
+{
+   "name" : "Sang Penanya"
+}
+Di dalam web tersebut raw.
+- Lalu send
+- Lalu cek di bagian body jika data yang kita ketik di raw tadi masuk kedalam body artinya post telah berhasil berjalan.
+
+
+Cth 3 :
+const express = require("express")
+const app = express();
+
+app.get("*",(req,res) => {
+    res
+    .status(404)
+    .json({
+        message : "Route Does Not exist",
+        app : "Express Route"
+    })
+});
+
+app.listen(3000,function(){
+    console.log("Server 3000")
+})
+
+
+=> Untuk bisa menampilkan ini,dalam postman kita ketik : localhost:3000/api.Dijalankan dalam bentuk GET.
+
+
+
+
+8.Routes Express
+=> Dalam Express kita bisa membuat sebuah rute untuk menampilkan halaman tertentu.Untuk bisa membuat itu kita harus membuat lokasi URL nya.Misalnya kita ingin masuk kehalaman about maka dalam URL kita ketik perintah : "localhost:3000/about"
+- Untuk bisa membuatnya kita bia meletakan di get sebelum req.
+Cth :
+const ekspres = require("express")
+const app  = ekspres()
+
+app.get("/",(req,res)=>{
+    res.send("Ini adalah halaman utama");
+})
+
+app.get("/about",(req,res)=>{
+    res.send("Web ini dibuat pada saat hujan di jam : 18-20,29-10,2022");
+})
+
+app.get("/portofolio",(req,res)=>{
+    res.send("Halo saya sang penanya yang hobi menulis dalam hal yang menyenangkan");
+})
+
+app.listen(3000,function(){
+    console.log("Server 3000")
+})
+
+
+
+9.Routes menggunakan modul
+=> Pada segmen sebelumya kita telah membahas tentang multiple route pada express.
+- Jika Anda perhatikan lebih detail, route dan logika program berada dalam satu file yaitu “index.js”.
+- Untuk permulaan itu adalah hal yang bagus, akan tetapi jika Anda membuat aplikasi yang lebih kompleks dan membutuhkan banyak route, itu bukan ide yang bagus.
+- Oleh sebab itu, express menyediakan fitur yaitu “Express Router”.
+- Dengan memanfaatkan express router, kita bisa membuat route terpisah dari “index.js”.
+- Dengan demikian, kita bisa membuat route yang lebih kompleks.
+- Untuk lebih memahami cara kerja dari express router, silahkan buat sebuah folder bernama “routes” setara dengan folder node_modules.
+
+Cth : 
+
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes
+
+
+https://www.digitalocean.com/community/tutorials/use-expressjs-to-get-url-and-post-parameters
+
+
+kiel fernandes
+gitarIwanFals11
+36.68.139.168/32
+
+
+
+
+Fungsi middleware di Express terdiri dari beberapa tipe :
+1.Application-Level
+2.Router Level
+3.Built-in
+4.Error handling
+5.Third-Party
+
+
+https://expressjs.com/en/guide/using-middleware.html
+https://reflectoring.io/express-middleware/
+
+Contoh :
+Build in
+const express = require("express")
+
+const app = express();
+app.use(express.static("images"))
+app.use(expres.static("htmls:))
+
+app.get('product,(req,res) => {
+	res.sendFile("productsample.html")
+})
+
+
+
+
+
+mongodb+srv://kiel_fernandes11:<password>@cluster1.93sejfz.mongodb.net/test
+
+
+
+
+1.Middleware Application-Level
+
+const express = require("express")
+const app = express()
+
+app.use((req, res,next) => {
+  console.log("Succes")
+  next()
+})
+
+app.get("/",(req,res)=>{
+  res.send("Middleware sudah berjalan")
+})
+
+
+=> Script diatas menjelaskan use dan get. app.use digunakan untuk menjalankan middleware nya.Jika use berhasil dipanggil maka dia akan melanjutkan ke middleware berikutnya melalui next().Lalu app.get digunakan untuk menampilkan data melalui jalur /.Data tampil melalui res.send().
+
+
+
+2.Middleware Router-Level
+
+const express = require('express')
+const app = express()
+
+app.use((req,res,next)=>{
+  console.log("Get Succes")
+  next()  
+})
+
+app.get("/user/:id",(req,res) => {
+  res.send("Id : " + req.params.id)
+})
+
+
+=> Script diatas menjelaskan tentang jalur perutean di middleware.Agak mirip dengan penjelasan no 1 bedanya dalam perutean di app.get ini kita tambah :id.Fungsinya untuk menambahkan jalur id dalam url.
+
+
+3.Built-in Middleware
+const express = require("express")
+const app = express()
+app.use(express.json())
+
+=> Script diatas merupakan built-in yang digunakan untuk mem-parsing permintaan JSON yang masuk dan menempatkan data yang di-parsing di req.body.Opsi ini terbatas memungkinkan Anda menentukan ukuran isi permintaan. Apakah Anda memasukkan string atau angka, itu akan ditafsirkan sebagai ukuran maksimum payload dalam byte.
+
+
+
+
+4.Error-Handling Middleware
+const express = require("express")
+const app = express()
+
+const errorLog = (err, req, res, next) => {
+  res.send( `error ${error.message}`) 
+  next(err)
+}
+
+app.use(errorLog)
+
+
+=> Script diatas digunakan untuk mengatasi terjadinya error dalam middleware.Jadi jika kita misalnya menginputkan dokumen word misalnya padahal yang diminta hanya pdf maka fungsi ini akan menampilkan error.
+
+
+
+
+5.Third-Party Middleware
+
+const express = require("express")
+let cookieParser = require("cookie-parser")
+const app = express()
+
+app.use(cookieParser())
+
+app.get("/tes",(req,res) => {
+  res.send("Coba Cookies : " + req.cookies)
+})
+
+=> Script diatas menjelaskan tentang middleware cookie-parser.cookie-parser digunakan untuk mem-parsing cookie yang dilampirkan ke objek permintaan client.

@@ -1,0 +1,309 @@
+Fetch
+
+https://dev.to/duhbhavesh/how-to-use-fetch-api-for-crud-operations-57a0
+
+https://medium.com/@hardimaneric/full-crud-with-fetch-and-javascript-4e6c43080261
+
+https://www.bezkoder.com/javascript-fetch/
+
+https://developer.mozilla.org/en-US/docs/Web/API/fetch
+
+
+
+!!!TAMBAHAN :
+3 Hal yang wajib ada jika pakai fetch untuk CRUD,yaitu :
+- method
+- body
+- headers
+
+Contoh :
+fetch("https://jsonplaceholder.typicode.com/posts",{
+    //3 hal yang wajib dipakai ketika menggunakan CRUD
+    //1.method : Metode apa yang ingin kita gunakan 
+    method : "POST",
+    //2.body : Nilai apa yang ingin kita masukan/tambahkan
+    body : JSON.stringify({
+        title : "Tes",
+        body : "bar",
+        email : "abc@gmail.com",
+        userId : 0
+    }),
+    //3.headers : Jenis File apa yang ingin kita tampilkan
+    headers : {
+        "Content-Type" : "application/json;charset=UTF-8"
+    }
+})
+.then(res => res.json())
+.then(simpanJSON => console.log(simpanJSON))
+
+
+
+
+
+1.Pengertian
+=> Metode global fetch() memulai proses pengambilan sumber daya dari jaringan, mengembalikan janji yang dipenuhi setelah respons tersedia. 
+
+ Janji diselesaikan ke Responseobjek yang mewakili tanggapan atas permintaan Anda.
+
+Promise fetch()hanya ditolak saat terjadi kesalahan jaringan (yang biasanya terjadi saat ada masalah izin atau serupa). fetch() Janji tidak menolak kesalahan HTTP ( 404, dll.). Sebagai gantinya, seorang then() pawang harus memeriksa Response.okdan/atau Response.status properti. 
+
+ WindowOrWorkerGlobalScopediimplementasikan oleh Windowand WorkerGlobalScope, yang berarti bahwa fetch()metode ini tersedia di hampir semua konteks di mana Anda mungkin ingin mengambil sumber daya. 
+
+Metode fetch()ini dikendalikan oleh connect-srcarahan Kebijakan Keamanan Konten daripada arahan sumber daya yang diambilnya. 
+
+Syntaks :
+	fetch(resource)
+	fetch(resource,options)
+
+
+2.resource 
+=> Ini menentukan sumber daya yang ingin Anda ambil. Ini bisa berupa:
+- String atau objek lainnya dengan stringifier — termasuk URLobjek — yang menyediakan URL sumber daya yang ingin Anda ambil.
+- Sebuah Request objek.
+
+
+
+3.options (opsional)
+=> Sebuah objek yang berisi pengaturan khusus yang ingin Anda terapkan pada permintaan. Opsi yang memungkinkan adalah: 
+1.method
+=> Metode permintaan, misalnya, GET, POST. Perhatikan bahwa Origintajuk tidak disetel pada permintaan Ambil dengan metode HEADatau GET. (Perilaku ini diperbaiki di Firefox 65 — lihat bug 1508661 .) 
+
+2.headers
+=> Header apa pun yang ingin Anda tambahkan ke permintaan Anda, terkandung di dalam Headersobjek atau literal objek dengan String nilai. Perhatikan bahwa beberapa nama dilarang . 
+Contoh :
+ headers : {
+        "Content-Type" : "application/json;charset=UTF-8"
+    }
+
+
+3.body
+=> Badan apa pun yang ingin Anda tambahkan ke permintaan Anda: ini bisa berupa Blob, an ArrayBuffer, a TypedArray, a DataView, a Form Data, a URL Search Params, objek string atau literal, atau ReadableStreamobjek. Kemungkinan terbaru ini masih dalam percobaan; periksa informasi kompatibilitas untuk memverifikasi Anda dapat menggunakannya. Perhatikan bahwa permintaan yang menggunakan metode GETor HEADtidak dapat memiliki badan. 
+Contoh :
+ body : JSON.stringify({
+        title : "Tes",
+        body : "bar",
+        email : "abc@gmail.com",
+        userId : 0
+    })
+
+
+
+4.mode
+=> Mode yang ingin Anda gunakan untuk permintaan, misalnya, cors, no-cors, atau same-origin. 
+
+5.credentials
+=> Mengontrol apa yang dilakukan browser dengan kredensial ( cookies , entri autentikasi HTTP , dan sertifikat klien TLS). Harus salah satu string berikut,yaitu :
+  a.omit
+  =>  Memberi tahu browser untuk mengecualikan kredensial dari permintaan, dan mengabaikan kredensial apa pun yang dikirim kembali sebagai respons (misalnya, Set-Cookieheader apa pun).
+
+  b.same-origin
+  => Memberi tahu browser untuk menyertakan kredensial dengan permintaan ke URL asal yang sama, dan menggunakan kredensial apa pun yang dikirim kembali sebagai tanggapan dari URL asal yang sama. Ini adalah nilai default.
+
+  c.include
+  => Memberi tahu browser untuk menyertakan kredensial dalam permintaan yang sama dan lintas asal, dan selalu menggunakan kredensial apa pun yang dikirim kembali sebagai tanggapan.
+
+  d.cache
+  => Sebuah string yang menunjukkan bagaimana permintaan akan berinteraksi dengan cache HTTP browser . Kemungkinan nilai, default, no-store, reload, no-cache, force-cache, dan only-if-cached, didokumentasikan dalam artikel untuk cacheproperti Request objek.
+
+  e.redirect
+  => Cara menangani redirect respons :
+    - follow : Secara otomatis mengikuti pengalihan. Kecuali jika dinyatakan lain, mode pengalihan disetel ke follow.
+    - error : Batalkan dengan kesalahan jika pengalihan terjadi
+    - manual : Penelepon bermaksud memproses respons dalam konteks lain
+
+  f.referrer
+  => Sebuah string yang menentukan perujuk permintaan. Ini bisa berupa URL asal yang sama, about:client, atau string kosong. 
+
+  g.referrerPolicy
+  => Menentukan kebijakan perujuk yang akan digunakan untuk permintaan. Mungkin salah satu dari no-referrer, no-referrer-when-downgrade, same-origin, origin, strict-origin, origin-when-cross-origin, strict-origin-when-cross-origin, atau unsafe-url. 
+
+  h.integrity
+  => Berisi nilai integritas sub -sumber daya permintaan (mis., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). 
+
+  i.keepalive
+  => Opsi keepaliveini dapat digunakan untuk memungkinkan permintaan hidup lebih lama dari halaman. Ambil dengan keepalivebendera adalah pengganti Navigator.sendBeacon()API. 
+
+  j.signal
+  => Contoh AbortSignalobjek; memungkinkan Anda untuk berkomunikasi dengan permintaan pengambilan dan membatalkannya jika diinginkan melalui file AbortController. 
+
+
+6.Nilai pengembalian
+=> Sebuah Promise yang menyelesaikan ke Response objek.
+
+
+7.Exceptions
+=> AbortError DOMException
+-  Permintaan dibatalkan karena panggilan ke metode. AbortController abort()
+
+
+8.TypeError
+=> Dapat terjadi karena alasan berikut :
+1.Nama Tajuk tidak Valid 
+Cth :
+// space in "C ontent-Type"
+const headers = {
+  'C ontent-Type': 'text/xml',
+  'Breaking-Bad': '<3',
+};
+fetch('https://example.com/', { headers });
+        
+
+2.Nilai Tajuk tidak valid.Objek header haus berisi tepat 2 elemen.
+Cth : 
+const headers = [
+  ['Content-Type', 'text/html', 'extra'],
+  ['Accept'],
+];
+fetch('https://example.com/', { headers });
+
+
+3.URL atau skema tidak valid,atau menggunakan skema yang pengambilannya tidak didukung,atau menggunakan skema yang tidak didukung untuk mode permintaan tertentu.
+Contoh :
+fetch('blob://example.com/', { mode: 'cors' });
+
+
+4.URL menyertakan kredensial.
+Cth :
+fetch('https://user:password@example.com/');
+
+
+5.URL perujuk tidak valid
+Cth :
+fetch('https://example.com/', { referrer: './abc\u0000df' });
+
+
+6.Mode tidak valid(navigate dan websocket)
+Cth :
+fetch('https://example.com/', { mode: 'navigate' });
+
+
+7.Jika mode cache permintaan adalah "only-if-cached" dan mode permintaan selain "asal yang sama".
+Cth :
+fetch('https://example.com/', {
+  cache: 'only-if-cached',
+  mode: 'no-cors',
+});
+
+
+8.Jika metode permintaan adalah token nama yang tidak valid atau salah satu header terlarang("CONNECT","TRACE",atau "TRACK")
+Cth :
+fetch('https://example.com/', { method: 'CONNECT' });
+
+
+9.Jika mode permintaan adalah "no-cors" dan metode permintaan bukan metode yang terdaftar aman untuk CORS("GET","HEAD",atau "POST")
+Cth : 
+fetch('https://example.com/', {
+  method: 'CONNECT',
+  mode: 'no-cors',
+});
+        
+
+10.Jika metode permintaan adalah "GET" atau "HEAD" dan isi bukan nol atau tidak ditentukan.
+Cth :
+fetch('https://example.com/', {
+  method: 'GET',
+  body: new FormData(),
+});
+   
+
+
+9.Contoh 
+=> Dalam contoh Ambil Permintaan kami (lihat Ambil Permintaan secara langsung ) kami membuat Requestobjek baru menggunakan konstruktor yang relevan, lalu mengambilnya menggunakan fetch()panggilan. Karena kami mengambil gambar, kami menjalankan Response.blob()respons untuk memberinya tipe MIME yang tepat sehingga akan ditangani dengan benar, kemudian membuat URL Obyek dan menampilkannya dalam sebuah <img>elemen. 
+Contoh :
+const myImage = document.querySelector('img');
+
+const myRequest = new Request('flowers.jpg');
+
+fetch(myRequest)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return response.blob();
+  })
+  .then((response) => {
+    myImage.src = URL.createObjectURL(response);
+  });
+
+=> Dalam Ambil dengan init kemudian Minta contoh (lihat Ambil Permintaan init live ), kami melakukan hal yang sama kecuali bahwa kami meneruskan initobjek saat kami memanggil fetch().
+Contoh :
+const myImage = document.querySelector('img');
+
+const myHeaders = new Headers();
+myHeaders.append('Accept', 'image/jpeg');
+
+const myInit = {
+  method: 'GET',
+  headers: myHeaders,
+  mode: 'cors',
+  cache: 'default',
+};
+
+const myRequest = new Request('flowers.jpg');
+
+fetch(myRequest, myInit)
+  .then((response) => {
+    // …
+  });
+
+=> Anda juga bisa meneruskan initobjek dengan Requestkonstruktor untuk mendapatkan efek yang sama.
+Cth :
+const myRequest = new Request('flowers.jpg', myInit);
+
+
+Anda juga dapat menggunakan objek literal seperti headers pada init.
+Contoh :
+const myInit = {
+  method: 'GET',
+  headers: {
+    'Accept': 'image/jpeg',
+  },
+  mode: 'cors',
+  cache: 'default',
+};
+
+const myRequest = new Request('flowers.jpg', myInit);
+
+
+Contoh 2 :
+// Create a new resource
+fetch('https://example.com/api/endpoint', {
+  method: 'POST',
+  body: JSON.stringify({
+    key: 'value'
+  }),
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error))
+
+// Read a resource
+fetch('https://example.com/api/endpoint/123')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error))
+
+// Update a resource
+fetch('https://example.com/api/endpoint/123', {
+  method: 'PUT',
+  body: JSON.stringify({
+    key: 'new value'
+  }),
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error))
+
+// Delete a resource
+fetch('https://example.com/api/endpoint/123', {
+  method: 'DELETE'
+})
+  .then(response => console.log(response.status))
+  .catch(error => console.error(error))

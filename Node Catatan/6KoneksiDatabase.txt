@@ -1,0 +1,10 @@
+Koneksi ke Database
+
+1.Koneksi ke database
+- Pertama aktifkan dulu servernya.
+Caranya : - Pergi ke cmd 
+	  - Ketik : mongod
+	  - Cmd / Terminal jangan di close agar server tetap aktif.
+
+- Buat sebuah file js dalam folder yang kita buat sebelumnya.
+- Buat variabel yang menyimpan :require('mongoose') untuk mengimpor library mongoosenya

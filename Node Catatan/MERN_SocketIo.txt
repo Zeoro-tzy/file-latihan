@@ -1,0 +1,1093 @@
+Membuat MERN untuk webSocket.Io Notification
+
+
+1.Frontend 
+- Pertama kita buat folder baru dan kosong lalu open folder itu di vscode
+- Selanjutnya buka folder itu diterminal dan install sebuah react didalamnya.
+ Ketik : npx create-react-app (namafilereact) 
+- Selanjutnya kita bersih-bersihkan file react itu hapus yang tidak diperlukan.
+
+
+2. Selanjutnya dalam file App.js buat kode seperti ini :
+Cth :
+Halaman App.js :
+import { useState } from "react";
+import "./app.css";
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+
+  console.log(user);
+
+  return (
+    <div className="container"> 
+      <div className="login">
+        <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+        <button onClick={() => setUser(username)}>Login</button>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+Halman app.css:
+body{
+    height : 100vh;
+    display : flex;
+    align-items : center;
+    justify-content : center;
+}
+
+.login{
+    height : 50vh;
+    display : flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : center;
+}
+
+input {
+    width : 50%;
+    padding : 10px;
+    margin-bottom : 20px;
+}
+
+button{
+    width : 60%;
+    padding : 10px;
+    background-color : lightseagreen;
+    color : white;
+    border : none;
+    border-radius : 5px;
+    cursor : pointer;
+}
+
+
+
+======================================================================
+
+
+- Selanjutnya kita membuat folder baru di "src" Bernama "components"
+- Lalu dalam folder "components" kita buat 2 folder lagi yaitu "navbar" dan "card"
+- Dalam folder "navbar" kita buat 2 file yaitu "Navbar.jsx" dan "navbar.css"
+
+Cth :
+
+Navbar.jsx :
+import React from 'react'
+import "./navbar.css";
+
+const Navbar = () => {
+  return (
+    <div className='navbar'>
+        Navbar
+    </div>
+  )
+}
+
+export default Navbar
+
+
+
+
+
+navbar.css :
+
+
+
+
+
+- Selanjutnya buat hal yang sama juga untuk card yaitu jsx dan css nya.
+
+Cth :
+
+Card.jsx :
+import React from 'react'
+import "./card.css";
+
+const Card = () => {
+  return (
+    <div className='card'>
+        Card
+    </div>
+  )
+}
+
+export default Card
+
+
+
+card.css :
+
+
+
+
+
+- Selanjutnya kita update lagi di App.js seperti kode berikut dan coba jalankan :
+
+
+Cth :
+import { useState } from "react";
+import "./app.css";
+import Navbar from "./components/navbar/Navbar";
+import Card from "./components/card/Card";
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+
+  console.log(user);
+
+  return (
+    <div className="container"> 
+      {user ? (
+        <>
+        <Navbar />
+        <Card />
+        </>
+      ) : (
+          <div className="login">
+          <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+          <button onClick={() => setUser(username)}>Login</button>
+          </div>
+      )}
+        </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+- Selanjutnya sementara kita buat data dumy nya dulu di folder "src" Namanya missal "data.js"
+Cth :
+
+export const posts = [
+    {
+        id : 1,
+        username : "john",
+        fullname : "Johny Deep",
+        userImg : "https://cdn.pixabay.com/photo/2023/11/01/11/15/cable-car-8357178_1280.jpg" ,
+        postImg : "https://cdn.pixabay.com/photo/2024/02/21/15/09/plant-8587893_1280.jpg",
+    },
+    {
+        id : 2,
+        username : "Messi",
+        fullname : "Leo Messi",
+        userImg : "https://cdn.pixabay.com/photo/2015/07/08/16/41/laptop-836566_1280.jpg" ,
+        postImg : "https://cdn.pixabay.com/photo/2020/03/08/12/02/fcbarcelona-4912292_1280.jpg",
+    },
+]
+
+
+
+- Kurang lebih beginilah untuk tampilan frontend :
+
+- src
+  - components
+    - card
+      - card.css
+      - Card.jsx
+    - navbar
+      - navbar.css
+      - Navbar.jsx
+  - app.css
+  - App.js
+  - data.js
+  - index.js
+  - .gitignore
+  - ...
+
+
+Cth : 
+1.index.js :
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+
+2.App.js
+
+import { useState } from "react";
+import "./app.css";
+import Navbar from "./components/navbar/Navbar";
+import Card from "./components/card/Card";
+import { posts } from "./data";
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+
+  console.log(user);
+
+  return (
+    <div className="container"> 
+      {user ? (
+        <>
+        <Navbar />
+        {posts.map((post) => (
+          <Card key={post.id} post={post}/>
+        ))}
+        <span className="username">{user}</span>
+        </>
+      ) : (
+          <div className="login">
+          <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+          <button onClick={() => setUser(username)}>Login</button>
+          </div>
+      )}
+        </div>
+  );
+}
+
+export default App;
+
+
+
+3. app.css
+
+body{
+    height : 100vh;
+    display : flex;
+    align-items : center;
+    justify-content : center;
+}
+
+.container {
+    width : 50vh;
+    border-radius : 5px;
+    border : 0.5px solid lightseagreen;
+}
+
+
+.login{
+    height : 50vh;
+    display : flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : center;
+}
+
+input {
+    width : 50%;
+    padding : 10px;
+    margin-bottom : 20px;
+}
+
+button{
+    width : 60%;
+    padding : 10px;
+    background-color : lightseagreen;
+    color : white;
+    border : none;
+    border-radius : 5px;
+    cursor : pointer;
+}
+
+.username {
+    font-weight : bold;
+    color : lightseascreen;
+    position : absolute;
+    top : 15px;
+    right : 20px;
+}
+
+
+4.data.js
+
+export const posts = [
+    {
+        id : 1,
+        username : "john",
+        fullname : "Johny Deep",
+        userImg : "https://cdn.pixabay.com/photo/2023/11/01/11/15/cable-car-8357178_1280.jpg" ,
+        postImg : "https://cdn.pixabay.com/photo/2024/02/21/15/09/plant-8587893_1280.jpg",
+    },
+    {
+        id : 2,
+        username : "Messi",
+        fullname : "Leo Messi",
+        userImg : "https://cdn.pixabay.com/photo/2015/07/08/16/41/laptop-836566_1280.jpg" ,
+        postImg : "https://cdn.pixabay.com/photo/2020/03/08/12/02/fcbarcelona-4912292_1280.jpg",
+    },
+]
+
+
+
+
+5. Navbar.jsx
+
+import React from 'react'
+import "./navbar.css";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MessageIcon from '@mui/icons-material/Message';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const Navbar = () => {
+  return (
+    <div className='navbar'>
+        <span className="logo"> Kiel App </span>
+        <div className='icons'>
+            <div className='icon'>
+                <NotificationsIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+            <div className='icon'>
+                <MessageIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+            <div className='icon'>
+                <SettingsIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default Navbar
+
+
+
+
+6. navbar.css
+
+.navbar{
+    height : 50px;
+    background-color : lightseagreen;
+    display : flex;
+    align-items : center;
+    justify-content : space-around;
+    color : white;
+}
+
+.logo{
+    font-weight : bold;
+    font-size : 20px;
+}
+
+.icons{
+    display : flex;
+    align-items : center;
+}
+
+.icon{
+    margin-left : 15px;
+    cursor : pointer;
+    position : relative;
+}
+
+
+.iconImg {
+    width : 20px;
+    height : 20px;
+}
+
+
+.counter{
+    width : 5px;
+    height : 5px;
+    background-color : red;
+    border-radius : 50%;
+    padding : 5px;
+    font-size : 12px;
+    display : flex;
+    align-items : center;
+    position : absolute;
+    top : -5px;
+    right : -5px;
+}
+
+
+
+
+7. Card.jsx
+
+import React, { useState } from 'react'
+import "./card.css";
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';import ShareIcon from '@mui/icons-material/Share';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+
+const Card = ({post}) => {
+  const [liked,setLiked] = useState(false);
+
+  const handleNotification = () => {
+    setLiked(true);
+  }
+
+  return (
+    <div className='card'>
+        <div className='info'>
+          <img src={post.userImg} alt="" className='userImg'/>
+          <span>{post.fullname}</span>
+        </div>
+          <img src={post.postImg} alt="" className='postImg'/>
+        <div className='interaction'>
+          {liked ? (
+          <FavoriteOutlinedIcon className='cardIcon likeFilled'/>
+          ) : (
+            <FavoriteBorderOutlinedIcon className='cardIcon' onClick={handleNotification} />
+          )}
+          <ChatBubbleOutlineOutlinedIcon className='cardIcon'/>
+          <ShareIcon className='cardIcon'/>
+          <InfoOutlinedIcon className='cardIcon infoIcon'/>
+
+        </div>
+    </div>
+  )
+}
+
+export default Card
+
+
+
+
+8. card.css
+
+.card{
+    height : 280px;
+}
+
+.info{
+    display : flex;
+    align-items : center;
+    padding : 5px;
+    font-weight : 500;
+    font-size : 14px;
+}
+
+.userImg{
+    width :30px;
+    height : 30px;
+    border-radius : 50%;
+    object-fit : cover;
+    margin-right : 10px;
+}
+
+.postImg{
+    width : 100%;
+    height : 200px;
+    object-fit : cover;
+}
+
+.interaction {
+    display : flex;
+    align-items : center;
+    padding : 5px;
+    position : relative;
+}
+
+.cardIcon{
+    width : 16px;
+    height : 16px;
+    cursor : pointer;
+    margin-right : 10px;
+}
+
+.infoIcon{
+    position : absolute;
+    right : 0;
+    width : 12px;
+    height : 12px;
+}
+
+
+.likeFilled {
+    color : red;
+}
+
+
+
+
+====================================================================
+
+
+
+10. Backend
+- Pertama kita buat folder baru dalam file Utama kita sejajar dengan folder Utama frontend,buat nama misalnya "backend".
+- Lalu masuk terminal dan masuk ke folder "backend" tersebut
+
+1. lalu ketik : npm init -y
+2. Lalu ketik : npm i socket.io
+3.Lalu ketik juga : npm i nodemon
+
+4.Lalu tambahkan "start" : "nodemon index.js" pada package.json
+Cth :
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "nodemon index.js"
+  },
+
+
+5. Selanjutnya buat file baru bernama "index.js" dan buat kode ini
+Cth :
+import { Server } from "socket.io";
+
+const io = new Server({options})
+
+io.on("connection",(socket) => {
+    //...
+})
+
+io.listen(3000)
+
+
+6.Lalu tambahkan "type" : "module" pada package.json
+Cth :
+"description": "",
+  "main": "index.js",
+  "type": "module",
+
+
+7.Selanjutnya kembali ke "index.js" dan buat kode seperti ini.
+Cth :
+import { Server } from "socket.io";
+
+const io = new Server({
+    cors : {
+        origin : "http://localhost:3000"
+    }
+})
+
+io.on("connection",(socket) => {
+    console.log("Someone has connected : ",socket)
+
+    socket.on("disconnect",() => {
+        console.log("Someone has left");
+    })
+})
+
+io.listen(5000)
+
+
+
+7.Selanjutnya kita pergi ke bagian frontend lagi di terminal dan install ini di frontend.
+Sintaks : npm install socket.io-client
+
+
+8.Selanjutnya pergi ke "App.js" pada folder "frontend" dan import kode ini. 
+Kode : import {io} from "socket.io-client" 
+
+
+9.Selanjutnya tambahkan kode ini :
+import {io} from "socket.io-client"
+
+  useEffect(() => {
+    const socket = io("http://localhost:5000")
+  },[])
+
+
+Cth kode lengkap App.js :
+import { useEffect, useState } from "react";
+import "./app.css";
+import Navbar from "./components/navbar/Navbar";
+import Card from "./components/card/Card";
+import { posts } from "./data";
+import {io} from "socket.io-client"
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+
+  useEffect(() => {
+    const socket = io("http://localhost:5000")
+ console.log(socket)
+  },[])
+
+  return (
+    <div className="container"> 
+      {user ? (
+        <>
+        <Navbar />
+        {posts.map((post) => (
+          <Card key={post.id} post={post}/>
+        ))}
+        <span className="username">{user}</span>
+        </>
+      ) : (
+          <div className="login">
+          <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+          <button onClick={() => setUser(username)}>Login</button>
+          </div>
+      )}
+        </div>
+  );
+}
+
+export default App;
+
+
+
+- Selanjutnya kita buka tab baru di browser lalu masuk lewat url tadi yaitu "http://localhost:3000" yang frontend tadi.Kemudian coba kita hapus tab nya apakah ada perubahan di backendnya.Jika perubahannya seperti dibawah ini artinya berhasil :
+Cth :
+Someone has left
+Someone has left
+
+
+- Jika dia pada saat diawal munculnya seperti ini :
+  maxRequestsPerSocket: 0,
+      _connectionKey: '6::::5000',
+      [Symbol(IncomingMessage)]: [Function: IncomingMessage],   
+      [Symbol(ServerResponse)]: [Function: ServerResponse],     
+      [Symbol(kCapture)]: false,
+      [Symbol(async_id_symbol)]: 22,
+      [Symbol(http.server.connections)]: ConnectionsList {},    
+      [Symbol(http.server.connectionsCheckingInterval)]: Timeout {
+        _idleTimeout: 30000,
+
+=> Artinya kode kita masih berjalan dan ini bukan error
+
+
+
+10.Fungsi umum di Socket.io
+A. Server Side
+1. io : Send event to client
+2. io.emit : to send every client
+3. io.to(socketId).emit : to send one client
+4. socket.on : Take event from client
+
+B.Client Side
+1. socket.emit : Send event to server
+2. socket.on : Take event from server
+
+
+
+11.Selanjutnya kita Kembali lagi ke "index.js" pada backend dan ikuti kode ini.
+
+Cth :
+
+import { Server } from "socket.io";
+
+const io = new Server({
+    cors : {
+        origin : "http://localhost:3000"
+    }
+})
+
+io.on("connection",(socket) => {
+    //io.emit("katakuncibebas")
+    io.emit("firstEventExample","Hello this is Test")
+
+    socket.on("disconnect",() => {
+        console.log("Someone has left");
+    })
+})
+
+io.listen(5000)
+
+=> Sekarang bagaimana cara mengambil event "firstEventExample" dari server.Caranya begini kita akan menggunakan socket.on.
+
+
+12.Sekarang kita pergi ke "App.js" pada folder "frontend" lalu ikuti kode ini.
+
+Cth :
+import { useEffect, useState } from "react";
+import "./app.css";
+import Navbar from "./components/navbar/Navbar";
+import Card from "./components/card/Card";
+import { posts } from "./data";
+import {io} from "socket.io-client"
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+
+  useEffect(() => {
+    const socket = io("http://localhost:5000")
+    //socket.on("namaEventdiServerbackend",function());
+    console.log(socket.on("firstEventExample",(msg) => {
+      console.log(msg)
+    }))
+  },[])
+
+  return (
+    <div className="container"> 
+      {user ? (
+        <>
+        <Navbar />
+        {posts.map((post) => (
+          <Card key={post.id} post={post}/>
+        ))}
+        <span className="username">{user}</span>
+        </>
+      ) : (
+          <div className="login">
+          <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+          <button onClick={() => setUser(username)}>Login</button>
+          </div>
+      )}
+        </div>
+  );
+}
+
+export default App;
+
+
+=> Nah,selanjutnya kita buka inspect elemen di browser kita dan liat hasilnya,apakah data di backend masuk atau tidak.Jika masuk artinya berhasil,jika gagal artinya ada yang salah di kode.Pastikan nama event di frontend itu wajib sama persis di backend
+
+
+
+13.Sekarang Kembali ke "index.js" pada backend dan ubah sedikit kode ini untuk testing lagi.
+
+Cth :
+import { Server } from "socket.io";
+
+const io = new Server({
+    cors : {
+        origin : "http://localhost:3000"
+    }
+})
+
+//Membuat array kosong jadi setiap kali ada pengguna yang menghubungkan ke server kita,kita dapat memperbaruinya.
+let onlineUsers = [];
+
+const addNewUser = (username,socketId) => {
+    !onlineUsers.some((user) => user.username === username)  && onlineUsers.push({username,socketId})
+}
+
+const removeUser = (socketId) => {
+    onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
+} 
+
+const getUser = (username) => {
+    return onlineUsers.find(user => user.username === username);
+}
+
+io.on("connection",(socket) => {
+    
+	//Contoh hasil
+    // [
+    //     {
+    //         username: "john" ,
+    //         socketId : "sadawaweaweae"
+    //     },
+    //     {
+    //         username : "Messi",
+    //         socketId : "dasdarawwar"
+    //     },
+    // ]
+
+
+    socket.on("newUser",(username) => {
+        addNewUser(username,socket.id)
+    })
+
+    socket.on("disconnect",() => {
+        removeUser(socket.id);
+    })
+})
+
+io.listen(5000)
+
+
+
+14.Selanjutnya pergi ke "App.js" di folder "frontend" dan ubah kode seperti ini.
+
+Cth :
+import { useEffect, useState } from "react";
+import "./app.css";
+import Navbar from "./components/navbar/Navbar";
+import Card from "./components/card/Card";
+import { posts } from "./data";
+import {io} from "socket.io-client"
+
+function App() {
+  const [username,setUsername] = useState("");
+  const [user,setUser] = useState("");
+  const [socket,setSocket] = useState(null);
+
+  useEffect(() => {
+   setSocket(io("http://localhost:5000"))
+   
+  },[])
+
+  useEffect(() => {
+    //socket? artinya jika null maka kita bisa buat kondisi.
+    socket?.emit("newUser",user)
+  },[socket,user])
+
+  return (
+    <div className="container"> 
+      {user ? (
+        <>
+        <Navbar socket={socket}/>
+        {posts.map((post) => (
+          <Card key={post.id} post={post} socket={socket} user={user}/>
+        ))}
+        <span className="username">{user}</span>
+        </>
+      ) : (
+          <div className="login">
+          <input type="text" placeholder="username" onChange={(e) => setUsername(e.target.value)}/>
+          <button onClick={() => setUser(username)}>Login</button>
+          </div>
+      )}
+        </div>
+  );
+}
+
+export default App;
+
+
+
+15. Selanjutnya pergi ke file "Card.jsx" dan ikuti kode ini.
+
+Cth :
+import React, { useState } from 'react'
+import "./card.css";
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';import ShareIcon from '@mui/icons-material/Share';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
+
+const Card = ({post,socket,user}) => {
+  const [liked,setLiked] = useState(false);
+
+  const handleNotification = (type) => {
+    setLiked(true);
+    socket.emit("sendNotification",{
+      senderName : user,
+      receiverName : post.username,
+      type,
+    })
+  }
+
+  return (
+    <div className='card'>
+        <div className='info'>
+          <img src={post.userImg} alt="" className='userImg'/>
+          <span>{post.fullname}</span>
+        </div>
+          <img src={post.postImg} alt="" className='postImg'/>
+        <div className='interaction'>
+          {liked ? (
+          <FavoriteOutlinedIcon className='cardIcon likeFilled'/>
+          ) : (
+            <FavoriteBorderOutlinedIcon className='cardIcon' onClick={() => handleNotification(1)} />
+          )}
+          <ChatBubbleOutlineOutlinedIcon className='cardIcon' onClick={() => handleNotification(2)}/>
+          <ShareIcon className='cardIcon' onClick={() => handleNotification(3)}/>
+          <InfoOutlinedIcon className='cardIcon infoIcon'/>
+
+        </div>
+    </div>
+  )
+}
+
+export default Card
+
+
+
+
+
+
+16. Selanjutnya Kembali lagi ke "index.js" pada folder "backend" dan ikuti kode ini.Tambahkan kode ini ke bagian ini
+
+Cth :
+
+io.on("connection",(socket) => {
+    
+    socket.on("newUser",(username) => {
+        addNewUser(username,socket.id)
+    })
+
+    socket.on("sendNotification",({senderName,receiverName,type}) => {
+        const receiver = getUser(receiverName)
+        io.to(receiver.socketId).emit("getNotification",{
+            senderName,
+            type
+        })
+    })
+
+    socket.on("disconnect",() => {
+        removeUser(socket.id);
+    })
+})
+
+io.listen(5000)
+
+
+17.Selanjutnya kita ke "Navbar.jsx" pada folder "frontend" dan ikuti kode ini.
+
+Cth :
+
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const Navbar = ({socket}) => {
+    const [notification,setNotification] = useState([])
+
+    useEffect(() => {
+        socket.on("getNotification",data=> {
+            setNotification( (prev) => [...prev,data])
+        })    
+    },[socket])
+
+    console.log(notification);
+
+    return (
+	...
+)
+
+
+
+- Selanjutunya kita buka tab baru lagi dan masuk dengan localhost yang sama,jadi sekarang ada 2 tab yang memasuki localhost:3000.
+- Selanjutnya coba masuk dengan 2 username yang berbeda yaitu john dan Messi dan liat kanan paling atas pastikan sesuai dengan Namanya yang masuk.
+- Lalu kita buka inspect di user yang akan mendapatkan like,lalu user yang akan memberikan like untuk saat ini tidak perlu buka konsol.Lalu liat pergerkannya apakah berhasil user Messi memberikan like kepada user john.
+- Liat di consolenya pada bagian array ini,maka hasilnya seperti ini.
+
+Cth :
+Array [ {…}, {…} ]
+​
+0: Object { senderName: "Messi", type: 1 }
+​
+1: Object { senderName: "Messi", type: 1 }
+
+
+- Lalu coba juga untuk klik komen dari yang memberikan like,maka hasilnya yang kedua adalah seperti ini.
+
+Cth :
+Array(4) [ {…}, {…}, {…}, {…} ]
+​
+0: Object { senderName: "Messi", type: 1 }
+​
+1: Object { senderName: "Messi", type: 1 }
+​
+2: Object { senderName: "Messi", type: 2 }
+​
+3: Object { senderName: "Messi", type: 2 }
+
+
+- Lalu coba klik juga yang bagian share dari orang yang akan memberikan like tadi maka hasilnya seperti ini.
+
+Cth :
+Array(6) [ {…}, {…}, {…}, {…}, {…}, {…} ]
+​
+0: Object { senderName: "Messi", type: 1 }
+​
+1: Object { senderName: "Messi", type: 1 }
+​
+2: Object { senderName: "Messi", type: 2 }
+​
+3: Object { senderName: "Messi", type: 2 }
+​
+4: Object { senderName: "Messi", type: 3 }
+​
+5: Object { senderName: "Messi", type: 3 }
+
+
+
+
+18. Selanjutnya kita pergi ke file "Navbar.jsx" di folder "frontend" lalu dibagian paling Bawah buat div baru seperti ini.
+
+Cth :
+import React, { act, useEffect, useState } from 'react'
+import "./navbar.css";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MessageIcon from '@mui/icons-material/Message';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const Navbar = ({socket}) => {
+    const [notification,setNotification] = useState([])
+
+    useEffect(() => {
+        socket.on("getNotification",data=> {
+            setNotification( (prev) => [...prev,data])
+        })    
+    },[socket])
+
+    console.log(notification);
+
+    const displayNotification = ({senderName, type}) => {
+        let action;
+
+        if(type===1){
+            action = "liked"
+        }else if(type===2){
+            action="commented"
+        }else{
+            action = "shared"
+        }
+        return (
+            <span className='notification'> {`${senderName} ${action} your post`}</span>
+        )
+    }
+
+    return (
+    <div className='navbar'>
+        <span className="logo"> Kiel App </span>
+        <div className='icons'>
+            <div className='icon'>
+                <NotificationsIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+            <div className='icon'>
+                <MessageIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+            <div className='icon'>
+                <SettingsIcon className='iconImg'/>
+                <div className='counter'>2</div>
+            </div>
+        </div>
+        <div className='notifications'>
+            {notification.map(n => (
+                 displayNotification(n)
+            ))}
+        </div>
+
+    </div>
+  )
+}
+
+export default Navbar
+
+
+
+19.Selanjutnya pergi ke "navbar.css" tambahkan kode ini dibawahnya.
+Cth :
+.navbar{
+    height : 50px;
+    background-color : lightseagreen;
+    display : flex;
+    align-items : center;
+    justify-content : space-around;
+    color : white;
+    position : relative;
+}
+
+
+.notifications{
+    position : absolute;
+    top : 50px;
+    right : 0;
+    background-color : white;
+    color : black;
+    font-weight : 300;
+    display : flex;
+    flex-direction : column;
+    padding : 10px;
+}
+
+
+
+20.Lalu Kembali lagi ke "Navbar.jsx" dan tambahkan kode ini.
+
+Cth :
+

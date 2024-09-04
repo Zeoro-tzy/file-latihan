@@ -1,0 +1,1069 @@
+Cara membuat CRUD + Image dengan NodeJS,Express,React dan MySQL
+
+
+1.Membuat Folder
+- Pertama yang kita lakukan adalah membuat folder untuk menyimpan folder backend dan frontend pada Fullstack.Misalnya kita buat nama foldernya adalah "Fullstack".
+- Selanjutnya kita buat lagi folder didalamnya yang pertama adalah "backend"
+
+
+2.Folder Backend
+- Ini lanjutan dari sebelumnya.
+- Kemudian kita masuk folder "backend" tersebut didalam terminal. Jika masih belum berada didalam folder tersebut,kita bisa menggunakan cd (namaFile)
+- Selanjutnya kita membuat file package.json dalam folder backend.
+  Perintah : npm init -y
+- Nah,sekarang dalam folder backend terdapat folder baru bernama package.json.
+- Selanjutnya kita install beberapa depedensi yang kita butuhkan.
+  Perintah : npm i express express-fileupload mysql2 sequelize cors nodemon
+
+Penjelasan :
+- npm i : Untuk menginstall package melalui npm
+- express : Framework web untuk Node.js,menyediakan routing,middleware dan template Engine.Membuat Server HTTP dan API
+- express-fileupload : Middleware untuk mengunggah file ke server,memungkinkan mengunggah file melalui form HTML.
+- mysql2 : Menjalankan query ke Database MySQL,mengelola koneksi database,serta mendukung promise dan async/await
+- sequelize : adalah ORM(Object-Relational Mapping) mendukung database SQL seperti MySQL,PostgreSQL,SQLite dan MSSQL.Menyediakan cara untuk mendefinisikan model data,melakukan query dan mengelola hubungan antar tabel tanpa harus menulis quey SQL secara langsung.
+- cors : Memungkinkan anda mengaktifkan Cross-Origin Resource Sharing (CORS) pada aplikasi.Mengizinkan aplikasi web untuk mengakses sumber daya dari domain yang berbeda,yang biasanya diblokir oleh browser untuk alasan keamanan.Ini penting untuk API yang digunakan oleh klien dari domain yang berbeda.
+- nodemon : Memantau perubahan pada file sumber dan memulai ulang server saat perubahan terdeteksi tanpa harus merefresh halaman web.
+
+
+=> Selanjutnya kita pergi ke file "package.json".
+ Lalu tambahkan : "type" : "module"
+- Tambahkan ini di bawah "description" :"" dan diatas "main" : "index.js"
+Cth : 
+  "name": "mysqlreactfullstack",
+  "version": "1.0.0",
+  "description": "",
+  "type" : "module",
+  "main": "index.js",
+
+Fungsinya : 
+- Agar kita bisa menggunakan sintaks ES6 untuk mengimport atau mengekspor module.
+
+- Selanjutnya tambahkan juga "start" : "nodemon index.js" pada "scripts" : {}
+Cth : 
+ "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "nodemon index.js"
+  },
+
+=> Tujuannya agar kita hanya menjalankan sekali saja dengan "npm start" di terminal nya dan secara otomatis dia akan mengupdate data jika ada perubahan. 
+
+- Selanjutnya kita buat sebuah file yaitu "index.js" dan pastikan berada didalam folder backend.
+- Selanjutnya dalam folder index.js tersebut,buat kode seperti dibawah ini. 
+
+Cth :
+
+import express from "express";
+import fileUpload from "express-fileupload";
+import cors from "cors";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload());
+
+app.listen(5000,() => console.log("Server sudah berjalannnn...."))
+
+
+Penjelasan : 
+- Pertama kita menggunakan Teknik es6 untuk mengimport
+- kedua kita menggunakan middleware mulai dari cors() sampai fileUpload() 
+- Ketiga kita pakai server 5000 untuk menjalankannya.
+
+
+=> Selanjutnya kita jalankan dengan "npm start".
+- Jika sudah berjalan,selanjutnya kita buat beberapa folder dalam folder backend.
+- Folder-folder yang perlu dibuat sekarang adalah : config, controllers, models dan routes.
+- Selanjutnya dalam folder config kita buat file baru Bernama "Database.js"
+
+- Lalu dalam file Dabase.js kita buat kode seperti ini :
+
+Cth :
+
+import { Sequelize } from "sequelize";
+
+const db = new Sequelize("upload_Db","root","",{
+    host : "localhost",
+    "dialect" : "mysql"
+})
+
+export default db;
+
+Penjelasan :
+=> Sintaks Wajib new Sequelize : 
+new Sequelize("namaDatabase","usernya","password",{
+   host : 'biasa localhost',
+   dialect : "jenisDatabase"
+ }
+
+=> Kemudian kita tinggal buat database untuk "upload_Db" ini.Disini kita bisa pakai XAMPP dan pastikan Apache dan MySQL bisa berjalan dengan baik.
+
+- Pertama buka XAMPP,lalu start "Apache" dan "MySQL".
+- Jika sudah,selanjutnya pergi ke Browser dan ketik di URL nya seperti ini.
+ Sintaks :
+  localhost/phpmyadmin
+
+- Kemudian klik tab "Databases" dan pada bagian "Create database" buat nama databasesnya sesuai dengan "namaDatabase" pada new Sequelize,karena sebelumnya kita buat namanya adalah "upload_Db",maka disini juga sama yaitu "upload_Db",Lalu klik "Create"
+- Jika sudah,sekarang kita Kembali lagi ke Vscode dan kita membuat sebuah file lagi didalam folder "Models" dan kita membuat nama misalnya "ProductModel.js"
+
+- Selanjutnya buat kode seperti dibawah ini.
+Cth : 
+import { Sequelize} from "sequelize";
+import db from "../config/Database.js";
+
+const {DataTypes} = Sequelize;
+
+const Product = db.define('product',{
+    name : DataTypes.STRING,
+    image : DataTypes.STRING,
+    url : DataTypes.STRING
+},{
+    freezeTableName : true
+});
+
+export default Product;
+
+(async() => {
+    await db.sync();
+})();
+
+
+Penjelasan : 
+- import { Sequelize } from "sequelize" =>  ini adalah ORM (Object-Relational Mapping) yang digunakan untuk berinteraksi dengan database SQL.
+
+- import db from "../config/Database.js" => ini adalah instance dari koneksi database yang telah dikonfigurasi sebelumnya.
+
+- const { DataTypes } = Sequelize =>  ini menyediakan berbagai tipe data yang dapat digunakan untuk mendefinisikan skema model database, seperti STRING, INTEGER, BOOLEAN, dll.
+
+- const Product = db.define('product', {
+    name: DataTypes.STRING,
+    image: DataTypes.STRING,
+    url: DataTypes.STRING
+}, {
+    freezeTableName: true
+}) 
+==> 
+- Product: Mendefinisikan model Product menggunakan metode define dari instance db.
+- 'product': Nama tabel di database yang akan dihubungkan dengan model ini.
+- { name: DataTypes.STRING, image: DataTypes.STRING, url: DataTypes.STRING }: Definisi skema model dengan tiga atribut:
+  - name: Tipe data STRING.
+  - image: Tipe data STRING.
+  - url: Tipe data STRING.
+- { freezeTableName: true }: Opsi yang digunakan untuk mencegah Sequelize dari secara otomatis membuat nama tabel dalam bentuk jamak. Dengan freezeTableName: true, tabel akan tetap dinamai product daripada diubah menjadi products.
+
+- (async () => {
+    await db.sync();
+})();
+
+==> IIFE (Immediately Invoked Function Expression) asinkron ini digunakan untuk menjalankan db.sync() saat file dieksekusi.
+await db.sync(): Metode sync dari instance db digunakan untuk memastikan bahwa skema model Product sesuai dengan tabel di database. Jika tabel belum ada, maka tabel tersebut akan dibuat. Ini membantu dalam menjaga konsistensi antara model dan tabel di database.
+
+
+
+=> Selanjutnya adalah kita membuat file controller di dalam Folder controllers.Misalnya kita membuat nama "ProductController.js"
+- Kemudian kita buat kodenya seperti dibawah ini :
+
+Cth : 
+import Product from "../models/ProductModel.js";
+
+export const getProducts = (req,res) => {
+    
+}
+
+export const getProductById = (req,res) => {
+
+}
+export const saveProduct = (req,res) => {
+
+}
+export const updateProduct = (req,res) => {
+
+}
+
+export const deleteProduct = (req,res) => {
+
+}
+
+
+=> Selanjutnya,kita buat file baru dalam folder routes, kita buat file missal Namanya adalah "ProductRoute.js".
+
+- Lalu buat kode seperti dibawah ini :
+
+Cth :
+
+import express from "express";
+
+import {
+    getProducts,
+    getProductById,
+    saveProduct,
+    updateProduct,
+    deleteProduct
+} from "../controllers/ProductController.js";
+
+const router = express.Router();
+
+router.get("/products",getProducts);
+router.get("/products/:id",getProductById);
+router.post("/products",saveProduct);
+router.patch("/products/:id",updateProduct);
+router.delete("/products/:id",deleteProduct);
+
+export default router;
+
+
+
+==> Selanjutnya kita tinggal import Routes ini di endpoint yaitu index.js.
+
+Cth :
+import express from "express";
+import fileUpload from "express-fileupload";
+import cors from "cors";
+import ProductRoute from "./routes/ProductRoute.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload());
+app.use(ProductRoute);
+
+app.listen(5000,() => console.log("Server sudah berjalann..."))
+
+
+
+
+=> Mungkin ada error karena "modul not found",jika ini yang terjadi kemungkinan besar karena kita tidak menambah ".js" dalam file yang kita import tersebut.
+=> Jika berhasil maka pada terminal akan muncul "Executing (default) : CREATE TABLE IF NOT EXISTS `product`... Executing (default) : SHOW INDEX FROM `product`.
+
+
+=> Selanjutnya kita pergi ke "phpmyadmin" lagi dan pilih "upload_db".Nanti akan muncul "Table : Product ...",kita juga bisa liat "Structure" nya sesuai dengan yang kita buat di vscode.
+
+=> Selanjutnya kembali ke vscode dan pergi lagi ke file "ProductControllers.js".Lalu kita tambahkan kode yang kita buat sebelumnya lebih lengkap.
+
+Cth :
+
+import Product from "../models/ProductModel.js";
+import path from "path";
+
+export const getProducts = async(req,res) => {
+    try{
+        const response = await Product.findAll();
+        res.json(response);
+    }catch(err){
+        console.log(err.message);
+    }
+}
+
+export const getProductById = async (req,res) => {
+    try{
+        const response = await Product.findOne({
+            where : {
+                id : req.params.id
+            }
+        });
+        res.json(response);
+    }catch(err){
+        console.log(err.message);
+    }
+}
+export const saveProduct = (req,res) => {
+    if(req.files === null) return res.status(400).json({msg : "No File Uploaded"});
+    const name = req.body.title;
+    const file = req.files.file;
+    const fileSize = file.data.length;
+    const extension = path.extname(file.name);
+    const fileName = file.md5 + extension;
+    const url = `${req.protocol}://${req.get("host")}/images/${fileName}`
+    const allowedType = ['.png','.jpg','.jpeg'];
+
+    if(!allowedType.includes(extension.toLowerCase())) return res.status(422).json({msg : "Invalid Images"});
+    if(fileSize > 5000000) return res.status(422).json({msg : "Image must be less than 5 MB"});
+}
+export const updateProduct = (req,res) => {
+
+}
+
+export const deleteProduct = (req,res) => {
+
+}
+
+
+=> Selanjutnya kita buat folder baru dalam folder backend,yaitu folder "public".Lalu dalam folder public lagi kita buat folder lagi Bernama "image"
+
+=> Selanjutnya Kembali lagi ke kode dan tambahkan seperti dibawah ini. 
+
+Cth : 
+export const saveProduct = (req,res) => {
+    if(req.files === null) return res.status(400).json({msg : "No File Uploaded"});
+    const name = req.body.title;
+    const file = req.files.file;
+    const fileSize = file.data.length;
+    const extension = path.extname(file.name);
+    const fileName = file.md5 + extension;
+    const url = `${req.protocol}://${req.get("host")}/images/${fileName}`
+    const allowedType = ['.png','.jpg','.jpeg'];
+
+    if(!allowedType.includes(extension.toLowerCase())) return res.status(422).json({msg : "Invalid Images"});
+    if(fileSize > 5000000) return res.status(422).json({msg : "Image must be less than 5 MB"});
+
+    file.mv(`./public/images/${fileName}`,async(err) => {
+        if(err) return res.status(500).json({msg : err.message});
+        try{
+            await Product.create({name : name,image : fileName, url : url});
+            res.status(201).json({msg : "Product created successfuly"})
+        }catch(err){
+            console.log(err.message);
+        }
+    })
+
+}
+
+
+==> Selanjutnya kita mencoba menggunakan postman
+
+=> Pertama kita mencoba untuk check method "Get" nya.Lalu di endpointnya ketik : http://localhost:5000/products.Jika kita liat hasilnya maka kosong hanya ada [].
+
+=> Nah sekarang kita isi datanya,pertama kita ganti "Get" menjadi "Post".
+- Lalu tab kita ganti menjadi "Body".
+- Dalam "Body" kita ganti "none" menjadi "form-data"
+
+=> Dalam form-data coba ikuti seperti ini :
+- Untuk Key pertama buat namanya : title . 
+Lalu terdapat Type pada Key tersebut secara default adalah "Text".Cara liatnya geser saja sedikit di area inputan pada "Key"
+- Selanjutnya "Value" nya adalah : Product 1
+
+=> Kemudian Key yang ke 2,yaitu : file
+- Lalu type nya ganti menjadi "file"
+- Lalu pada Value kita cari file gambar yang kita inginkan sebagai contohnya.
+- Lalu klik "Send" pada Postman tersebut.
+- Lalu liat hasilnya
+  
+
+=> Selanjutnya jika kita liat bahwa gambar yang kita punya tadi dari phpmyadmin tadi misal namanya "http://localhost:5000/images/34f86c89c670726727f25666c50222f9.jpg". Jika kita cek di browser maka ada tulisan "Cannot Get 34f86c89c670726727f25666c50222f9.jpg". Ini terjadi karena kita tidak membuat menjadi static file.
+
+=> Kembali ke "index.js" lalu tambahkan kode ini : app.use(express.static("public"));
+
+Cth :
+import express from "express";
+import fileUpload from "express-fileupload";
+import cors from "cors";
+import ProductRoute from "./routes/ProductRoute.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload());
+app.use(express.static("public"));
+app.use(ProductRoute);
+
+app.listen(5000,() => console.log("Server sudah berjalann..."))
+
+=> Jika kita cek lagi maka gambar tadi akan muncul didalam web browser kita.
+
+
+=> Selanjutnya kita akan mengerjakan bagian updateProduct dan deleteProduct pada ProductContrller.js 
+- Pertama kita tambahkan async pada deleteProduct dan tambahkan kode seperti berikut.
+
+Cth :
+
+export const deleteProduct = async(req,res) => {
+    const product = await Product.findOne({
+        where : {
+            id : req.params.id
+        }
+    });
+    if(!product) return res.status(404).json({msg : "No Data Found"})
+
+    //Jika data ditemukan,kita hapus image dalam folder images kemudian kita juga delete data dalam database.
+    try{
+        const filepath = `./public/images/${product.image}`
+        fs.unlinkSync(filepath);
+        await Product.destroy({
+            where : {
+                id : req.params.id
+            }
+        })
+        res.status(200).json({msg : "Product Deleted Successfuly"});
+    }catch(err){
+        console.log(err.message);
+    }
+}
+
+=> Selanjutnya Kembali lagi ke postman,lalu ganti method nya menjadi "GET" untuk ngambil data.Jika berhasil sekarang kita akan mencoba untuk menghapus data nya 1 saja.
+=> Selanjutnya kita ganti method menjadi "DELETE" dan tambahkan paramater di url nya yaitu id nya.
+Cth : 
+http://localhost:5000/products/2
+
+=> Lalu klik "Send" dan coba get lagi.Jika berhasil maka data yang di delete tadi akan terhapus dan juga dalam folder public/images juga akan terhapus,begitu juga dalam database phpmyadmin.
+
+=> Selanjutnya coba kita isi data lagi untuk database nya,seperti cara sebelumnya.
+
+
+
+=> Selanjutnya kita membuat UpdateProduct nya.
+- Pertama ikuti dulu kode seperti dibawah.
+
+Cth :
+
+export const updateProduct = async(req,res) => {
+    const product = await Product.findOne({
+        where : {
+            id : req.params.id
+        }
+    });
+    if(!product) return res.status(404).json({msg : "No Data Found"})
+
+     let fileName = "";
+     if(req.files === null){
+        fileName = Product.image;
+     }else{
+        const file = req.files.file;
+        const fileSize = file.data.length;
+        const extension = path.extname(file.name);
+        fileName = file.md5 + extension;
+        const allowedType = ['.png','.jpg','.jpeg'];
+
+        if(!allowedType.includes(extension.toLowerCase())) return res.status(422).json({msg : "Invalid Images"});
+        if(fileSize > 5000000) return res.status(422).json({msg : "Image must be less than 5 MB"});
+
+        const filepath = `./public/images/${product.image}`
+        fs.unlinkSync(filepath);
+
+        file.mv(`./public/images/${fileName}`,(err) => {
+            if(err) return res.status(500).json({msg : err.message});
+        })
+    }   
+
+    const name = req.body.title;
+    const url = `${req.protocol}://${req.get("host")}/images/${fileName}`
+    try{
+        await Product.update({name : name, image : fileName, url : url}, {
+            where : {
+                id : req.params.id
+            }
+        });
+        res.status(200).json({msg : "Product Updated successfuly"})
+    }catch(err){
+        console.log(err.message);
+    }
+    
+    }
+
+
+==> Selanjutnya kita Kembali ke Postman dan sekarang method nya kita ganti menjadi "PATCH".
+- Lalu kita tambahkan id kedalam URL pada product yang ingin di update.
+  Cth : http://localhost:5000/products/2
+- Lalu kita ganti value pada title dan file untuk mengubah file.
+- Lalu klik "Send".Kemudian ganti lagi method nya menjadi "GET" dan klik "Send" untuk melihat apakah datanya berubah atau tidak.Jika berubah artinya berhasil dan kita Kembali lagi ke vscode dan melihat pada bagian folder "public/images",gambar sebelumnya telah dihapus dan digantikan dengan gambar yang baru.
+- Sampai sini pembuatan Backend kita telah selesai.
+
+
+
+
+
+===============================================================
+
+
+3.Folder Frontend
+- Pertama buka terminal baru dan pastikan ini berada di folder diatas backend atau folder dari parent backend.
+- lalu ketik perintah : npx create-react-app (namaFolder)
+Cth : npx create-react-app frontend
+
+- Selanjutnya kita masuk kedalam folder frontend dengan cara : cd/frontend
+- Selanjutnya kita install beberapa dependensi yang diperlukan,yaitu : npm i react-router-dom axios bulma
+
+Penjelasan :
+- npm i : untuk menginstall dependencies dari node
+- react-router-dom : Untuk menginstall Rute untuk React
+- axios : Untuk penghubung dengan API pada backend
+- bulma : Pengganti CSS mirip bootstrap.
+
+==> Selanjutnya ketik : npm start
+- Selanjutnya pergi ke folder "src" pada frontend,
+- Lalu hapus semuanya kecuali : index.js,App.js dan .gitignore.
+
+- Selanjutnya pergi ke file "App.js" dan hapus semuanya kecuali ini :
+
+function App() {
+  return (
+    <div>
+
+    </div>
+  );
+}
+
+export default App;
+
+Lalu coba tambahkan seprti ini :
+ <h2>Lorem ipsum dolor sit amet.</h2>
+
+==> Kemudian pada file "index.js" hapus semua kecuali ini.
+
+Cth : 
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+==> Selanjutnya import "bulma" di file "index.js".
+Perintah : import "bulma/css/bulma.css";
+
+
+==> Selanjutnya dalam folder "src" kita buat folder baru bernama "components".
+- Lalu install extension "ES7 + React/Redux/React-Native snippets" pada Vscode.
+- Lalu ganti language "javascript" pada paling Bawah vscode dekat "Go Live" denga "React JavaScript JSX"
+- Lalu dalam folder "components" buat file "ProductList.js"
+- Kemudian ketik : rafce lalu enter pada file tersebut.
+- Secara otomatis akan membuat function baru sesuai dengan nama dari file kita.
+Cth :
+import React from 'react'
+
+const ProductList = () => {
+  return (
+    <div className="container"></div>
+  )
+}
+
+export default ProductList
+
+
+==> Lalu install "bulma snippets" dalam extension vscode untuk mempermudah lagi.
+- Lalu coba ikuti kode ini.
+Cth :
+import React from 'react'
+
+const ProductList = () => {
+  return (
+    <div className="container mt-5">
+        <div className="columns is-multiline">
+            <div className="column is-one-quarter">
+                
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default ProductList
+
+=> Kemudian dalam class "column is-one-quarter" kita tulis : card:b . Ini secara otomatis akan menggenerate kode secara otomatis.
+
+=> Kemudian kita hapus yang tidak penting dan coba ikuti contoh kode dibawah ini.
+
+Cth :
+
+import React from 'react'
+
+const ProductList = () => {
+  return (
+    <div className="container mt-5">
+        <div className="columns is-multiline">
+            <div className="column is-one-quarter">
+                <div className="card">
+                  <div className="card-image">
+                    <figure className="image is-4by3">
+                      <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" />
+                    </figure>
+                  </div>
+                  <div className="card-content">
+                    <div className="media">
+                     
+                      <div className="media-content">
+                        <p className="title is-4">John Smith</p>
+                        <p className="subtitle is-6">@johnsmith</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <footer className='card-footer'>
+                    <a className='card-footer-item'>Edit</a>
+                    <a className='card-footer-item'>Delete</a>
+                  </footer>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+  )
+}
+
+export default ProductList
+
+
+==> Selanjutnya pada file "App.js" kita tambahkan kode seperti berikut.
+
+Cth :
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import ProductList from "./components/ProductList";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<ProductList />}/>
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+==> Selanjutnya pada "ProducList.js" kita import {useState,useEffect} dan axios.
+
+Cth :
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+
+
+=> Selanjutnya buat kode ini lebih lengkap.
+
+Cth :
+
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+
+const ProductList = () => {
+    const [products,setProducts] = useState([]);
+
+    const getProduct = async() => {
+        const response = await axios.get("http://localhost:5000/products");
+
+        setProducts(response.data);
+    }
+
+    useEffect(() => {
+        getProduct();
+    },[])
+
+    return (
+    <div className="container mt-5">
+        <div className="columns is-multiline">
+            {products.map( (product) => (
+                <div className="column is-one-quarter" key={product.id}>
+                <div className="card">
+                  <div className="card-image">
+                    <figure className="image is-4by3">
+                      <img src={product.url} alt="Image" />
+                    </figure>
+                  </div>
+                  <div className="card-content">
+                    <div className="media">
+                     
+                      <div className="media-content">
+                        <p className="title is-4">{product.name}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <footer className='card-footer'>
+                    <a className='card-footer-item'>Edit</a>
+                    <a className='card-footer-item'>Delete</a>
+                  </footer>
+                </div>
+                
+            </div>
+            ))}
+            
+        </div>
+    </div>
+  )
+}
+
+export default ProductList
+
+
+
+
+==> Selanjutnya kita membuat file baru di dalam folder component lagi,kita beri nama "AddProduct.js",lalu kita ganti juga language jadi "JSX" seperti sebelumnya.
+
+=> Selanjutnya ikuti kode seperti ini,lebih mudah pakai kode "rafce" dalam file.
+Cth :
+import React,{useState} from 'react'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
+const AddProduct = () => {
+  const[title,setTitle] = useState("");
+  const[file,setFile] = useState("");
+  const[preview,setPreview] = useState("");
+  const navigate = useNavigate();
+
+    const loadImage = (e) => {
+        const image = e.target.files[0];
+        setFile(image);
+        setPreview(URL.createObjectURL(image));
+    }
+
+const saveProduct = async(e) => {
+    e.preventDefault();//Agar tidak reload lagi
+    const formData = new FormData();
+
+    //Key Ini harus sama dengan key pada backend
+    formData.append("file",file);
+    formData.append("title",title);
+
+    try{
+        await axios.post("http://localhost:5000/products",formData,{
+            headers:{
+                "Content-Type" : "multipart/form-data"
+            }
+        });
+        navigate("/");
+    }catch(err){
+        console.log(err);
+    }
+}
+
+  return (
+    <div>
+      <div className="columns is-centered mt-5">
+        <div className="column is-half">
+            <form onSubmit={saveProduct}>
+                <div className="field">
+                    <label className="label">Product Name</label>
+                    <div className="control">
+                        <input type="text" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Product Name'/>
+                    </div>
+                </div>
+
+                <div className="field">
+                    <label className="label">Image</label>
+                    <div className="control">
+                        <div className="file">
+                            <label className="file-label">
+                                <input type="file" className='file-input' onChange={loadImage} />
+                                <span className='file-cta'>
+                                    <span className='file-label'>Choose a file</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {preview ? (
+                    <figure className='image is-128x128'>
+                        <img src={preview} alt="Preview Image" />
+                    </figure>
+                ) : ("") }
+
+                <div className="field">
+                    <div className="control">
+                        <button type='submit' className="button is-success">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default AddProduct
+
+
+
+==> Selanjutnya pergi ke "App.js" dan import addproduct,seperti kode berikut.
+Cth :
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import ProductList from "./components/ProductList";
+import AddProduct from "./components/AddProduct";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<ProductList />}/>
+        <Route path="add" element={<AddProduct />}/>
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+
+==> Selanjutnya kita membuat "delete product".Kita Kembali ke "ProductList.js" dan disana terdapat tombol "delete" lalu kita tambah kode seperti dibawah ini.
+
+Cth :
+
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+
+const ProductList = () => {
+    const [products,setProducts] = useState([]);
+
+    const getProduct = async() => {
+        const response = await axios.get("http://localhost:5000/products");
+
+        setProducts(response.data);
+    }
+
+    const deleteProduct = async(productId) => {
+      try{
+        await axios.delete(`http://localhost:5000/products/${productId}`);
+        getProduct();
+      }catch(err){
+        console.log(err);
+      }
+    }
+
+    useEffect(() => {
+        getProduct();
+    },[])
+
+    return (
+    <div className="container mt-5">
+        <div className="columns is-multiline">
+            {products.map( (product) => (
+                <div className="column is-one-quarter" key={product.id}>
+                <div className="card">
+                  <div className="card-image">
+                    <figure className="image is-4by3">
+                      <img src={product.url} alt="Image" />
+                    </figure>
+                  </div>
+                  <div className="card-content">
+                    <div className="media">
+                     
+                      <div className="media-content">
+                        <p className="title is-4">{product.name}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <footer className='card-footer'>
+                    <a className='card-footer-item'>Edit</a>
+                    <a className='card-footer-item' onClick={() => deleteProduct(product.id)}>Delete</a>
+                  </footer>
+                </div>
+                
+            </div>
+            ))}
+            
+        </div>
+    </div>
+  )
+}
+
+export default ProductList
+
+
+
+
+==> Selanjutnya kita membuat fungsi untuk "Update product".
+- Pertama kita pergi ke file "AddProduct.js" lalu copy semua kode tersebut.
+- Lalu kita membuat file baru di folder "components" dengan nama "EditProduct.js",seperti biasa kita ubah ke dalam bentuk "JSX".
+- Kemudian kita lakukan sedikit perubahan didalamnya,dan ikuti kode dibawah ini.
+
+Cth :
+
+import React,{useState,useEffect} from 'react'
+import axios from 'axios';
+import { useParams,useNavigate } from 'react-router-dom';
+
+
+const EditProduct = () => {
+  const[title,setTitle] = useState("");
+  const[file,setFile] = useState("");
+  const[preview,setPreview] = useState("");
+  const navigate = useNavigate();
+  const {id} = useParams();
+
+    useEffect( () => {
+        getProductById();
+    },[])
+
+  const getProductById = async() => {
+    const response = await axios.get(`http://localhost:5000/products/${id}`);
+
+    //Adalah field yang ada dalam database
+    setTitle(response.data.name);
+    setFile(response.data.image);
+    setPreview(response.data.url);
+  }
+  
+  const loadImage = (e) => {
+        const image = e.target.files[0];
+        setFile(image);
+        setPreview(URL.createObjectURL(image));
+    }
+
+const updateProduct = async(e) => {
+    e.preventDefault();//Agar tidak reload lagi
+    const formData = new FormData();
+
+    //Key Ini harus sama dengan key pada backend
+    if(file){
+        formData.append("file",file);
+    }
+    formData.append("title",title);
+
+    try{
+        await axios.patch(`http://localhost:5000/products/${id}`,formData,{
+            headers:{
+                "Content-Type" : "multipart/form-data"
+            }
+        });
+        navigate("/");
+    }catch(err){
+        console.log(err);
+    }
+}
+
+  return (
+    <div>
+      <div className="columns is-centered mt-5">
+        <div className="column is-half">
+            <form onSubmit={updateProduct}>
+                <div className="field">
+                    <label className="label">Product Name</label>
+                    <div className="control">
+                        <input type="text" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Product Name'/>
+                    </div>
+                </div>
+
+                <div className="field">
+                    <label className="label">Image</label>
+                    <div className="control">
+                        <div className="file">
+                            <label className="file-label">
+                                <input type="file" className='file-input' onChange={loadImage} />
+                                <span className='file-cta'>
+                                    <span className='file-label'>Choose a file</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {preview ? (
+                    <figure className='image is-128x128'>
+                        <img src={preview} alt="Preview Image" />
+                    </figure>
+                ) : ("") }
+
+                <div className="field">
+                    <div className="control">
+                        <button type='submit' className="button is-success">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default EditProduct;
+
+
+
+
+
+
+
+==> Selanjutnya kita pergi ke file "ProductList.js" dan tambahkan fungsi "Link" didalamnya dan ikuti kode seperti dibawah ini.
+
+Cth :
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
+const ProductList = () => {
+    const [products,setProducts] = useState([]);
+
+    const getProduct = async() => {
+        const response = await axios.get("http://localhost:5000/products");
+
+        setProducts(response.data);
+    }
+
+    const deleteProduct = async(productId) => {
+      try{
+        await axios.delete(`http://localhost:5000/products/${productId}`);
+        getProduct();
+      }catch(err){
+        console.log(err);
+      }
+    }
+
+    useEffect(() => {
+        getProduct();
+    },[])
+
+    return (
+    <div className="container mt-5">
+      <Link to="add" className="button is-success">Add New</Link>
+        <div className="columns is-multiline">
+            {products.map( (product) => (
+                <div className="column is-one-quarter" key={product.id}>
+                <div className="card">
+                  <div className="card-image">
+                    <figure className="image is-4by3">
+                      <img src={product.url} alt="Image" />
+                    </figure>
+                  </div>
+                  <div className="card-content">
+                    <div className="media">
+                     
+                      <div className="media-content">
+                        <p className="title is-4">{product.name}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <footer className='card-footer'>
+                    <Link to={`edit/${product.id}`} className='card-footer-item'>Edit</Link>
+                    <a className='card-footer-item' onClick={() => deleteProduct(product.id)}>Delete</a>
+                  </footer>
+                </div>
+                
+            </div>
+            ))}
+            
+        </div>
+    </div>
+  )
+}
+
+export default ProductList
+
+
+
+
+==> Selanjutnya kita pergi ke file "App.js" dan tambahkan rute untuk "EditProduct" seperti dibawah ini.
+
+Cth :
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import ProductList from "./components/ProductList";
+import AddProduct from "./components/AddProduct";
+import EditProduct from "./components/EditProducts";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<ProductList />}/>
+        <Route path="add" element={<AddProduct />}/>
+        <Route path="edit/:id" element={<EditProduct />}/>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+

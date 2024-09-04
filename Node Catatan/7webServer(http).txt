@@ -1,0 +1,427 @@
+Web Server
+https://www.petanikode.com/nodejs-http/
+1.Node JS Web Server
+2.Web Server 
+3.Cara membuat Web server 
+4.Cara menjalankan web server.
+5.Contoh Lain
+6.Response Head,Body
+7.Mengambil html dari file html
+8.Mengambil URL untuk Routing
+9.Membuat Routing dengan halaman html yang berbeda
+10.Cara Mengambil Query String di Nodejs
+11.Menggunakan Modul URL untuk membuat WebServer Statis
+
+
+
+1.Node JS Web Server
+=> Pada dasarnya ketika kita membuat apk dia belum berbentuk web.Dia hanya berbentuk CLI(Command Line Interface) sebuah apk yang berjalan di terminal.
+
+- Node js sebenarnya bisa membuat apk web tapi kita harus memiliki web server.Nah kita akan membuat web server terlebih dahulu agar kita bisa membuat web.
+
+
+2.Web Server :
+- Pertama buat folder baru
+- Panggil dulu namanya : http.Biar lebih jelas bisa langsung ke websitenya
+
+Cara baca modul Web Server : 
+- Pertama pergi ke web Node js
+- Lalu Klik Dokumentasi
+- Pilih versi Lts
+- Pilih Http
+
+
+
+
+3.Cara membuat Web server : 
+const http = require("http");
+
+const server = http.createServer( (req,res) => {
+    res.write("Hello World dunia");
+    res.end();
+} )
+
+
+server.listen(3000,() => {
+    console.log("Listening on port 3000...")
+} )
+
+
+
+
+=> Penjelasan :
+- require("http") 
+=> 1.require adalah fungsi yang digunakan untuk mencari modul dalam node atau sama seperti import dalam python.
+   2.http => adalah modul dalam node.Jika kita pergi ke website node lalu pergi kebagian doc.Lalu pergi ke versi yang ada Lts nya dan selanjutnya pergi ke http.Nah disitu banyak sekali tabel content yang disediakan dan salah satunya adalah membuat server.Nama contentnya adalah createServer.
+
+
+- http.createServer((req,res) => {
+	res.write("Hello World")
+	res.end();	
+})
+
+Sintaks :
+   http.createServer([options],[requestListener(req,response)])
+
+
+Nah http itu adalah variabel yang sudah menyimpan modul http yang kita panggil tadi menggunakan require.
+
+1.Options => Ini pilihan
+2.requestListener => adalah fungsi yang ada pada createServer.Ini menerima 2 buah parameter yaitu : req dan res.
+3.req => request gunanya apa yang akan dikirimkan ke server
+3.res => Adalah respons yang gunanya apa yang dikembalikan sebagai response oleh web server.
+4.write => Digunakan untuk menjalankan reponse.
+5.end => perintah didalam server sudah selesai.
+6.res.write / res.end => res itu adalah fungsi response yang dimana response tersebut ada nilai kembaliannya dan ada akhirnya jika selesai.
+
+
+
+- server.listen(3000,() => {
+    console.log("Listening on port 3000...")
+} )
+
+Sintaks : servernya.listen(port, hostname, backlog, callback);
+
+=> server.listen => Fungsinya untuk menjalankan server.server.listen nah servernya itu adalah variabel yang sebelumnya sudah menyimpan createServer
+   Parameter listen yaitu : port, hostname,listeningListener
+- port =>  secara default 3000.Ada banyak port yang bisa digunakan salah satunya 8000,1234.Ini bisa kita dapatkan di : https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+Jika nomor port sudah yes / assign itu artinya port sudah tidak bisa dipakai lagi.
+- hostname => secara default localhost
+- backlog => Menentukan panjang maksimum antrian koneksi yang tertunda. secara default 511
+- listeningListener : callback berupa function.Bisa berisi error dan biasanya ditulis pesan yang ada di dalam console ketika server sedang berjalan.
+
+
+
+4.Cara menjalankan web server.
+- Ketika kita sudah selesai membuat web server kita bisa pergi ke terminal
+- Lalu pergi ke file yang ingin dijalankan
+- Lalu ketik node (namafile).js / node namafile
+- Terus pergi ke web browser dan ketik => localhost:(portlocalhost).Cth : localhost : 8000
+- Jika kita sudah merubah node nya maka kita harus restart.Salah satu caranya : kita hapus node di terminal buat baru lagi.Bisa dengan ctrl+c trus enter lalu ketik lagi : node namafile
+
+
+5.Contoh Lain 
+const http = require("http")
+
+const host = "localhost"
+const port = 2593
+
+const requestListener = function (req, res) {
+    res.setHeader("Content-Type", "text/html");
+    res.writeHead(200);
+    res.end(`<h1>Kata-Kata Bijak</h1> \n
+    <p>Jangan Lakukan Sekarang kalau bisa dikerjakan besok </p>`);
+};
+
+
+const server = http.createServer(requestListener)
+
+server.listen(port,host,()=> {
+    console.log(`Server is runinng on http://${host}:${port}`)
+})
+
+
+ Penjelasan : 
+- setHeader(name) 
+=> Pada dasarnya nilai yang dikembalikan oleh server itu adalah teks biasa bukan html.Jika kita ingin mengembalikan sebagai html  kita pakai setHeader ini.
+
+Nilai bisa : 
+- response.setHeader('Content-Type', 'text/html');
+- response.setHeader('Content-Length', Buffer.byteLength(body));
+- response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
+const contentType = response.getHeader('content-type');
+// contentType is 'text/html'
+- const contentLength = response.getHeader('Content-Length');
+// contentLength is of type number
+- const setCookie = response.getHeader('set-cookie');
+// setCookie is of type string[]
+
+Link : URL Jenis Konten : https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+
+
+
+6.Response Head,Body
+=> Response body dan response header adalah data payload yang akan kita kirimkan ke client. Data ini kita bisa modifikasi dengan response.Pada dasarnya head dalam response ini sama seperti head html dan body sama seperti body dalam html.
+1. Sintaks Head: 
+  	writeHead(statusCode,[statusMessage],[Headers]) 
+
+- statusCode : angka
+- statusMessage : string
+- headers : object | array
+- returns => <http.serverResponse>
+=> Jika misalnya status code == 200 maka content-type nya apa?
+
+
+ Respon Status code : 
+- 100 - 199 => Tanggapan Informasi
+- 200 - 299 => Tanggapan Berhasil
+- 300 - 399 => Tanggapan Redirect / pengalihan
+- 400 - 499 => Tanggapan error client(kesalahan klient)
+- 500 - 599 => Tanggapan kesalahan Server
+
+
+
+=> Dalam writeHead kita bisa mengubah jenis konten menjadi : JSON,XML,PDF,Dll.
+Cth :
+- response.writeHead(200, {'Content-Type': 'application/json'});
+- response.writeHead(200, {'Content-Type': 'application/pdf'});
+- response.writeHead(200, {'Content-Type': 'application/xml'});
+
+
+
+2. Sintaks Body :
+	write(chunk[encoding],[callback])
+
+- chunk <string> | <buffer>
+- encoding <string>
+- callback <Function>
+- Returns : boolean
+
+
+Cth : 
+var http = require('http');
+http.createServer(function (request, response) {
+    response.writeHead(200, {'Content-Type': 'text/html'});
+    response.write('Hello <b>World</b>!');
+    response.end();
+}).listen(8000);
+
+console.log("server running on http://localhost:8000");
+
+=> Pada contoh diatas,kita menggunakan method 'writeHead()' untukmengubah jenis konten yang akan dikirikan ke clinet.Secara default kontennya berbentuk dalam 'text/plain'.
+
+Lalu method 'write()' untuk menulis body atau konten yang dikirim.Sama seperti body dalam html
+
+
+
+3.Response.end
+=> Untuk mengakhiri repson.
+Sintaks :
+	reponse.end([data,[encoding]],[callback])
+
+- data <string> | <buffer>
+- encoding <string>
+- callback <Function>
+- Returns : boolean
+
+
+
+
+7.Mengambil html dari file html
+Cth :
+const fs = require('fs');
+const http = require("http")
+const port = 1234
+
+http.createServer(function(req,res){
+    //Baca File
+    fs.readFile('3coba.html',function(error,data){
+        if(error) throw error;
+
+        //kirim respon
+        res.writeHead(200,{
+            'Content-Type' : 'text/html'
+        })
+        res.write(data)
+        res.end()
+    })
+}).listen(port,function(){
+    console.log(`Server sudah berjalan http://${port}...`)
+})
+
+=> Untuk fs ada di materi 4ModuleSystem
+
+
+
+
+
+8.Mengambil URL untuk Routing
+=> Jika kita ingin mengambil url untuk membuat URL Routing,maka kita bisa mengambilnya dari objek "request" dengan properti "url".
+
+Cth :
+const http = require("http");
+
+http.createServer(function(req,res){
+    res.writeHead(200,{'Content-Type':'text/html'})
+    res.write('URL : ' + req.url)
+    res.end()
+}).listen(3000)
+
+console.log("Server Sudah berjalan")
+
+Penjelasan :
+- req => Merupakan bagian dari fungsi dalam request.
+- url => Merupakan sebuah fungsi yang ada pada request
+
+=> Dari kode diatas kita bisa membuat router misalnya saat orang membuka rute ini maka jalankan fungsi ini.Owh iya kalo kode diatas kita bisa mencoba membuat nama router didalam link pencarianya dengan nama yang kita inginkan.Misalnya : http://localhost:3000/tentang.
+
+
+
+Contoh 2 :
+const http = require("http")
+
+//2.Membuat Web Server
+const server = http.createServer(function(req,res){
+    res.writeHead(200,{
+        'Content-Type' : 'text/html'
+    })
+    switch(req.url){
+        case '/tentang' :
+            res.write("Ini adalah tentang")
+            break
+        case '/profil' :
+            res.write("Ini adalah profil")
+            break
+        default :
+            res.write("404 : Halaman tidak ada")
+            break
+    }  
+    res.end();
+}).listen(3000,function(){
+    console.log("Server sudah Berjalan")
+})
+
+
+Penjelasan : 
+- Switch : Sebuah fungsi yang berguna untuk membuat pengecekan nilai.Kalo diterjemahkan : Cek nilai dari ini.
+- Case : Sama dengan if.
+- Default : sama dengan else.
+Cth : 
+var warna = "merah"
+
+switch(warna) :
+  case 'hitam' :
+	console.log("Warna hitam");
+	break
+  case 'biru' :
+	console.log("Warna biru");
+	break
+  case 'merah' :
+	console.log("Warna hitam");
+	break
+  default :
+	console.log("Warna tidak terdeteksi");
+	break
+
+
+
+
+9.Membuat Routing dengan halaman html yang berbeda
+//1.Memanggil modul http
+const http = require('http');
+const fs = require("fs");;
+
+
+//2.Membuat server
+const server = http.createServer(function(req,res){
+    res.writeHead(200,{
+        'Content-Type' : 'text/html'
+    });
+
+    switch(req.url){
+        case '/tentang' :
+            fs.readFile('1tentang.html',function(err,data){
+                if(err) throw err;
+
+                res.writeHead(200,{
+                    'Content-Type' : 'text/html'
+                })
+                res.write(data)
+                res.end();
+            })
+
+        case '/profil' :
+            fs.readFile('2profil.html',function(err,data){
+                if(err) throw err;
+
+                res.writeHead(200,{
+                    'Content-Type' : 'text/html'
+                })
+                res.write(data)
+                res.end()
+            })
+        default:
+            fs.readFile('index.html',function(err,data){
+                if(err) throw err;
+
+                res.writeHead(200,{
+                    'Content-Type' : 'text/html'
+                })
+                res.write(data)
+                res.end()
+            })
+    }
+
+}).listen(3000,function(){
+    console.log("Server sudah berjalan")
+})
+
+
+
+
+10.Cara Mengambil Query String di Nodejs
+=> Maksudnya adalah kita mengambil nilai yang ada pada url setelah ?.Misalnya : localhost:8000/barang?harga=1000
+
+- Untuk bisa mengambil nilai tersebut kita bisa menggunakan modul "url";
+Cth :
+let url = require("url")
+let adr = 'https://www.petanikode.com/search.php?year=2018&month=february';
+let q = url.parse(adr,true);
+
+//Hasil parse url
+console.log("protocol : " + q.protocol )
+console.log("host : " + q.host )
+console.log("pathname : " + q.pathname )
+console.log("search: " + q.search )
+
+let qdata = q.query
+console.log(qdata)
+
+
+Penjelasan :
+- url => Merupakan sebuah modul node yang kita panggil
+- url.parse => Merupakan sebuah fungsi dalam modul url.Arti dari parse adalah menguraikan yaitu setiap data pada url akan dijabarkan 1 per satu atau bisa dibilang di pecah sehingga kita bisa mengambil nilai yang dipecah tadi jika tidak ingin mengambil nilai secara utuh.
+   Sintaks : url.parse() memiliki 2 parameter,yaitu:
+- String URL yang akan di-parse
+- Boolean yang untuk parse parameter/query string.Parameter ini bersifat opsional atau boleh tidak diisi.Jika diisi 'true',maka parameter/query string akan di-parse menjadi objek.
+
+Source : https://www.petanikode.com/nodejs-url/
+
+- q = url.parse(req.url,true).query;
+=> Pada baris ini kita melakukan parsing URL dengan modul 'url'.Lalu mengambil property 'query'.Sehingga variabel 'q' menjadi sebuah objek yang berisi seperti ini : {keyword : 'Belajar NodeJS'} dengan demikikan,kita bisa mengambil nilai 'belajar nodeJs' melalui properti 'keyword'.
+
+
+
+11.Menggunakan Modul URL untuk membuat WebServer Statis
+=> URL merupakan sebuah teks yang menyatakan alamat sebuah web atau halaman web.
+Misal : https://www.petanikode.com/search/?q=nodejs
+
+Penjelasan :
+https: => Protokol
+www.petanikode.com => domain
+search = pathName
+q=nodejs => parameter
+
+
+=> Sebuah URL terdiri dari protokol,domain,pathname,parameter,dll.Bagaimana cara kita mengurai (parsing) URL ini di dalam program.
+
+- Untuk dapat menggunakan modul 'url' kita harus mengimpornya dengan fungsi require():
+	const url = require('url')
+
+Contoh :
+const url = require('url')
+let adr = 'https://www.petanikode.com/search.php?year=2018&month=february';
+const q = url.parse(adr,true);
+
+//hasil parse url
+console.log("protocol : " + q.protocol);
+console.log("hostname : " + q.host);
+console.log("pathname : " + q.pathname);
+console.log("parameter : " + q.search);
+
+let qdata = q.query;
+console.log(qdata)
+
+
+
+

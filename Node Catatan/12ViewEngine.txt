@@ -1,0 +1,17 @@
+View Engine
+
+1.View engine
+=> Sebuah cara kita untuk mempermudah pengelolaan file statis web pada aplikasi kita.Kita bisa membuat variabel dan variabel itu akan digganti nilai yang sebenarnya,lalu menampilkannya dalam bentuk html.
+
+- Jadi dari express kita bisa mengirim data ke dalam view engine dan akan ditangkap data tersebut dan menampilkan dalam bentuk variabel.Lalu dapat memisahkan file di web kita dan itu mempermudah.
+
+- Lebih dari 20 View/Template Engine yang bisa dipakai.Salah satunya EJS(Embedded Javascript Template)
+
+
+2.Template Embedded Javascript Template
+- Simpel sintaks
+- Simple setup
+- Eksekusi cepat
+- Mempermudah debug
+- Pengembangnya aktif dan banyak
+- Dibuat oleh Express.

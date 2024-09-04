@@ -1,0 +1,175 @@
+Read-Eval-Print-Loop :
+1.Fungsi
+2.Masuk Command Prompt
+3.Cara menggunakan Node JS
+4.Membuat Lebih dari 1 baris
+5.Kode Wajib
+6.Cara mengisi file js tanpa membuka kode editor.
+7.Cara nge-load file js di cmd
+8.Menyimpan semua script dalam REPL dalam 1 sesi.
+9.Jika penulisan node salah
+10.Break dan Clear
+11.Editor
+12.Menggunakan Node dengan kode editor
+
+
+
+1.Fungsi 
+- Untuk mendebug skrip yang dimiliki sebuah script benar atau salah
+- Mengeksekusi kode lewat comand prompt atau terminal.
+
+2.Masuk Comand Prompt
+- Klik bersamaan : windows + r
+- ketik cmd 
+- Masuk ke folder yang diinginkan dengan : cd (foldernya)
+
+3.Cara menggunakan
+=> Jika kita sudah punya file js dan kita ingin menjalankan di node caranya tinggal ketik : node (namafile.js).
+
+Jika belum punya atau ingin coba-coba kita bisa pakai dibawah ini :
+
+=> Pada saat kita sudah masuk ke file yang diinginkan coba ketik node saja tanpa ada file javascript.
+Cth :
+   node
+
+Nanti akan muncul pesan : Welcome to node.js v...
+
+Seperti ini : 
+	C:\Users\zeoro\Documents\Language\JS\Nodejs>node
+	Welcome to Node.js v16.16.0.
+	Type ".help" for more information.
+
+Itu artinya kita sudah masuk ke comand prompt punya node.Ini disebut dengan REPL dan kita bisa Membaca,Meng-evaluasi,Mencetak,Mengulang kembali.Disana kita bisa menulis semua script javascript apapun itu.
+Cth : 
+	> 2 + 2 // Disebut sebagai Eval
+	4  // Disebut sebagai Print
+	>  // Disebut sebagai Loop
+
+=> Jadi pada dasarnya ketika kita menulis kode itu akan dievaluasi dulu lalu kode yang ketik akan di print dan dia akan mengulang kembali ke command prompt awal yang meminta kita untuk menulis sesuatu lagi.
+
+Contoh kode lain : 
+ > a = 10
+ 10
+ > b = 5
+ 5
+ > if(a < b) {true} else {false}
+ false
+ > if (a > b) { true } else { false }
+ true
+ >
+
+// Selama kita belum keluar dari REPL ini kita masih bisa mengakses semua kode yang kita buat sebelumnya.Jika kita sudah keluar ya kita tidak bisa lagi mengakses data kita sebelumnya.
+
+
+
+4.Membuat lebih dari 1 baris 
+=> Misalnya kita menulis sebuah function yang dimana function itu bisa terdiri dari banyak baris,Caranya pada saat kita membuat buka kurung { kita enter saja nanti dia mengerti bahwa kita belum selesai membuat kode nya sampai kita membuat tutup kurung.
+
+Cth : 
+
+Type ".help" for more information.
+> const nama = "Sang Penanya";
+undefined
+> const umur = 20;
+undefined
+> nama
+'Sang Penanya'
+> umur
+20
+> const sayHello = (name,age) => {
+... console.log(`Hallo nama saya adalah ${name},Saya berumur ${age} tahun`)
+... }
+undefined
+> sayHello(nama,umur)
+Hallo nama saya adalah Sang Penanya,Saya berumur 20 tahun
+undefined
+
+// Kenapa hasilnya ada undefined karena kita menggunakan console.log() yang dimana itu tidak mengembalikan nilai.Untuk mengatasinya ganti saja dengan return yang fungsinya untuk mengembalikan nilai.
+
+Contoh 2 : 
+> const sayHello2 = (name,age) => {
+... return(`Hallo nama saya ${nama},umur ${umur} tahun`);
+... }
+undefined
+> sayHello2(nama,umur)
+'Hallo nama saya Sang Penanya,umur 20 tahun'
+>
+
+
+5.Kode wajib 
+- .help => Special keyword digunakan untuk memberikan bantuan contohnya : bagaimana keluar dari node.Nah disitu juga ada kode bagaimana keluar dari node.
+- global => Bisa mengakses ke sebuah variabel global
+- global. lalu tab 2 kali => Kita bisa pakai semua module yang ada dalam node nya.
+
+
+6.Cara mengisi file js tanpa membuka kode editor
+- Jika pakai gitbash kita bisa ketik : vi (namafile.js);
+- Nah kita tidak bisa langsung nulis script javascript untuk mengatasinya kita bisa masuk insert.Caranya kita ketik i nanti ada bacaan insert nah disitu sudah bisa nulis file javascript.
+- Untuk save dan keluar kita bisa klik : escape lalu :wq artinya w(write) q(quit)
+- Untuk melihat isinya bisa tulis cat (namafile) 
+
+TAMBAHAN :
+Cara hapus file js :
+- ketik : rm (namafile.js)
+
+
+7.Cara nge-load file js di cmd
+- Pertama masuk lagi ke node.Mudah saja kita ketik saja didalam file : node
+- Terus kita ketik .load (namafile)
+
+
+8.Menyimpan semua script dalam REPL dalam 1 sesi.
+=> Jadi misal kita sudah membuat script dalam REPL tapi kita mau itu disimpan kita bisa menggunakan .save
+Caranya : 
+- Buat dulu scriptnya 
+- Lalu ketik .save (namafile.js)
+
+Cth : 
+Welcome to Node.js v16.16.0.
+Type ".help" for more information.
+> const nama = "Sang Penanya";
+undefined
+> const hobi = "Menulis";
+undefined
+> const bioData = (name,hob) => {
+... return(`Halo nama saya ${name},Hobi saya ${hob}`);
+... }
+undefined
+> bioData(nama,hobi)
+'Halo nama saya Sang Penanya,Hobi saya Menulis'
+> .save 2REPL.js
+
+Session saved to: 2REPL.js
+>
+
+
+9.Jika penulisan node salah
+=> Jika misalnya kita menulis scriptnya ada yang kurang atau salah kita bisa betulkan lagi tanpa ngetik ulang.Caranya kita tekan tombol atas.
+
+
+
+10.break dan clear
+=> Fungsinya untuk menghentikan pembuatan kode.Jika misal kita membuat kode dan ingin berhenti ditengah-tengah kita bisa pakai .break dan .clear.
+
+Contoh :
+Welcome to Node.js v16.16.0.
+Type ".help" for more information.
+> const nama = "Sang Penulis";
+undefined
+> const umur = 20
+undefined
+> const namaUser = (name,age) => {
+... .break
+>
+
+// Dengan begini kita sudah berhenti untuk menulis kode.
+
+
+11.editor
+=> Mengetikan banyak baris sekaligus.Jika kita ingin memakai kode kita bisa pakai ctrl+d jika tidak mau dipake bisa pakai ctrl+c.
+
+
+12.Menggunakan node dalam kode editor
+=> Kita bisa menggunakan node dalam kode editor dengan cara masuk ke kode editor.Lalu masuk ke menu view dan ada pilihan terminal.Nah disitu kita menggunakana node.
+
+

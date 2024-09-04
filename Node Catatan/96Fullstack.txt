@@ -1,0 +1,159 @@
+1.Bagian Frontend
+- Membuat sebuah file html dan terhubung ke file javascript yang terhubung ke backend.
+- File ini berisi form
+
+
+2.Bagian Backend
+1.Membuat file .env
+=> Sebuah file yang akan menangkap Database URL dari mongoose kita.
+Contoh :
+DATABASE_URL = mongodb+srv://kiel_fernandes11:SzAIcGeMTjqlI5We@cluster1.93sejfz.mongodb.net/test
+
+2.Membuat file index
+=> File ini fungsinya sebagai penghubung antara mongodb dengan backend.Didalam file ini terdapat :
+- dotenv => Agar bisa menggunakan file .env yang kita buat sebelumnya.
+- express
+- mongoString => Lokasi File .env kita
+- cors => Modul ini digunakan untuk POST,DELETE,PUT agar bisa berjalan di frontend.
+- rute => Sebuah modul yang kita buat sendiri yang dimana ini adalah rute untuk CRUD.
+- connect => Fungsi mongodb 
+
+
+3.Membuat File model schema database mongodb
+=> File ini fungsinya untuk membuat schema mongodb.
+- Terdapat : mongoose
+- Lalu buat schemanya
+- Lalu export schema tersebut.
+
+
+4.Membuat file rute 
+=> Sebuah file yang digunakan untuk membuat jalur CRUD.File ini berisi nilai yang penting yaitu :
+- modul express
+- modul Router dari express => Untuk menentukan rute
+- modul schema yang kita buat di file sebelumnya.File ini digunakan untuk menyesuaikan saja terhadap nilai yang kita masukan.Jika misalnya di model schema terdapat : nama,email,umur yang wajb diisi maka pembuatan CRUD juga harus dibuat.
+
+
+3.Gabungan
+1.Membuat file index.html dan terhubung dengan file js.Contoh nama file : hubung.js
+2.Terdapat file-file di backend yang atas
+3.File tambahan js untuk menghubungkan dengan backend.Contoh nama file : hubung.js.File berisi :
+- fetch dll.
+
+
+
+
+Tambahan :
+require("dotenv").config()
+const express = require("express")
+const mongoose = require("mongoose")
+const mongoString = process.env.DATABASE_URL
+const app = express()
+const rute = require("./rute")
+app.use(express.json())
+app.use(express.urlencoded({extended : true}))
+
+
+// 1.Koneksi ke mongodb
+mongoose.connect(mongoString);
+const db = mongoose.connection
+
+db.once("connected", () => {
+    console.log("Database Connected")
+})
+
+db.on("error",(err) => {
+    console.log(err)
+} )
+
+// Rute untuk Middleware
+app.use("/data",rute)
+
+
+
+app.listen(3000,() => {
+    console.log("Server sudah berjalan")
+})
+
+
+
+PENJELASAN : 
+    require("dotenv").config(): Ini adalah pemanggilan fungsi config() dari modul dotenv. Modul ini membantu dalam memuat variabel lingkungan dari file .env ke dalam process.env. File .env berisi konfigurasi, seperti kunci rahasia atau string koneksi, yang ingin kita teruskan ke aplikasi tanpa mengeksposnya di kode sumber. Ini memungkinkan penggunaan variabel lingkungan dalam proyek tanpa harus menulis nilainya langsung di kode.
+
+    const express = require("express"): Ini mengimpor modul express yang merupakan framework web untuk Node.js. Modul ini akan membantu dalam membuat dan mengelola server HTTP serta menyediakan berbagai fitur yang membantu dalam mengembangkan aplikasi web dengan lebih mudah.
+
+    const mongoose = require("mongoose"): Ini mengimpor modul mongoose, yang adalah modul untuk berinteraksi dengan database MongoDB. Mongoose mempermudah proses koneksi, memodelkan skema data, serta operasi CRUD (Create, Read, Update, Delete) ke database MongoDB.
+
+    const mongoString = process.env.DATABASE_URL: Ini menyimpan string koneksi database MongoDB yang disimpan dalam variabel lingkungan DATABASE_URL. Sebelumnya, nilai ini telah dimuat dari file .env menggunakan dotenv.config().
+
+    const app = express(): Membuat instance aplikasi Express yang akan digunakan untuk mengkonfigurasi dan menjalankan server web.
+
+    const rute = require("./rute"): Ini mengimpor file rute.js yang berisi definisi rute dan fungsi middleware yang akan digunakan dalam aplikasi.
+
+    app.use(express.json()): Ini adalah middleware bawaan dari Express yang digunakan untuk mengurai body permintaan dengan format JSON. Middleware ini akan mem-parsing permintaan dengan tipe application/json dan membuat data JSON tersedia di req.body.
+
+    app.use(express.urlencoded({extended : true})): Ini adalah middleware bawaan dari Express yang digunakan untuk mengurai body permintaan dengan format x-www-form-urlencoded. Middleware ini akan mem-parsing permintaan dengan tipe application/x-www-form-urlencoded dan membuat data tersedia di req.body.
+
+    mongoose.connect(mongoString);: Kode ini mengeksekusi fungsi connect dari mongoose untuk membuka koneksi ke database MongoDB yang sudah didefinisikan dalam mongoString.
+
+    const db = mongoose.connection: Membuat koneksi ke instance database untuk dapat memantau acara terkait koneksi.
+
+    db.once("connected", () => {...}): Ini adalah acara yang menunggu koneksi database berhasil. Saat koneksi terbentuk, fungsi callback akan dieksekusi dan mencetak "Database Connected" ke konsol.
+
+    db.on("error",(err) => {...}): Ini adalah acara yang menunggu adanya kesalahan dalam koneksi database. Jika ada kesalahan, fungsi callback akan dieksekusi dan mencetak kesalahan ke konsol.
+
+    app.use("/data",rute): Menetapkan rute middleware untuk URL yang dimulai dengan "/data". Ini berarti setiap permintaan dengan URL yang dimulai dengan "/data" akan melewati rute yang didefinisikan di file rute.js.
+
+    app.listen(3000,() => {...}): Ini akan menjalankan server Express di port 3000 dan akan mencetak "Server sudah berjalan" ke konsol saat server berjalan.
+
+Jadi, potongan kode tersebut adalah cara untuk mengonfigurasi dan menjalankan server web dengan Express, menghubungkan ke database MongoDB menggunakan Mongoose, dan menetapkan rute yang telah didefinisikan di file rute.js. Selain itu, pemanggilan dotenv.config() memungkinkan kita menyimpan variabel lingkungan di file .env dan menggunakan mereka di dalam aplikasi tanpa menghardkod nilainya di kode sumber.
+
+
+
+
+
+Kenapa masih memuat data Mongostring sedangkan sudah ada require('dotenv') ?
+=> Ketika kita menggunakan require('dotenv').config(), data dari file .env dimuat ke dalam process.env, yang merupakan objek global di Node.js yang berisi variabel lingkungan sistem.
+
+Jadi, mengapa masih ada kode const mongoString = process.env.DATABASE_URL setelah memuat data dari file .env?
+
+Hal ini karena di dalam file .env, biasanya kita menyimpan beberapa variabel lingkungan yang berbeda, dan masing-masing variabel lingkungan memiliki peran atau nilai yang berbeda. Contohnya, di dalam file .env, Anda mungkin memiliki beberapa variabel lingkungan seperti DATABASE_URL, API_KEY, SECRET_KEY, dan lain-lain.
+
+Dengan menggunakan process.env.DATABASE_URL, kita mengambil nilai dari variabel lingkungan DATABASE_URL yang telah dimuat sebelumnya dari file .env. Dalam konteks kode yang diberikan, variabel mongoString akan berisi nilai yang ada di DATABASE_URL yang dapat digunakan untuk melakukan koneksi ke database MongoDB.
+
+Cth :
+DATABASE_URL=mongodb://localhost:27017/mydatabase
+API_KEY=abc12345
+SECRET_KEY=supersecret
+
+
+=> Setelah memuatnya dengan require('dotenv').config(), nilai dari process.env.DATABASE_URL akan menjadi mongodb://localhost:27017/mydatabase. Kemudian, baris const mongoString = process.env.DATABASE_URL akan mengambil nilai tersebut dan menyimpannya di dalam variabel mongoString.
+
+Dengan cara ini, kita memiliki akses ke nilai variabel lingkungan (DATABASE_URL dalam hal ini) yang telah dimuat dari file .env dan dapat digunakan dalam kode untuk melakukan koneksi atau tugas lain yang membutuhkan nilai tersebut.
+
+
+
+
+
+Tambahan : 
+arti dari kode app.use(express.urlencoded({extended : true})) dan berikan analogi untuk membantu memahaminya:
+
+Arti dari kode tersebut:
+
+    app.use(...): Ini adalah metode Express yang digunakan untuk menambahkan middleware ke aplikasi Express.
+    express.urlencoded({extended : true}): Ini adalah middleware bawaan dari Express yang digunakan untuk mengurai (parse) body permintaan dengan format x-www-form-urlencoded.
+    {extended: true}: Ini adalah opsi yang memberi tahu middleware untuk menggunakan modul qs untuk mem-parsing data dari body permintaan. Opsi ini memungkinkan kita untuk mengurai data yang lebih kompleks, seperti array dan objek bersarang.
+
+Analogi dengan Restoran:
+
+Kita bisa menggunakan analogi meja pesanan restoran untuk memahami kode tersebut:
+
+Bayangkan Anda berada di restoran dan ingin memesan makanan. Anda memberikan pesanan Anda kepada pelayan (server) dengan menggunakan formulir pesanan khusus. Formulir ini memiliki banyak kolom dengan nama makanan, jumlah, pilihan, dan lainnya. Setelah Anda memberikan formulir pesanan, pelayan harus mengurai dan memproses informasi yang ada di formulir tersebut untuk mengetahui apa yang harus dipesan ke dapur (server).
+
+Dalam hal ini, analogi tersebut dapat dijelaskan sebagai berikut:
+
+    Restoran (Aplikasi Express): Aplikasi Express adalah seperti restoran yang menerima pesanan dari pelanggan (klien) yang datang ke sana.
+    Pelayan (Middleware): Middleware adalah seperti pelayan yang berada di tengah-tengah antara pelanggan (klien) dan dapur (server). Pelayan harus mengurai dan memproses pesanan yang masuk sebelum mengirimkannya ke dapur untuk diproses.
+    Formulir Pesanan (Body Permintaan): Ketika Anda memesan makanan, Anda memberikan informasi seperti nama makanan, jumlah, pilihan, dll di formulir pesanan. Di pengembangan web, ketika Anda mengirimkan data dari formulir HTML melalui permintaan POST, data tersebut berada di dalam body permintaan.
+    Mengurai (Parse) Formulir Pesanan (Middleware express.urlencoded()): Ini adalah langkah di mana middleware express.urlencoded() bekerja. Middleware ini mengurai (parse) data yang ada di dalam body permintaan yang dikirimkan oleh klien. Seperti pelayan yang mengurai informasi dari formulir pesanan, middleware ini mengurai data dari body permintaan dan membuatnya tersedia dalam bentuk objek di req.body. Dengan begitu, Anda dapat dengan mudah mengakses data yang dikirimkan oleh klien dalam permintaan.
+
+Jadi, dengan menggunakan app.use(express.urlencoded({extended : true})), Anda memasang middleware bawaan Express yang memungkinkan Anda untuk mengurai data dari formulir yang dikirimkan melalui permintaan x-www-form-urlencoded dan membuatnya tersedia di req.body untuk penggunaan lebih lanjut dalam aplikasi Anda.

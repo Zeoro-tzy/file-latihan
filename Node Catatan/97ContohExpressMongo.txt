@@ -1,0 +1,128 @@
+1.File .env
+DATABASE_URL = mongodb+srv://kielfernandes:uMBzcTIof3aKQPtq@cluster0.fuxh3ps.mongodb.net/test
+
+
+2.File model.js
+const mongoose = require("mongoose")
+
+const dataSchema = new mongoose.Schema(
+    {
+        name : String,
+        email : String,
+        age : Number
+    }
+)
+
+module.exports = mongoose.model("Tes",dataSchema)
+
+
+3.File routes.js
+const express = require("express")
+const routes = express.Router()
+const model = require("./model");
+
+routes.get("/v1",async(req,res) => {
+    try{
+        const data = await model.find();
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err)
+    }
+})
+
+
+routes.get("/v1/:id",async(req,res) => {
+    const id = req.params.id
+    try{
+        const data = await model.findById(id);
+        res.status(200).json(data);
+    }catch(err) {
+        console.log(err)
+    }
+})
+
+
+routes.post("/v1",async(req,res) => {
+    try {
+        const user = req.body.map(mod => new model(mod));
+        await model.insertMany(user)
+        res.status(200).json({message : "Sudah berjalan dengan sukses"})
+    }catch(err){
+        console.log(err)
+    }
+    
+})
+
+
+routes.delete('/v1/:id', async (req, res) => {
+    const id = req.params.id;
+    try{
+        await model.findByIdAndDelete(id)
+        res.status(200).json({ message: 'Success' });
+    } catch (err) {
+        console.log(err);
+    }
+    });
+
+
+
+routes.delete("/v1",async(req,res)=> {
+    try{
+        await model.deleteMany({})
+        res.status(200).json({message : "Data berhasil dihapus"})
+    }catch(err){
+        res.status(500).json({message : "Data error"})
+    }
+})
+
+
+routes.put("/v1/:id",async(req,res) => {
+    try{
+        const data = await model.findById(req.params.id);
+        data.name = req.body.name;
+        data.email = req.body.email;
+        data.age = req.body.age;
+
+        await data.save()
+        res.status(200).json({message : "Sucess"})
+    }catch(err){
+        console.log(err)
+    }
+})
+
+
+module.exports = routes
+
+
+
+4.File index.js
+require("dotenv").config();
+const express = require("express")
+const mongoose = require("mongoose")
+const mongoString = process.env.DATABASE_URL;
+const routes = require("./routes")
+
+mongoose.set("strictQuery", false)
+
+mongoose.connect(mongoString)
+const database = mongoose.connection
+
+database.on("error",(error)=> {
+    console.log(error)
+})
+
+database.once("connected",()=> {
+    console.log("Database Connected")
+})
+
+const app = express()
+
+app.use(express.json())
+app.use("/",routes)
+
+app.listen(3000,() => console.log("Server 3000 sudah berjalan"))
+
+
+=> Untuk bisa menjalankan semua kode ini hal yang paling penting adalah kita sudah menginstall express,mongoose,nodemon,dotenv.
+Untuk bisa menginstall itu semua bisa dilihat di file 9Restful API(express).
+perintah menginstall di terminal : npm install express nodemon dotenv mongoose

@@ -1,0 +1,1687 @@
+1.Backend
+Langkah-langkah standard untukk memulai backend :
+
+1.Menginstall modul yang diperlukan 
+=> Untuk bisa menghubungkan antara express dengan mongodb kita harus menginstall berapa modul dan berikut perintahnya :
+- Pertama harus install node js dulu di website resminya.
+- Jika sudah di install selanjutnya membuat sebuah folder baru dan masuk kedalam folder baru tersebut
+
+- Jalankan perintah : npm init -y. 
+- Jalankan di terminal vscode dan pastikan pada saat menjalankan perintah kita sudah berada di lokasi folder yang dibuat tadi.
+- Ketik perintah : npm install express
+
+Modul Tambahan :
+- Untuk menginstall express,nodemon,mongoose(Untuk mongoDB) Khusus jika ingin pakai Database Mongodb :
+- Ketik perintah di terminal vscode : npm install express nodemon dotenv mongoose cors
+- Untuk menjalankan API bisa menggunakan postman atau juga Thunder client yang ada pada vscode
+
+Nodemon :
+- Jika kita sudah menginstall nodemon,selanjutnya kita melakukan konfigurasi dalam package.json nya.Tujuannya agar kita bisa refresh server setiap kita melakukan perubahan.
+- Setelah itu pergi ke scripts.Lalu tambahkan dalam scripts tersebut :
+  "start" : "nodemon index.js"
+- Ini agar yang di refresh adalah index.js nya,jadi pada dasarnya setiap kode backend yang kita buat sudah pasti terhubung dengan index.js tempat utama kita dalam proses backend.
+- Pastikan juga membuat file indexnya 
+- Jika ingin menjalankan nodemon tinggal : npm start
+
+
+TAMBAHAN :
+
+3.Cara menghubungkan Express dengan mongodb
+1.MongoDb Atlas
+- Pertama pergi ke atlas lalu pergi ke halaman database.
+- Kemudian pilih connect.
+- Kemudian pilih connect using mongodb compass.
+- Lalu copy data connection string yang no 2.Seperti ini : mongodb+srv://kielfernandes:<password>@cluster0.fuxh3ps.mongodb.net/test
+- Untuk /test yang bagian terakhir bisa diganti dengan nama collection yang diinginkan.Secara default nama collection nya adalah test
+- Untuk <password> itu diganti dengan password mongodb kita.Contoh : mongodb+srv://kielfernandes:fyRH2wjxsjIo3nw6@cluster0.fuxh3ps.mongodb.net/test
+- Untuk bisa melihat password kita bisa pergi ke bagian : Database Access
+- Lalu pergi ke username yang kita inginkan.
+- Disana ada tulisan Edit,klik itu.
+- Pergi ke Edit Password
+- Lalu Klik Autogenerate
+- Lalu copy dan jangan lupa update User.
+- Kemudian Password yang kita copy barusan itu kita gantikan dengan <password> yang ini.
+
+
+2.Express
+- Untuk menyimpan data mongoDb yang sudah kita buat diatas kita bisa menyimpan datanya di file ".env"
+- Lalu kita letakkan di variabel.Contoh : DATABASE_URL = mongodb+srv://kielfernandes:fyRH2wjxsjIo3nw6@cluster0.fuxh3ps.mongodb.net/test
+- Nah langkah ini kita masukan ke dalam bagian express Oleh karena itu kita bisa menginstall expressnya dulu seperti penjelasan di 9RestfulApiExpress di folder Backend.
+- Jika sudah melakukan langkah pembuatan express kita bisa meletakan file .env nya di bagian express tersebut.
+- Selanjutnya kita require file .env dan disimpan di js express yang sudah kita buat tersebut.
+
+
+
+
+2.Membuat file .env
+=> Sebuah file yang akan menangkap Database URL dari mongoose kita.
+Contoh :
+DATABASE_URL = mongodb+srv://kiel_fernandes11:SzAIcGeMTjqlI5We@cluster1.93sejfz.mongodb.net/namabebas
+
+
+
+3.Membuat file index
+=> Index ini merupakan tempat utama kita dalam menjalankan fungsi dari mongodb.
+Cth :
+require("dotenv").config()
+const express = require("express");
+const mongoose = require("mongoose");
+const mongoString = process.env.DATABASE_URL;
+const app = express();
+const cors = require("cors")
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+const bioRute = require("./rute")
+const userRute = require("./auth/register")
+
+app.use(cors())
+
+//Koneksi ke mongodb
+mongoose.connect(mongoString);
+const db = mongoose.connection;
+
+db.once("connected",() => {
+    console.log("Database connected")
+})
+
+db.on("error",(err) => {
+    console.log(err)
+})
+//Menambah data
+app.use("/data",bioRute)
+
+//Register Data
+app.use("/auth",userRute)
+
+app.listen(3001,() => {
+    console.log("Server sudah berjalan")
+})
+
+
+
+4.Membuat schema 
+=> Selanjutnya,kita memnbuat schema,hal apa saja aturan dalam membuat sebuah nilai.Schema adalah struktur data yang menggambarkan bagaimana dokumen-dokumen dalam koleksi (collection) MongoDB tertentu harus diorganisir. Schema ini menentukan jenis data yang diharapkan untuk setiap bidang (field) dalam dokumen dan mengatur validasi serta beberapa opsi lainnya terkait dengan cara data disimpan dalam database.
+
+Cth :
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+    nama : {
+        type : String,
+        required : true
+    },
+    email : {
+        type : String,
+        required : true,
+        unique : true
+    },
+    umur : {
+        type : Number
+    }
+})
+
+module.exports = mongoose.model("Biodata",userSchema);
+
+
+5.Membuat rute
+=> Selanjutnya kita membuat rute untuk setiap data kita,seperti get,put,post dan delete.Pastinya rute ini juga harus terhubung dengan skema sebelumnya kita buat.
+Cth :
+const express = require("express");
+const rute = express.Router();
+const bioData = require("./schma");
+
+rute.get("/getData", async (req,res) => {
+    try{
+        const user = await bioData.find();
+        res.status(200).json(user);
+    }catch(err){
+        res.status(404).json({message : "Data tidak ditemukan"})
+    }
+})
+
+rute.get("/getData/:id",async(req,res) => {
+    try{
+        const id = req.params.id;   
+        const dtId = await bioData.findById(id)
+        if(!dtId){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(200).json(dtId)
+    }catch(err){
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+rute.post("/postData",async (req,res) =>{
+    try{
+        const user = new bioData(req.body);
+        const saveData = await user.save();
+        res.status(201).json(saveData)
+    }catch(err){
+        res.status(409).json({message : "Tidak bisa menambah data"})
+    }
+})
+
+rute.patch("/updateData/:id",async (req,res) => {
+    try{
+        const updData = await bioData.findByIdAndUpdate(
+            req.params.id,req.body,{new : true}
+        )
+        if(!updData){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(202).json(updData)
+    }catch(err){
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+rute.delete("/delDt/:id",async(req,res) => {
+    try{
+        const id = req.params.id
+        const delData = await bioData.findByIdAndDelete(id);
+        if(!delData){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(200).json({message : "Data berhasil dihapus"})
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+module.exports = rute;
+
+
+6.Pastikan setiap module exports ini dimasukan ke dalam indeks.js biar dia bisa digunakan.
+
+7.Testing
+=> Selanjutnya kita bisa melakukan testing di postman atau dalam client thunder pada vscode.
+Caranya adalah kita pergi ke postman dan ke url nya.Lalu masukan lah : http://localhost:3000/data .Ini contohnya url nya sesuaikan dengan data yang ada pada index.js dan juga port nya sesuaikan lagi.
+
+
+8.Jika semua berhasil  maka kita bisa lanjut ke frontendnya.
+
+
+2.Frontend
+=> Buatlah file frontend dalam reactjs.Disini kita akan membuat yang sederhana,yaitu CRUD.Juga ini menggunakan tailwind sebagai pengganti css nya.
+
+
+1.Cara membuat React :
+a.Menggunakan CMD
+- Buka cmd => windows + r
+- Masuk ke dalam folder yang akan menyimpan react
+- ketik : npx create-react-app (namafilereact) 
+   cth : npx create-react-app reactlearn
+- ketik lagi : cd my-app
+
+
+2.Cara upgrade npm :
+- ketik di cmd : npm install --global --production npm-windows-upgrade
+
+3.Cara memulai React :
+- Ketika kita sudah membuat folder react dalam cmd sebelumnya,kita bisa membuka
+  folder react di dalam vscode.
+- kita masuk ke terminal 
+- Kita masuk ke dalam folder react yang dibuat sebelumnnya
+- Lalu ketik : npm start
+- Ketika sudah masuk ke dalam file react di vscode pilih folder "src"
+- lalu pilih app.js
+- Nah di dalam div classname="App" kita akan memulai project.
+
+Tambahan : 
+
+Install : axios react-router-dom tailwind,
+Kode :
+npm i axios react-router-dom
+
+
+
+Cth :
+1.add.jsx :
+import { useState } from "react";
+import "../dist/output.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const TambahUpdate = () => {
+    const [nama,setNama] = useState("");
+    const [email,setEmail] = useState("");
+    const [umur,setUmur] = useState("");
+    const navigasi = useNavigate();
+    
+
+    const Kirim = () => {
+        const data = {
+            nama : nama,
+            email : email,
+            umur : umur
+        }
+        axios.post("http://localhost:3001/data/postData",data)
+        .then(res => {
+            setNama("")
+            setEmail("")
+            setUmur("")
+            navigasi("/")
+        })
+    }
+
+    return(
+        <div className=" p-3 container mx-auto flex justify-center">
+            <div className=" bg-purple-300 w-1/2 p-5 mt-24">
+                <input type="text" placeholder="Nama..." className="p-1 w-full" value={nama} onChange={(e) => setNama(e.target.value)} />
+                <br /><br />
+                <input type="email" placeholder="Email..." className="p-1 w-full" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                <br/><br />
+                <input type="number" placeholder="Umur..." className="p-1 w-full" value={umur} onChange={(e) => setUmur(e.target.value)} />
+                <button className=" bg-green-400 mt-6 block mx-auto px-4 hover:bg-green-500" onClick={Kirim}>Kirim</button>
+            </div>
+        </div>
+    )
+}
+
+export default TambahUpdate;
+
+
+
+2.home.jsx :
+import { useEffect, useState } from "react";
+import axios from "axios";
+import "../dist/output.css";
+import { useNavigate } from "react-router-dom";
+
+const Home = () => {
+    const [data,setData] = useState();
+    const [loading,setLoading] = useState(true)
+    const navigasi = useNavigate();
+   
+    const getData = async () => {
+        try{
+            //Kirim permintaan Get dengan token dalam header
+          axios.get("http://localhost:3001/data/getData")
+.then(res => {
+            setData(res.data)
+            setLoading(false)
+
+})
+
+        }catch(err){
+            console.error("Gagal mengambil data")
+            setLoading(false)
+        }        
+    }
+
+    //Tambah Data
+    const tambahDt = () => {
+        navigasi("/tambah")
+    }
+
+    //Edit Data
+    const editData = (id) => {
+        navigasi(`/editData/${id}`)
+    }
+
+    //Menghapus Data
+    const deleteData = (id) => {
+        axios.delete(`http://localhost:3001/data/delDt/${id}`)
+        .then(res => {
+            getData()
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    //Use Effect
+    useEffect(() => {
+        getData();
+    },[])
+    
+    if(loading){
+        return <p>Loading...</p>
+    }
+
+    return(
+        <div className="p-2 container mx-auto">
+            {data.map(dt => (
+                <div key={dt._id} className=" bg-purple-200
+                 p-2 mt-5 flex justify-between" >
+                    <div>
+                        <p>Nama : {dt.nama}</p>
+                        <p>Email : {dt.email}</p>
+                        <p>Umur : {dt.umur}</p>
+                    </div>
+                    <div className="m-5">
+                        <button className=" bg-gray-200 px-4 mx-3 rounded-lg hover:bg-gray-300" onClick={() => editData(dt._id)}>Edit</button>
+                        <button className=" bg-red-400 px-4 rounded-lg hover:bg-red-500" onClick={() => deleteData(dt._id)}>Hapus</button>
+                    </div>
+                </div>
+            ))}
+            <button className=" bg-green-300 mt-5 block mx-auto px-2 rounded-lg hover:bg-green-500" onClick={tambahDt}>Tambah</button>
+        </div>
+    )
+}
+
+export default Home;
+
+
+
+3.edit.jsx :
+import { useEffect, useState } from "react";
+import "../dist/output.css";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+
+const EditData = () => {
+    const [nama,setNama] = useState("");
+    const [email,setEmail] = useState("");
+    const [umur,setUmur] = useState("");
+    const navigasi = useNavigate();
+    const {id} = useParams();
+    
+
+    const Kirim = () => {
+        const data = {
+            nama : nama,
+            email : email,
+            umur : umur
+        }
+        axios.patch(`http://localhost:3001/data/updateData/${id}`,data)
+        .then(res => {
+            setNama("")
+            setEmail("")
+            setUmur("")
+            navigasi("/")
+        })
+    }
+
+    useEffect(() => {
+        axios.get(`http://localhost:3001/data/getData/${id}`)
+        .then(res => {
+            setNama(res.data.nama)
+            setEmail(res.data.email)
+            setUmur(res.data.umur)
+        })
+    },[id])
+
+    return(
+        <div className=" p-3 container mx-auto flex justify-center">
+            <div className=" bg-purple-300 w-1/2 p-5 mt-24">
+                <input type="text" placeholder="Nama..." className="p-1 w-full" value={nama} onChange={(e) => setNama(e.target.value)} />
+                <br /><br />
+                <input type="email" placeholder="Email..." className="p-1 w-full" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                <br/><br />
+                <input type="number" placeholder="Umur..." className="p-1 w-full" value={umur} onChange={(e) => setUmur(e.target.value)} />
+                <button className=" bg-green-400 mt-6 block mx-auto px-4 hover:bg-green-500" onClick={Kirim}>Kirim</button>
+            </div>
+        </div>
+    )
+}
+
+export default EditData;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cara menambahkan login,register untuk backend dan frontend.
+
+1.backend 
+=> 1.Pertama kita membuat Schema untuk userLogin,mulai dari nama,email,password,dll.
+Cth : 
+const mongoose = require('mongoose')
+
+const userSchema = mongoose.Schema({
+  nama : {
+	type : String,
+	required : true,
+	max : 255
+	},
+   email : {
+	type : String,
+	required : true,
+	max : 100
+	},
+   password : {
+	type : String,
+	required : true,
+	min : 6,
+	max : 1024
+	},
+   createdAt : {
+	type : Date,
+	default : Date.now
+	},
+})
+
+module.exports = mongoose.model('User',userSchema)
+
+
+2.Kedua kita buat post terlebih dahulu yang dimana nanti data yang baru akan di post ke dalam database khusus login.
+Cth : 
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+
+//Register
+router.post("/register",async(req,res) => {
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : req.body.password
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+module.exports = router;
+
+
+3.Lalu kita export lah Rute nomor 2 ini kedalam index utamanya.
+Cth :
+const userRoutes = require('./importRoutes')
+
+app.use('contoh/user',userRoutes)
+
+
+
+4.Nah selanjutnya,kita ubahlah passwordnya ini atau kita enkripsi passwordnya menjadi karakter random.
+
+Package yang akan digunakan adalah bcryptjs.bcryptjs adalah sebuah pustaka atau modul yang digunakan untuk mengenkripsi dan memverifikasi kata sandi (password) dalam bahasa pemrograman JavaScript. 
+
+Caranya : npm install bcryptjs
+
+=> Kemudian kita panggilah packagenya ini kedalam rute post pada userLogin.Sebelum user nge-post data nya,password yang dibuat oleh user itu terlebih dahulu di enkripsi menjadi sebuah karakter random,sebelum dimasukan ke dalam database.
+
+Contoh : 
+const bcrypt = require('bcryptjs')
+
+router.post("/register",async(req,res) => {
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+PENJELASAN : 
+1.genSalt() => genSalt() adalah sebuah fungsi dari modul bcryptjs yang digunakan untuk menghasilkan "salt" yang akan digunakan dalam proses penghash-an password.Salt adalah string acak yang digunakan untuk menambahkan entropi pada password sebelum dihash.
+
+Fungsi genSalt() menerima dua parameter:
+A.Rounds => Angka yang menentukan seberapa lama algoritma hashing dijalankan. Semakin tinggi angka rounds, semakin lama waktu yang dibutuhkan untuk menghasilkan salt dan hash, sehingga semakin sulit bagi penyerang untuk mencoba menebak password dengan serangan brute force. Namun, nilai yang terlalu tinggi juga dapat membuat proses hashing menjadi lebih lambat, yang bisa berpengaruh pada performa aplikasi Anda.
+
+B.Callback => Fungsi callback yang akan dipanggil setelah salt berhasil di-generate. Biasanya, fungsi ini digunakan untuk melakukan hashing password setelah salt selesai dibuat.
+
+Contoh : const bcrypt = require('bcryptjs');
+const password = 'password123';
+
+bcrypt.genSalt(10, (err, salt) => {
+  if (err) throw err;
+  
+  bcrypt.hash(password, salt, (err, hash) => {
+    if (err) throw err;
+    console.log('Password yang di-hash:', hash);
+  });
+});
+
+=> Untuk callback itu opsional
+
+
+2.hash() => Fungsi ini digunakan untuk menghash password dengan menggunakan salt yang telah dihasilkan sebelumnya. Fungsi hash() menerima tiga parameter: data (data yang akan dihash, dalam kasus ini, password), salt (salt yang telah dihasilkan sebelumnya), dan callback (fungsi untuk menangani hasil hash yang dihasilkan secara asinkron).
+
+Cth : 
+const bcrypt = require('bcryptjs');
+const password = 'password123';
+const saltRounds = 10;
+
+bcrypt.genSalt(saltRounds, (err, salt) => {
+  if (err) throw err;
+
+  bcrypt.hash(password, salt, (err, hash) => {
+    if (err) throw err;
+    console.log('Password yang di-hash:', hash);
+  });
+});
+
+=> Untuk callback itu opsional
+
+
+3.compare(password,hash,callback) => Fungsi ini digunakan untuk membandingkan password yang dimasukkan oleh pengguna dengan hash yang tersimpan di database. Fungsi ini akan membandingkan password yang diberikan dengan hash, dan jika cocok, akan memanggil callback dengan parameter true, dan false jika tidak cocok.
+Contoh : 
+const bcrypt = require('bcryptjs');
+const password = 'password123';
+const hashFromDB = '$2a$10$vGCMfNqUjECmH2Tva6By/.rRoEDK/hm9i92R3SzPWeaLcB6tvJSL2'; // Contoh hash dari password123
+
+bcrypt.compare(password, hashFromDB, (err, isMatch) => {
+  if (err) throw err;
+  if (isMatch) {
+    console.log('Password cocok!');
+  } else {
+    console.log('Password tidak cocok!');
+  }
+});
+
+
+
+
+5.Selanjutnya kita akan melakukan pengecekan terhadap email.Jika emailnya sudah ada dalam database maka kita kasih warning agar user menggunakan email yang lain.
+
+Contoh :
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+router.post("/register",async(req,res) => {
+
+  //Cek email 
+    const emailExist = await User.findOne({email : req.body.email})
+    if(emailExist) return res.status(400).json({
+	status : res.statusCode,
+	message : "Email sudah digunakan"
+    })
+  
+
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+PENJELASAN :
+1.findOne => findOne adalah salah satu metode dari MongoDB yang digunakan untuk melakukan pencarian atau query data dalam koleksi (collection) dokumen. Metode ini digunakan untuk mencari dokumen pertama yang sesuai dengan kriteria pencarian yang diberikan.
+
+Sintaks :
+ db.collection.findOne(query, projection);
+=> Ini jika kita mencarinya bukan pakai js,tapi langsung pakai mongodb.
+
+
+6.Selanjutnya kita melakukan validasi,ketika kita membuat user.Misalya email yang kita inputkan itu tidak sesuai format yang sebenarnya.Kita pakai package namanya : @hapi/joi.
+
+=> Pustaka @hapi/joi sangat populer dan sering digunakan untuk melakukan validasi data yang masuk ke dalam aplikasi web atau API sebelum data tersebut diproses lebih lanjut atau disimpan di database. Dengan menggunakan @hapi/joi, Anda dapat dengan mudah mendefinisikan skema atau aturan validasi untuk objek JavaScript, baik itu untuk request payload, parameter URL, atau data lainnya.
+
+=> Beberapa fitur dan kemampuan yang dimiliki oleh @hapi/joi antara lain:
+1.Validasi tipe data: Anda dapat mendefinisikan tipe data yang diharapkan untuk setiap field atau properti dalam objek, seperti string, number, boolean, array, dan lain-lain.
+2.Validasi nilai minimum dan maksimum: Anda dapat menentukan nilai minimum dan maksimum untuk field berbasis numerik.
+3.Validasi string: Anda dapat mendefinisikan panjang minimal dan maksimal, atau menggunakan regular expression untuk memvalidasi string.
+4.Validasi array: Anda dapat menentukan panjang minimal dan maksimal, serta jenis data yang diharapkan dalam array.
+5.Validasi objek bersarang: Anda dapat dengan mudah melakukan validasi untuk objek yang memiliki struktur yang bersarang atau kompleks.
+6.Pesan kustom: Anda dapat menentukan pesan kustom yang akan ditampilkan jika validasi gagal.
+
+
+Cara instal : npm install @hapi/joi
+
+- Pertama kita bisa saja langsung buat validasi di file yang sama,tapi alangkah baiknya kita buat di file terpisah,biar rapi.Nah kita buat ada 2 validasi,yaitu pada saat register dan login.
+
+Contoh :
+const Joi = require('@hapi/joi')
+
+const registerValidation = (data) => {
+ const schema = Joi.object({
+   nama : Joi.string().required()
+   email : Joi.string().email().required()
+   password : Joi.string().min(6).required()
+  })
+ 
+ return schema.validate(data)
+
+}
+
+PENJELASAN : 
+- Joi.string().required() => Artinya data yang wajib adalah string,jadi jika user mengisi misalnya numerik maka dia akan warning dan menyuruh user untuk masukan karakter string,kemudian ini bentuknya adalah required atau wajib diisi.
+- Joi.string().min(6) => Artinya password wajib diisi dengan tipe string dan minimal ada 6 karakter.Jika kurang dari situ maka akan ada warning.
+- schema.validate => Dalam Joi, Anda mendefinisikan skema (schema) yang menggambarkan aturan atau struktur data yang valid. Setelah Anda mendefinisikan skema, Anda dapat menggunakan metode schema.validate() untuk memeriksa apakah data yang diberikan sesuai dengan skema yang ditentukan.
+
+=> Selanjutnya kita buat juga untuk loginnya. 
+
+const loginValidation = (data) => {
+ const schema = Joi.object({
+   email : Joi.string().email().required()
+   password : Joi.string().min(6).required()
+  })
+ 
+ return schema.validate(data)
+}
+
+module.exports.registerValidation = registerValidation;
+module.exports.loginValidation = loginValidation;
+
+
+
+
+
+6.Selanjutnya kita gunakan registerValidation dan loginValidation kedalam file midleware post sebelumnya.
+
+- Pertama kita import terlebih dahulu registerValidation dan LoginValidation.
+Cth :
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+//Import Validation
+const {registerValidation} = require('../fileValidation')
+
+router.post("/register",async(req,res) => {
+
+  // const validation = registerValidation(req.body)
+  // res.send(validation)
+
+  // !!!Matikan semua yang ada dibawah lalu jalankan diatas agar send nya bisa berfungsi
+  
+
+  const {error} = registerValidation(req.body)
+
+  if(error) return res.status(400).json({
+    status : res.statusCode,
+    message : error.details[0].message
+  })
+
+
+  //Cek email 
+    const emailExist = await User.findOne({email : req.body.email})
+    if(emailExist) return res.status(400).json({
+	status : res.statusCode,
+	message : "Email sudah digunakan"
+    })
+  
+
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+===========================================================
+
+
+7.Selanjutnya kita membuat yang login.
+
+=> Kita membuat di file yang sama juga. tapi kita buat untuk router baru.
+
+Cth :
+router.post('/login',async(req,res) => {
+  //if email exist
+  const user = await User.findOne({email : req.body.email})
+  if(!user) return res.status(400).json({
+   status : res.statusCode,
+   message : "Email Salah"
+  })
+
+  //Cek Password
+  const validPwd = await bcrypt.compare(req.body.password,user.password)
+  if(!validPwd) return res.status(400).json({
+   status : res.statusCode,
+   message : "Password anda Salah"
+  })
+  
+ res.send("berhasil login")
+
+})
+
+
+
+8.Terakhir setelah berhasil login,kita akan membuat token dengan menggunakan JWT.
+
+Cara install : npm install jsonwebtoken
+
+=> Kita tambahkan jwt dalam file midleware sebelumnya.
+Cth : const jwt = require('jsonwebtoken');
+
+
+Lalu tambhakan token dalam post login tadi.
+
+
+router.post('/login',async(req,res) => {
+  //if email exist
+  const user = await User.findOne({email : req.body.email})
+  if(!user) return res.status(400).json({
+   status : res.statusCode,
+   message : "Email Salah"
+  })
+
+  //Cek Password
+  const validPwd = await bcrypt.compare(req.body.password,user.password)
+  if(!validPwd) return res.status(400).json({
+   status : res.statusCode,
+   message : "Password anda Salah"
+  })
+  
+
+  //Membuat token menggunakan JWT
+  const token = jwt.sign({_id : user._id},process.env.SECRET_KEY) 
+  res.header('nama-token',token).json({
+   token : token
+  })
+
+})
+
+PENJELASAN :
+1.jwt.sign() => dalah metode yang digunakan untuk membuat token JSON Web Token (JWT) di Node.js. JWT adalah standar terbuka (RFC 7519) yang digunakan untuk mewakili klaim (claims) antara dua pihak secara aman. Token JWT terdiri dari tiga bagian, yaitu header, payload (klaim), dan tanda tangan (signature).
+
+2.Kita bisa membuat Secret_key dalam file .env yang dimana isinya bebas.
+Contoh : 
+SECRET_KEY = akraeiraermamrnarnaer
+
+
+
+
+9.Selanjutnya kita pasang autentikasi untuk setiap rootnya.
+
+- Pertama kita membuat sebuah file baru dengan nama bebas.js
+- Dalam file tersebut kita panggil jwt nya
+Cth : 
+const jwt = require('jsonwebtoken')
+
+const verifyToken = (req,res,next) => {
+  const token = req.header('nama-token')
+
+  if(!token) return   res.status(400).json({
+     status : res.statusCode,
+     message : "Access Denied!"
+   })
+  try{
+  const verified = jwt.verify(token,process.env.SECRET_KEY)
+  req.user = verified
+  next()
+  }catch(err){
+   res.status(400).json({
+     status : res.statusCode,
+     message : "Invalid Token !"
+   })
+  }
+}
+
+module.exports = verifyToken
+
+
+Tes di file lain yang ada Rute CRUD nya :
+
+//1.Get Data
+rute.get("/getData",verifyToken,async(req,res) => {
+    try{
+        const getData = await schemaHome.find()
+        res.status(200).json(getData)
+    }catch(err){
+        res.status(404).json({message : "Data tidak ditemukan"})
+    }
+})
+
+
+
+
+PENJELASAN :
+- jwt.verify() => jwt.verify() adalah metode yang digunakan untuk memverifikasi dan memecahkan token JSON Web Token (JWT) yang diterima di Node.js. JWT adalah standar terbuka (RFC 7519) yang digunakan untuk mewakili klaim (claims) antara dua pihak secara aman. Token JWT terdiri dari tiga bagian, yaitu header, payload (klaim), dan tanda tangan (signature).
+
+
+
+10.Selanjutnya kita bisa pasang di dalam Midleware di file lain.Misalnya untuk midleware getData pemasaran dalam database pemasaran barang.Jika bisa,pasangkan di semua rute.
+
+Contoh : 
+
+const verifyToken = require('../letakfileVerify')
+
+route.get("/dataTes",verifyToken,async(req,res) => {
+    try{
+        const data = await DataTes.find()
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err)
+    }
+})
+
+
+
+
+11.Contoh lengkap untuk backend :
+1.File schemaAuth.js
+const mongoose = require("mongoose");
+
+const userSchema = mongoose.Schema({
+    username : {
+        type : String,
+        required : true,
+        max : 255
+    },
+    email : {
+        type : String,
+        required : true,
+        max : 100
+    },
+    password : {
+        type : String,
+        required : true,
+        min : 6,
+        max : 1024
+    },
+    createdAt : {
+        type : Date,
+        default : Date.now
+    }
+})
+
+module.exports = mongoose.model("User2",userSchema)
+
+
+
+2.File auth.js
+const express = require("express");
+const router = express.Router()
+const userShema = require("./schemaUser");
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+
+// Middleware untuk memverifikasi token
+const verifyToken = (req, res, next) => {
+    const token = req.header("token-kedua");
+  
+    if (!token) return res.status(404).json({ message: "Token tidak ditemukan" });
+  
+    try {
+      jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(401).json({ message: "Token tidak valid" });
+        req.user = decoded;
+        next();
+      });
+    } catch (err) {
+      res.status(400).json({ message: "Token invalid" });
+    }
+  };
+  
+
+
+//1.Register
+router.post("/register",async (req,res) => {
+    
+    //Hash Password
+    const salt = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(req.body.password,salt)
+    
+    //Cek email
+    const emailExist = await userShema.findOne({email : req.body.email})
+    if(emailExist) return res.status(400).json({message : "Email sudah digunakan"})
+
+    const user = new userShema({
+        username : req.body.username,
+        email : req.body.email,
+        password : hashPassword
+    })
+    try{
+        const saveUser = await user.save()
+        res.json(saveUser)
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+router.get("/getUser",verifyToken,async (req,res) => {
+    try{    
+        const user = await userShema.findById(req.user._id);
+
+        //Pastikan pengguna ditemukan
+        if(!user) return res.status(404).json({message : "Pengguna tidak ditemukan"})
+
+        //Kirim informasi pengguna yang relavan,termasuk properti
+        res.status(200).json({
+            _id : user._id,
+            username : user.username,
+            email : user.email
+        })
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message : "Terjadi kesalahan di server"})
+    }
+})
+
+router.post("/login",async (req,res) => {
+    try{
+        //If email exist
+        const user = await userShema.findOne({email : req.body.email})
+        if(!user) return res.status(404).json({message : "Email salah"})
+
+        //Cek password
+        const validPwd = await bcrypt.compare(req.body.password,user.password)
+        if(!validPwd) return res.status(400).json({message : "Password salah"})
+
+        //Membuat token menggunakan jwt
+        const token = jwt.sign({_id : user._id},process.env.SECRET_KEY)
+        res.header("token-kedua",token).json({
+            token : token
+        })
+
+    }catch(err){
+        res.status(500).json({message : "Terjadi kesalahan di server"})
+    }
+})
+
+module.exports = router;
+
+
+3.file .env
+DATABASE_URL = "mongodb+srv://kielfrndes2:WcoF4itcpG5ETrUL@cluster0.tmoy0uj.mongodb.net/"
+
+SECRET_KEY = "Ini5Hsi4akraeiraer@587mrnarnaer"
+
+
+4.file rute.js
+const express = require("express");
+const rute = express.Router();
+const bioData = require("./schma");
+const jwt = require("jsonwebtoken");
+
+const verifyToken = (req,res,next) => {
+    const token = req.header("token-kedua");
+
+    if(!token) return res.status(404).json({message : "Token tidak ditemukan"});
+
+    try{
+        const verified = jwt.verify(token,process.env.SECRET_KEY);
+        req.user = verified
+        next()
+    }catch(err){
+        res.status(400).json({message : "Token invalid"})
+    }
+}
+
+rute.get("/getData",verifyToken, async (req,res) => {
+    try{
+        const user = await bioData.find();
+        res.status(200).json(user);
+    }catch(err){
+        res.status(404).json({message : "Data tidak ditemukan"})
+    }
+})
+
+rute.get("/getData/:id",async(req,res) => {
+    try{
+        const id = req.params.id;   
+        const dtId = await bioData.findById(id)
+        if(!dtId){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(200).json(dtId)
+    }catch(err){
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+rute.post("/postData",async (req,res) =>{
+    try{
+        const user = new bioData(req.body);
+        const saveData = await user.save();
+        res.status(201).json(saveData)
+    }catch(err){
+        res.status(409).json({message : "Tidak bisa menambah data"})
+    }
+})
+
+rute.patch("/updateData/:id",async (req,res) => {
+    try{
+        const updData = await bioData.findByIdAndUpdate(
+            req.params.id,req.body,{new : true}
+        )
+        if(!updData){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(202).json(updData)
+    }catch(err){
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+rute.delete("/delDt/:id",async(req,res) => {
+    try{
+        const id = req.params.id
+        const delData = await bioData.findByIdAndDelete(id);
+        if(!delData){
+            res.status(404).json({message : "Data tidak ditemukan"})
+        }
+        res.status(200).json({message : "Data berhasil dihapus"})
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message : "Terjadi kesalahan server"})
+    }
+})
+
+module.exports = rute;
+
+
+
+5.File index.js
+require("dotenv").config()
+const express = require("express");
+const mongoose = require("mongoose");
+const mongoString = process.env.DATABASE_URL;
+const app = express();
+const cors = require("cors")
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+const bioRute = require("./rute")
+const userRute = require("./auth/register")
+
+app.use(cors())
+
+//Koneksi ke mongodb
+mongoose.connect(mongoString);
+const db = mongoose.connection;
+
+db.once("connected",() => {
+    console.log("Database connected")
+})
+
+db.on("error",(err) => {
+    console.log(err)
+})
+//Menambah data
+app.use("/data",bioRute)
+
+//Register Data
+app.use("/auth",userRute)
+
+app.listen(3001,() => {
+    console.log("Server sudah berjalan")
+})
+
+
+
+
+Frontend
+1.login.jsx
+import { useState } from "react";
+import "../dist/output.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const Login = () => {
+    const [email,setEmail] = useState("")
+    const [password,setPassword] = useState("")
+    const navigasi = useNavigate();
+
+    const login = async() => {
+        try{
+            //1.Kirim permintaan post untuk login
+            const res = await axios.post("http://localhost:3001/auth/login",{email,password});
+            const token = res.data.token
+
+            //2.Simpan token di localstorage
+            localStorage.setItem("token-kedua",token);
+
+            //3.Set header untuk permintaan berikutnya
+            const config = {
+                headers : {
+                    'token-kedua' : token
+                }
+            }
+
+            //4.Kirim permintaan Get dengan header yang berisi token
+            const response = await axios.get("http://localhost:3001/data/getData",config)
+
+            //Navigasi ke halaman selanjutnya
+            navigasi("/home")
+            
+        }catch(err){
+            alert(err.response.data.message)
+        }
+    }
+
+    //Register
+    const Register = () => {
+        navigasi("/register")
+    }
+
+
+    return(
+        <div className=" bg-purple-200 container mx-auto  p-2 mt-20 w-3/4">
+            <div className="flex flex-col w-3/4 mx-auto">
+                <input type="email" placeholder="Email" className="m-2 p-2" onChange={e => setEmail(e.target.value)}/>
+                <input type="password" placeholder="Password" className="m-2 p-2" onChange={e => setPassword(e.target.value)}/>
+           </div>
+           <button className=" bg-green-300 block px-3 mt-3 mx-auto hover:bg-green-500" onClick={login}>Login</button>
+           <button className=" bg-gray-400 block px-3 mt-3 mx-auto hover:bg-gray-500" onClick={Register}>Register</button>
+        </div>
+    )
+}
+
+export default Login;
+
+
+
+2.register.jsx
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const Register = () => {
+    const [nama,setNama] = useState("")
+    const [email,setEmail] = useState("")
+    const [password,setPassword] = useState("")
+    const navigasi = useNavigate()
+
+    const Daftar = () => {
+        const data = {
+            username : nama,
+            email : email,
+            password : password
+        }
+        axios.post("http://localhost:3001/auth/register",data)
+        .then(res => {
+            navigasi("/")
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    return(
+        <div className=" p-3 container mx-auto flex justify-center">
+            <div className=" bg-purple-300 w-1/2 p-5 mt-24">
+                <input type="text" placeholder="Nama..." className="p-1 w-full" value={nama} onChange={(e) => setNama(e.target.value)} />
+                <br /><br />
+                <input type="email" placeholder="Email..." className="p-1 w-full" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                <br/><br />
+                <input type="number" placeholder="Umur..." className="p-1 w-full" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button className=" bg-green-400 mt-6 block mx-auto px-4 hover:bg-green-500" onClick={Daftar}>Daftar</button>
+            </div>
+    </div>
+    )
+}
+
+export default Register;
+
+
+
+
+Nah agar kita bisa mendapatkan data dari get Data maka kita set lah Itemnya di halaman yang akan diambil datanya.
+
+3.home.jsx
+import { useEffect, useState } from "react";
+import axios from "axios";
+import "../dist/output.css";
+import { useNavigate } from "react-router-dom";
+
+const Home = () => {
+    const [data,setData] = useState();
+    const [loading,setLoading] = useState(true)
+    const navigasi = useNavigate();
+    const [nama,Setusername] = useState("")
+    const [email,SetEmail] = useState("")
+
+    const getData = async () => {
+        try{
+            //1.Ambil token dari Local storage
+            const token = localStorage.getItem("token-kedua")
+            if(!token){
+                console.error("Token tidak ditemukan")
+                setLoading(false)
+                return;
+            }
+
+            //set header dengan token
+            const config = {
+                headers : {"token-kedua" : token}
+            }
+
+            //Kirim permintaan Get dengan token dalam header
+            const response = await axios.get("http://localhost:3001/data/getData",config)
+            setData(response.data)
+            setLoading(false)
+
+        }catch(err){
+            console.error("Gagal mengambil data")
+            setLoading(false)
+        }        
+    }
+
+    //Mengambil username dari mongodb
+const getUsername = async () => {
+    try {
+        // 1. Ambil token dari Local storage
+        const token = localStorage.getItem("token-kedua");
+        if (!token) {
+            console.error("Token tidak ditemukan");
+            setLoading(false);
+            return;
+        }
+
+        // 2. Set header dengan token
+        const config = {
+            headers: { "token-kedua": token }
+        }
+
+        // 3. Kirim permintaan Get dengan token dalam header
+        const response = await axios.get("http://localhost:3001/auth/getUser", config);
+        console.log(response.data.username); // Mengakses username dari respons
+        Setusername(response.data.username)
+        SetEmail(response.data.email)
+    } catch (err) {
+        console.error("Gagal mengambil username");
+    }
+}
+
+    //Tambah Data
+    const tambahDt = () => {
+        navigasi("/tambah")
+    }
+
+    //Edit Data
+    const editData = (id) => {
+        navigasi(`/editData/${id}`)
+    }
+
+    //Menghapus Data
+    const deleteData = (id) => {
+        axios.delete(`http://localhost:3001/data/delDt/${id}`)
+        .then(res => {
+            getData()
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    //Logout
+    const logout = () => {
+        //Hapus token dari localstorage
+        localStorage.removeItem("token-kedua")
+        navigasi("/")
+    }
+
+    //Use Effect
+    useEffect(() => {
+        getData();
+        getUsername()
+    },[])
+    
+    if(loading){
+        return <p>Loading...</p>
+    }
+
+    return(
+        <div className="p-2 container mx-auto">
+            <button className=" bg-gray-400 p-2 hover:bg-gray-500" onClick={logout}>Logout</button>
+            <p>Selamat Datang : {nama}</p>
+            <p>Email : {email}</p>
+            {data.map(dt => (
+                <div key={dt._id} className=" bg-purple-200
+                 p-2 mt-5 flex justify-between" >
+                    <div>
+                        <p>Nama : {dt.nama}</p>
+                        <p>Email : {dt.email}</p>
+                        <p>Umur : {dt.umur}</p>
+                    </div>
+                    <div className="m-5">
+                        <button className=" bg-gray-200 px-4 mx-3 rounded-lg hover:bg-gray-300" onClick={() => editData(dt._id)}>Edit</button>
+                        <button className=" bg-red-400 px-4 rounded-lg hover:bg-red-500" onClick={() => deleteData(dt._id)}>Hapus</button>
+                    </div>
+                </div>
+            ))}
+            <button className=" bg-green-300 mt-5 block mx-auto px-2 rounded-lg hover:bg-green-500" onClick={tambahDt}>Tambah</button>
+        </div>
+    )
+}
+
+export default Home;
+
+
+
+
+TAMBAHAN :
+- Cara agar setiap collection pada database bisa berelasi.
+Cth :
+backend :
+Ini untuk schema rute authentication :
+const mongoose = require("mongoose");
+
+const SchemaAuth = mongoose.Schema({
+    username : {
+        type : String,
+        required : true,
+        max : 255
+    },
+    email : {
+        type : String,
+        required : true,
+        max : 100
+    },
+    password : {
+        type : String,
+        required : true,
+        min : 6,
+        max : 1024
+    },
+    createdAt : {
+        type : Date,
+        default : Date.now()
+    },
+    tasks : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Task"
+    }]
+}) 
+
+module.exports = mongoose.model("User",SchemaAuth)
+
+
+
+
+Ini untuk Task Schema:
+const mongoose = require("mongoose")
+
+const TaskSchema = new mongoose.Schema({
+    title : {
+        type : String,
+        required : true
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    createdBy: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },
+})
+
+module.exports = mongoose.model("Task",TaskSchema)
+
+
+
+
+
+Ini untuk Rute task:
+
+const express = require("express")
+const rute = express.Router();
+const TaskSchema = require("./schemaTask")
+const jwt = require("jsonwebtoken")
+
+const verifyToken = (req,res,next) => {
+    const token = req.header("todo-token")
+
+    if(!token) return res.status(400).json({message : "Access Denied"})
+    try{
+        const verified = jwt.verify(token,process.env.SECRET_KEY)
+        req.user = verified
+        next()
+    }catch(err){
+        res.status(400).json({message : "Invalid Token"})
+    }
+}
+
+
+//1.Get Data
+rute.get("/getData",verifyToken,async(req,res) => {
+    try{
+        const userId = req.user._id;
+        const getData = await TaskSchema.find({createdBy : userId})
+        // res.status(200).json(getData)
+        res.send(getData)
+    }catch(err){
+        res.status(404).json({message : "Data tidak ditemukan"})
+    }
+})
+
+//2.Get by ID
+rute.get("/getData/:id",async(req,res) => {
+    try{
+        const id = req.params.id;
+        const cariById = await TaskSchema.findById(id)
+        res.status(200).json(cariById)
+    }catch(err){
+        res.status(404).json({message : "Data tidak ditemukan"})
+    }
+})
+
+//3.Post
+rute.post("/postData",verifyToken,async (req,res) => {
+    try{
+        const userId = req.user._id
+        const newTsk = new TaskSchema({
+            ...req.body,
+            createdBy : userId
+        });
+        const saveData = await newTsk.save();
+        res.status(200).json(saveData)
+    }catch(err){
+        console.log(err)
+        res.status(500).json({message : "Server sedang bermasalah"})
+    }
+})
+
+//4.Delete
+rute.delete("/delData/:id",async(req,res) => {
+    try{
+        const id = req.params.id;
+        const delData = await TaskSchema.findByIdAndDelete(id);
+        res.status(200).json({message : "Berhasil dihapus"})
+    }catch(err){
+        res.status(500).json({message : "Server sedang bermasalah"})
+    }
+}) 
+
+//5.Patch
+rute.patch("/updData/:id",async(req,res) => {
+    try{
+        const id = req.params.id
+        const body = req.body;
+        const updData = await TaskSchema.findByIdAndUpdate(id,body,{new : true})
+        res.status(200).json(updData)
+    }catch(err){
+        res.status(500).json({message : "Server sedang bermasalah"})
+    }
+    
+})
+ 
+module.exports = rute;
+
+
+
+
+Frontend :
+addTitle :
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const AddTitle = () => {
+    const [title,setTitle] = useState("");
+    const [desk,setDesk] = useState("")
+    const navigasi = useNavigate()
+    
+    const KirimData = async () => {
+        try{
+            //1.Ambil token dari local storage
+            const token = localStorage.getItem("todo-token");
+            if(!token) {
+                console.log("Token invalid")
+                return;
+            }
+
+            //2.Set header token 
+            const config = {
+                headers : {
+                    "todo-token" : token
+                }
+            }
+            const data = {
+                title : title,
+                description : desk
+            }
+            axios.post("http://localhost:3001/task/postData",data,config)
+            .then(() => {
+                navigasi("/desc")
+            })
+
+        }catch(err){
+            console.error(err)
+        }
+      
+    }
+
+    return(
+        <div className=" container mx-auto mt-5">
+            <div className="flex p-1 w-3/4 mx-auto flex-col">
+                <input type="text" placeholder="Title" className=" border border-black p-1 mb-2" onChange={(e) => setTitle(e.target.value)}/>
+                <textarea name="" id="" placeholder="Masukan Deskripsi" cols="30" rows="10" className=" resize-none p-1 border border-black" onChange={(e) => setDesk(e.target.value)}></textarea>
+            </div>
+            <button className=" bg-green-300 p-2 px-4 mt-5 block mx-auto hover:bg-green-400" onClick={KirimData}>Tambah</button>
+        </div>
+    )
+}
+
+export default AddTitle;
+
+
+
+getDesc.jsx :
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const GetDesc = () => {
+    const [data,setData] = useState(null);
+    const navigasi = useNavigate()
+    const [load,setLoad] = useState(true);
+
+    const getData = async () => {
+        try{
+            //1.Ambil Token dari localstorage
+            const token = localStorage.getItem("todo-token")
+
+            if(!token){
+                console.error("Token tidak ditemukan")
+                setLoad(false)
+                return;
+            }
+            
+            //Set header dengan token 
+            const config = {
+                headers : {"todo-token" : token}
+            }
+
+            //Kirim permintaan get dengan token dalam header
+            const response = await axios.get("http://localhost:3001/task/getData",config)
+            setData(response.data)
+            setLoad(false)
+        }catch(err){
+            console.error("Gagal mengambil data")
+            setLoad(false)
+        }
+    }
+
+    //Hapus
+    const Deldt = (id) => {
+        axios.delete(`http://localhost:3001/task/delData/${id}`)
+        .then(res => {
+            getData()
+        })
+    }
+
+
+    //logout
+    const logout = () => {
+        //Hapus token dari local storage
+        localStorage.removeItem("todo-token");
+        navigasi("/")
+    }
+    
+    useEffect(() => {
+        getData()
+    },[])
+
+
+    if(load){
+        return <p>Loading...</p>
+    }
+
+    return(
+        <div>
+             <button onClick={logout} className=" bg-gray-300 block px-4 py-2 mx-auto hover:bg-gray-500 mt-4">Logout</button>
+            {data && data.map(dt => (
+                <div key={dt._id} className=" bg-purple-200 m-2 p-2 relative">
+                    <div>
+                        <p>Title : {dt.title}</p>
+                        <p>Description : {dt.description}</p>
+                    </div>
+                    <div className="  absolute top-3 right-3">
+                        <button className="mr-2 p-2 bg-gray-200 px-4 hover:bg-gray-300">Edit</button>
+                        <button className="mr-2 p-2 bg-red-200 px-4 hover:bg-red-300" onClick={() => Deldt(dt._id)}>Hapus</button>
+                    </div>
+                </div>
+            ))}
+           <button className=" block mx-auto mt-4 bg-green-300 hover:bg-green-400 p-2 px-5" onClick={() => navigasi("/addTitle")}>+</button>
+        </div>
+    )
+}
+
+export default GetDesc;

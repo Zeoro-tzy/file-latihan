@@ -1,0 +1,803 @@
+Web Socket
+
+Link : 
+https://afiefafian95.medium.com/berkenalan-dengan-socket-io-1b9db2d983f6
+
+Cara install 
+1. Sisi Backend : 
+- mkdir my-socket-app
+cd my-socket-app
+npm init -y
+
+- npm install socket.io
+2. Sisi client : npm install socket.io-client
+
+Contoh :
+1. Backend 
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('message', (msg) => {
+    console.log('Message received: ' + msg);
+    io.emit('message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+server.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
+});
+
+
+
+2. Frontend
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Example</title>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>Socket.IO Example</h1>
+  <input id="messageInput" type="text" placeholder="Type a message...">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    socket.on('message', (msg) => {
+      console.log('Message from server:', msg);
+    });
+
+    function sendMessage() {
+      const message = document.getElementById('messageInput').value;
+      socket.emit('message', message);
+    }
+  </script>
+</body>
+</html>
+
+
+
+1.Web Socket
+=> WebSocket (WS) adalah sebuah protokol komunikasi komputer, dikenalkan pada awal sebagai TPC-based socket API di tahun 2008. Protokol ini memungkinkan untuk berkomunikasi secara 2 arah diatas 1 koneksi TCP. WebSocket membolehan interaksi antara client dengan server secara real-time. Dengan protokol ini dapat mengirim request secara terus menerus tanpa harus membuka koneksi untuk 1 koneksi seperti protokol HTTP.
+
+
+2.Perbandingan 
+    HTTP : Client hanya bisa mengirim request, dan server mengirim balik response ke client.
+
+    WebSocket : Ketika koneksi antara client dan server terhubung, maka kedua pihak dapat saling mengirim data tanpa membuka koneksi baru, sampai koneksi tersebut putus.
+
+Berikut beberapa kelebihan WebSocket dibandingkan menggunakan HTTP
+
+- Koneksi 2 arah secara asynchronous, baik client maupun server dapat mengirim pesan ke masing — masing tujuan secara langsung tanpa pihak yang menerima data harus request terlebih dahulu
+- Latency time yang sangat rendah
+- Stream data secara real-time
+
+Berikut aplikasi yang disarankan dibangun menggunakan koneksi WebSocket
+- Game online multiplayer
+- Aplikasi chatting / sosial media
+- Aplikasi kolaborasi realtime
+- Realtime notification
+- Aplikasi berbasis lokasi realtime seperti Gojek, Grab dan sejenisnya
+- Internet of Things (IoT)
+- Dan aplikasi yang membutuhkan koneksi real-time tanpa melakukan pooling request (looping request dengan jeda waktu tertentu secara terus menerus)
+
+
+3.Pengenalan Socket.io
+=> Socket.io adalah real-time engine opensource yang dibangun di atas Node.js. Dengan Socket.io kita dapat berkomunikasi secara real-time, dua arah dan komunikasi berbasis event.
+
+=> Dengan komunikasi berbasis event, kita tidak perlu request untuk mendapatkan data terbaru, yang perlu kita lakukan hanyalah listen / subcribe ke suatu topik. Jadi selama WebSocket tetap aktif dan listen ke suatu topik, jika terdapat data baru di topik tersebut, kita akan mendapatkan datanya secara otomatis.
+
+
+
+4.Lanjutan
+=> Penjelasan Singkat Istilah Dasar di Socket.io
+
+Socket.io dijadikan 2 bagian, yaitu
+
+    Server: Backend web
+    Client: Frontend web, Mobile, dll
+
+Baik server maupun client memiliki fungsi utama dan API yang kurang lebih sama, yaitu :
+
+    Event emitter, analogikan saja seperti orang berbicara tentang suatu hal/mengirim data dengan topik tertentu.
+    Event listener, sebagai pendengar atau penerima pesan dari suatu topik, sehingga antara client dengan server dapat menerima pesan dari kedua pihak.
+    Broadcast, merupakan fitur untuk mengirim data/pesan seperti event emitter, namun broadcast mengirim ke semua alamat socket yang aktif kecuali pengirimnya sendiri.
+
+
+
+
+5.Cara membuat Web Socket IO
+1.Instalasi socket.io
+=> Mulailah dengan menginstal socket.io pada server backend Anda. Buka terminal.
+Sintaks : npm install socket.io
+
+2.Membuat Server WebSocket:
+=> Di dalam berkas server Anda (biasanya server.js atau app.js), Anda perlu mengintegrasikan socket.io dengan server Express.
+Cth :
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const mongoose = require('mongoose');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// ... (koneksi ke MongoDB, definisi model, dll.)
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Contoh event: Mengirim pesan ke klien yang terhubung
+  socket.emit('welcome_message', 'Welcome to the WebSocket server!');
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+
+3.Menghubungkan React Frontend:
+=> Pada sisi frontend (React), Anda dapat menggunakan pustaka socket.io-client untuk menghubungkan klien ke server WebSocket. 
+Sintaks : npm install socket.io-client
+
+
+4.Menggunakan socket.io-client di React:
+=> Di komponen React, Anda dapat mengatur koneksi dan menghandle event-event WebSocket.
+Cth :
+import React, { useEffect } from 'react';
+import io from 'socket.io-client';
+
+const App = () => {
+  useEffect(() => {
+    const socket = io.connect('http://localhost:3001'); // Sesuaikan dengan URL server Anda
+
+    socket.on('welcome_message', (message) => {
+      console.log('Received:', message);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  return (
+    <div>
+      {/* Komponen React Anda */}
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+6. Penjelasan fungsi umum
+A. Server
+1. io.on 
+=> Pada sisi server digunakan untuk mendengarkan dan menangani event tertentu yang terjadi pada koneksi Socket.io.
+ Sintaks :  
+   io.on(event,callback)
+
+=> Event yang bisa digunakan :
+1. connection 
+=> Event ini adalah titik masuk utama untuk menangani klien yang baru terhubung ke server. Ketika event ini dipicu, server akan menerima objek socket yang merepresentasikan koneksi dari klien yang baru terhubung.
+
+=> Event connection terjadi saat:
+- Klien membuka koneksi WebSocket pertama kali ke server.
+- Klien berhasil terhubung kembali setelah putus (misalnya, karena masalah jaringan)
+
+Cth :
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  // Event 'disconnect' juga bawaan, digunakan saat klien terputus.
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+
+  // Event custom lainnya bisa ditangani di sini
+  socket.on('sendMessage', (message) => {
+    io.emit('receiveMessage', message);
+  });
+});
+
+=======================================================================
+
+2. disconnect 
+=> Event ini dipicu ketika klien terputus dari server.
+=> Terjadi ketika klien menutup browser, kehilangan koneksi jaringan, atau secara manual memutuskan koneksi.
+=> Fungsi: Berguna untuk membersihkan data atau mengelola status pengguna setelah mereka terputus.
+
+Cth :
+io.on('connection', (socket) => {
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+=======================================================================
+
+3. connect_error
+=> Event ini dipicu ketika ada kesalahan saat klien mencoba terhubung ke server.
+=> Terjadi jika ada masalah jaringan, server tidak dapat dijangkau, atau terjadi timeout.
+=> Fungsi: Digunakan untuk menangani kesalahan dan mungkin mencoba ulang koneksi atau memberikan feedback kepada pengguna.
+
+Cth :
+io.on('connect_error', (error) => {
+  console.error('Connection error:', error);
+});
+
+=======================================================================
+
+4. reconnect_attempt
+=> Event ini dipicu setiap kali Socket.IO mencoba untuk menyambungkan kembali klien ke server setelah terputus.
+=> Terjadi otomatis saat Socket.IO mencoba untuk melakukan koneksi ulang setelah klien kehilangan koneksi.
+=> Berguna untuk melacak upaya reconnect dan memberikan informasi kepada pengguna atau mengubah UI selama proses reconnect.
+
+Cth :
+io.on('reconnect_attempt', () => {
+  console.log('Trying to reconnect...');
+});
+
+=======================================================================
+
+5. reconnect
+=> Event ini dipicu ketika klien berhasil tersambung kembali ke server setelah terputus.
+=> Terjadi setelah upaya reconnect berhasil.
+=> Berguna untuk mengatur ulang status atau melakukan inisialisasi ulang data setelah koneksi berhasil dipulihkan.
+
+Cth :
+io.on('reconnect', (attemptNumber) => {
+  console.log('Reconnected after', attemptNumber, 'attempt(s)');
+});
+
+=======================================================================
+
+6. reconnect_error
+=> Event ini dipicu jika terjadi kesalahan saat mencoba untuk reconnect ke server.
+=> Terjadi jika upaya reconnect mengalami kesalahan.
+=> Fungsi: Memberikan informasi kesalahan selama proses reconnect dan memungkinkan penanganan yang lebih baik terhadap masalah tersebut.
+
+Cth :
+io.on('reconnect_error', (error) => {
+  console.error('Reconnect error:', error);
+});
+
+=======================================================================
+
+7. reconnect_failed
+=> Event ini dipicu ketika Socket.IO tidak dapat terhubung kembali ke server setelah beberapa upaya reconnect.
+=> Terjadi setelah beberapa percobaan reconnect gagal dan Socket.IO menyerah untuk mencoba kembali.
+=> Fungsi: Berguna untuk menginformasikan pengguna bahwa koneksi tidak dapat dipulihkan dan mungkin memerlukan tindakan lebih lanjut.
+
+Cth :
+io.on('reconnect_failed', () => {
+  console.log('Reconnection failed.');
+});
+
+=======================================================================
+
+8. error
+=> Event ini dipicu jika terjadi kesalahan umum di server atau klien terkait dengan Socket.IO.
+=> Terjadi ketika ada kesalahan yang tidak secara khusus dikategorikan oleh event lain.
+=> Fungsi: Digunakan untuk menangani kesalahan umum yang mungkin muncul selama operasi Socket.IO.
+
+Cth :
+io.on('error', (error) => {
+  console.error('Socket.IO Error:', error);
+});
+
+
+=======================================================================
+
+2. io.emit
+=> Mengirim pesan atau event ke semua klien yang terhubung ke server dan untuk nama event bebas.
+
+ Sintaks :
+  io.emit('event_name', data);
+
+Cth : 
+io.emit('broadcastMessage', 'This message is for everyone!');
+
+=> Fungsi ini mengirim pesan broadcastMessage ke semua klien yang terhubung.
+
+=> Cocok untuk broadcast pesan, notifikasi global, atau update status yang perlu diketahui semua klien.
+=> Contoh: Mengirim pengumuman global di sebuah aplikasi chat.
+
+
+=======================================================================
+
+3. socket.emit
+=> Mengirim pesan atau event ke klien tertentu yang terhubung melalui objek socket.
+ Sintaks :
+   socket.emit('event_name', data);
+
+Cth :
+io.on('connection', (socket) => {
+  socket.emit('welcomeMessage', 'Welcome to the chat!');
+});
+
+=> Fungsi ini mengirim pesan welcomeMessage hanya ke klien yang baru terhubung.
+
+=> Cocok untuk menyapa pengguna setelah terhubung atau memberikan data spesifik kepada klien.
+Contoh: Mengirim pesan selamat datang ke pengguna baru.
+
+
+======================================================================
+
+4. socket.broadcast.emit
+=> Mengirim pesan atau event ke semua klien yang terhubung kecuali klien yang memicu event.
+ Sintaks :
+  socket.broadcast.emit('event_name', data);
+
+Cth :
+io.on('connection', (socket) => {
+  socket.on('sendMessage', (message) => {
+    socket.broadcast.emit('receiveMessage', message);
+  });
+});
+
+=> Fungsi ini mengirim pesan receiveMessage ke semua klien kecuali klien yang mengirim sendMessage.
+
+=> Cocok untuk memberitahukan pengguna lain bahwa ada tindakan yang dilakukan oleh klien tertentu.
+Contoh: Memberitahukan pengguna lain bahwa seorang pengguna baru telah bergabung.
+
+
+=====================================================================
+
+5. io.to(room).emit
+=> Mengirim pesan atau event ke semua klien dalam room tertentu
+Sintaks :
+  io.to('room_name').emit('event_name', data);
+
+Cth :
+io.on('connection', (socket) => {
+  socket.join('room1');
+  io.to('room1').emit('roomMessage', 'This message is for room1 only');
+});
+
+=> Fungsi ini mengirim pesan roomMessage ke semua klien dalam room1
+
+=> Cocok untuk aplikasi dengan chat rooms atau game rooms, di mana hanya pengguna dalam room yang sama perlu menerima pesan tertentu.
+Contoh: Mengirim pesan ke semua pengguna dalam chat room tertentu.
+
+
+=======================================================================
+
+6. socket.join
+=> Menambahkan klien ke room tertentu
+ Sintaks : 
+  socket.join('room_name');
+
+Cth :
+io.on('connection', (socket) => {
+  socket.join('chatroom');
+});
+
+=> Fungsi ini menambahkan klien yang terhubung ke chatroom
+
+=> Menambahkan klien ke room tertentu. Berguna dalam aplikasi chat, game, atau kolaborasi di mana pengguna dapat bergabung ke room tertentu untuk berinteraksi.
+Contoh: Menambahkan pengguna ke chat room tertentu
+
+
+=====================================================================
+
+
+7. socket.leave
+=> Mengeluarkan klien dari room tertentu.
+Sintaks :
+ socket.leave('room_name');
+
+Cth :
+io.on('connection', (socket) => {
+  socket.leave('chatroom');
+});
+
+=> Cocok untuk mengelola keanggotaan room atau mengatur aksesibilitas pengguna terhadap konten dalam room.
+Contoh: Mengeluarkan pengguna dari chat room setelah mereka memutuskan untuk meninggalkan room tersebut.
+
+
+====================================================================
+
+8. socket.on
+=> Mengambil event dari klien.
+Sintaks :
+  socket.on('event_name', callback);
+
+Cth :
+io.on('connection', (socket) => {
+  socket.on('sendMessage', (message) => {
+    console.log('Message received:', message);
+  });
+});
+
+=> Fungsi ini menangani event sendMessage yang dikirim oleh klien tertentu.
+
+=> Fungsi utama untuk menangani semua jenis interaksi dari klien seperti pesan, perintah, atau sinyal.
+Contoh: Mendengarkan pesan yang dikirim dari klien dan kemudian mengirimkannya ke semua klien dalam room yang sama.
+
+
+======================================================================
+
+
+9. socket.disconnect
+=> Memutuskan koneksi klien secara manual
+Sintaks :
+  socket.disconnect(true);
+
+Cth :
+io.on('connection', (socket) => {
+  // Disconnect the socket after 5 seconds
+  setTimeout(() => {
+    socket.disconnect(true);
+  }, 5000);
+});
+
+=> Fungsi ini memutuskan koneksi klien setelah 5 detik.
+
+=> Berguna untuk mengelola pengguna yang tidak diinginkan atau menangani situasi di mana Anda ingin menutup sesi pengguna.
+Contoh: Memutuskan koneksi pengguna setelah waktu tertentu atau jika mereka melanggar aturan.
+
+
+======================================================================
+
+10. io.close atau io.disconnectSockets
+=> Menutup server Socket.IO atau memutuskan semua koneksi klien.
+
+Sintaks :
+ io.close(); // Atau  io.disconnectSockets();
+
+Cth :
+// Menutup semua koneksi setelah 10 detik
+setTimeout(() => {
+  io.disconnectSockets();
+}, 10000);
+
+=> Fungsi ini akan memutuskan semua koneksi klien yang terhubung ke server.
+
+=> Menutup semua koneksi atau mematikan server secara teratur atau ketika terjadi kondisi tertentu (misalnya, maintenance).
+Contoh: Mematikan semua koneksi saat server perlu dimatikan untuk pemeliharaan.
+
+
+====================================================================
+
+11. io.use
+=>  Middleware untuk Socket.IO yang bisa digunakan untuk melakukan validasi atau autentikasi sebelum klien terhubung.
+
+Sintaks :
+io.use((socket, next) => {
+  // Logika middleware di sini
+  next();
+});
+
+Contoh :
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (isValidToken(token)) {
+    return next();
+  }
+  return next(new Error('authentication error'));
+});
+
+
+=> Middleware yang digunakan untuk memvalidasi atau mengautentikasi klien sebelum mereka terhubung. Berguna untuk memastikan bahwa hanya pengguna yang sah yang dapat mengakses server.
+Contoh: Menggunakan token untuk autentikasi sebelum mengizinkan klien terhubung.
+
+
+
+
+
+
+
+
+
+
+
+
+==================================================================
+
+B. Client
+Di sisi klien, Socket.IO menyediakan berbagai fungsi yang memungkinkan aplikasi web untuk berkomunikasi secara real-time dengan server. Berikut adalah beberapa fungsi utama yang sering digunakan di klien:
+
+1. io()
+- Deskripsi: Fungsi ini digunakan untuk membuat koneksi dari klien ke server Socket.IO.
+   Contoh :
+     const socket = io('http://localhost:3000');
+     
+- Contoh: Membuat koneksi ke server Socket.IO yang berjalan di `http://localhost:3000`.
+
+=====================================================================
+
+2. socket.on(eventName, callback)
+- Deskripsi: Mendengarkan event yang dikirim oleh server. Fungsi ini digunakan untuk menangani pesan atau data yang diterima dari server.
+   Sintaks :   
+     socket.on('event_name', (data) => {
+       console.log(data);
+     });
+     
+- Contoh: 
+     socket.on('message', (msg) => {
+       console.log('Message from server:', msg);
+     });
+
+ => Mendengarkan event `message` yang dikirim oleh server.
+
+===================================================================== 
+
+ 3. `socket.emit(eventName, data)`
+- Deskripsi: Mengirim event dan data dari klien ke server. Fungsi ini digunakan ketika klien perlu mengirimkan informasi atau melakukan permintaan ke server.
+- Penggunaan:
+  Cth :
+   socket.emit('event_name', data);
+
+- Contoh: 
+     socket.emit('sendMessage', { text: 'Hello, server!' });
+
+=> Mengirim pesan ke server.    
+ 
+===================================================================== 
+
+ 4. `socket.connect()`
+- Deskripsi: Menginisialisasi atau memulihkan koneksi ke server jika koneksi telah diputus.
+- Penggunaan:
+
+     javascript
+     socket.connect();
+     
+
+   - Contoh: Mencoba menghubungkan kembali ke server setelah klien terputus.
+
+=====================================================================
+
+ 5. `socket.disconnect()`
+   - Deskripsi: Memutuskan koneksi klien dari server. Fungsi ini bisa digunakan untuk memutuskan koneksi secara manual.
+   - Penggunaan:
+
+     javascript
+     socket.disconnect();
+     
+
+   - Contoh: Memutuskan koneksi ketika pengguna menutup aplikasi atau pindah ke halaman lain.
+
+=====================================================================
+
+ 6. `socket.close()`
+   - Deskripsi: Alias untuk `socket.disconnect()`; memutuskan koneksi klien dari server.
+   - Penggunaan:
+
+     javascript
+     socket.close();
+     
+   - Contoh: Memutuskan koneksi secara manual.
+
+=====================================================================
+
+ 7. `socket.on('connect', callback)`
+   - Deskripsi: Event ini dipicu ketika klien berhasil terhubung ke server. Callback ini digunakan untuk menangani apa yang terjadi setelah koneksi berhasil.
+   - Penggunaan:
+
+     javascript
+     socket.on('connect', () => {
+       console.log('Connected to server');
+     });
+     
+   - Contoh: Menampilkan pesan bahwa klien telah terhubung ke server.
+
+=====================================================================
+
+ 8. `socket.on('disconnect', callback)`
+   - Deskripsi: Event ini dipicu ketika klien terputus dari server. Callback ini digunakan untuk menangani apa yang terjadi setelah koneksi terputus.
+   - Penggunaan:
+
+     javascript
+     socket.on('disconnect', () => {
+       console.log('Disconnected from server');
+     });
+     
+
+   - Contoh: Menampilkan pesan bahwa klien telah terputus dari server.
+
+=====================================================================
+
+ 9. `socket.on('reconnect', callback)`
+   - Deskripsi: Event ini dipicu ketika klien berhasil tersambung kembali ke server setelah terputus.
+   - Penggunaan:
+
+     javascript
+     socket.on('reconnect', (attemptNumber) => {
+       console.log(`Reconnected to server after ${attemptNumber} attempts`);
+     });
+     
+   - Contoh: Menangani logika saat klien berhasil tersambung kembali setelah mengalami pemutusan.
+
+=====================================================================
+
+ 10. `socket.on('reconnect_attempt', callback)`
+   - Deskripsi: Event ini dipicu setiap kali klien mencoba untuk melakukan koneksi ulang ke server.
+   - Penggunaan:
+
+     javascript
+     socket.on('reconnect_attempt', () => {
+       console.log('Attempting to reconnect...');
+     });
+     
+   - Contoh: Menampilkan pesan bahwa klien sedang mencoba melakukan koneksi ulang.
+
+=====================================================================
+
+ 11. `socket.on('error', callback)`
+   - Deskripsi: Event ini dipicu ketika terjadi kesalahan pada koneksi Socket.IO di sisi klien.
+   - Penggunaan:
+
+     javascript
+     socket.on('error', (error) => {
+       console.error('Socket.IO Error:', error);
+     });
+     
+
+   - Contoh: Menangani kesalahan yang terjadi di sisi klien.
+
+=====================================================================
+
+ 12. `socket.on('connect_error', callback)`
+   - Deskripsi: Event ini dipicu ketika klien gagal terhubung ke server.
+   - Penggunaan:
+
+     javascript
+     socket.on('connect_error', (error) => {
+       console.error('Connection Error:', error);
+     });
+     
+
+   - Contoh: Menangani situasi di mana koneksi ke server gagal.
+
+=====================================================================
+
+ 13. `socket.on('connect_timeout', callback)`
+   - Deskripsi: Event ini dipicu ketika klien tidak dapat terhubung ke server dalam waktu yang telah ditentukan.
+   - Penggunaan:
+
+     javascript
+     socket.on('connect_timeout', () => {
+       console.warn('Connection timeout');
+     });
+     
+   - Contoh: Menampilkan pesan peringatan ketika waktu koneksi ke server habis.
+
+=====================================================================
+
+ 14. `socket.on('reconnect_failed', callback)`
+   - Deskripsi: Event ini dipicu ketika klien gagal untuk melakukan koneksi ulang setelah beberapa kali percobaan.
+   - Penggunaan:
+
+     javascript
+     socket.on('reconnect_failed', () => {
+       console.error('Failed to reconnect to server');
+     });
+     
+   - Contoh: Menangani situasi di mana koneksi ulang gagal dan mungkin memerlukan tindakan lebih lanjut dari pengguna.
+
+
+
+
+
+Cth Lengkap :
+
+1. Backend :
+const express = require("express");
+const http = require("http");
+const {Server} = require("socket.io");
+const cors = require("cors");
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+
+app.use(cors());
+//titik masuk utama untuk menangani klien yang baru terhubung ke server
+io.on('connection', (socket) => {
+    console.log("Socket A user Connected : ");
+
+    //Mengambil event dari klien secara realtime
+    socket.on("pesan",(msg) => {
+        console.log("Pesan diterima : ",msg);
+
+        //Mengirim pesan atau event ke semua klien yang terhubung ke server dan untuk nama event bebas
+        io.emit("pesan",msg)
+    })
+
+    //ketika klien menutup browser, kehilangan koneksi jaringan, atau secara manual memutuskan koneksi.
+    socket.on('disconnect', () => {
+        console.log("User disconnected")
+    })
+
+} )
+
+server.listen(5000, () => console.log("Server is run"))
+
+
+
+2. Frontend
+import { useState, useEffect } from "react";
+import io from "socket.io-client";
+import "./app.css";
+
+function App() {
+  const [message, setMessage] = useState("");
+  const [tampungChat, setTampungChat] = useState([]);
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    // Membuat koneksi hanya sekali saat komponen pertama kali dimuat
+    const newSocket = io("http://localhost:5000");
+    setSocket(newSocket);
+
+    // Mendengarkan event yang dikirim oleh server
+    newSocket.on('pesan', (msg) => {
+      console.log("Pesan dari server: ", msg);
+      setTampungChat((prevChats) => [...prevChats, msg]); // Tambahkan pesan baru ke array
+    });
+
+    return () => {
+      newSocket.disconnect(); // Memutus koneksi saat komponen unmount
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (socket) {
+      // Mengirim event dan data dari klien ke server
+      socket.emit('pesan', message);
+      setMessage(""); // Reset input setelah mengirim pesan
+    }
+  };
+
+  return (
+    <div className="App">
+      <input 
+        type="text" 
+        value={message} 
+        onChange={(e) => setMessage(e.target.value)} 
+      />
+      <button onClick={sendMessage}>Kirim</button>
+      <div className="isiChat">
+        {tampungChat.map((chat, index) => (
+          <div key={index}>
+            <p >{chat}</p>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default App;

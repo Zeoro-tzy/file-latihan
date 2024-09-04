@@ -1,0 +1,123 @@
+- json.parse(),json.stringify() = Done
+- express.json(),express.urlencoded() = Done
+- get,post,put,delete : id,all
+- push
+- find
+- indexOf
+- app.use()
+
+
+1.json.parse() dan json.stringify()
+=> Objek JSON, yang tersedia di semua peramban modern, memiliki dua metode berguna untuk menangani konten yang berformat JSON: parse dan stringify. JSON.parse() mengambil string JSON dan mengubahnya menjadi objek JavaScript. JSON.stringify() mengambil objek JavaScript dan mengubahnya menjadi string JSON.
+
+Contoh :
+const myObj = {
+  name: 'Skip',
+  age: 2,
+  favoriteFood: 'Steak'
+};
+
+const myObjStr = JSON.stringify(myObj);
+
+console.log(myObjStr);
+// "{"name":"Skip","age":2,"favoriteFood":"Steak"}"
+
+console.log(JSON.parse(myObjStr));
+// Object { name: 'Skip', age: 2, favoriteFood: 'Steak' }
+
+
+=> INGATT!!! Object pada js itu ditandai dengan {} dan ada key dan value.Jika di python itu disebut dictionary.
+
+=> Meskipun metode itu biasanya digunakan pada objek, tetapi dapat juga digunakan pada larik.
+Contoh :
+const myArr = ['bacon', 'lettuce', 'tomatoes'];
+
+const myArrStr = JSON.stringify(myArr);
+
+console.log(myArrStr);
+// "["shark","fish","dolphin"]"
+
+console.log(JSON.parse(myArrStr));
+// ["shark","fish","dolphin"]
+
+=> Dalam ilmu komputer, larik adalah suatu tipe data terstruktur yang dapat menyimpan banyak data dengan suatu nama yang sama dan menempati tempat di memori yang berurutan serta bertipe data sama pula. Larik dapat diakses berdasarkan indeksnya
+
+
+a.JSON.parse()
+=> JSON.parse() dapat mengambil fungsi sebagai argumen kedua yang dapat mengubah nilai objek sebelum mengembalikannya. Di sini, nilai-nilai objek diubah menjadi huruf besar dalam objek yang dikembalikan dari metode parse.
+Contoh :
+const user = {
+  name: 'Sammy',
+  email: 'Sammy@domain.com',
+  plan: 'Pro'
+};
+
+const userStr = JSON.stringify(user);
+
+JSON.parse(userStr, (key, value) => {
+  if (typeof value === 'string') {
+    return value.toUpperCase();
+  }
+  return value;
+});
+
+
+b.JSON.stringify()
+=> JSON.stringify() dapat mengambil dua argumen tambahan, yang pertama menjadi fungsi replacer dan yang kedua menjadi nilai String atau Number yang digunakan sebagai space dalam string yang dikembalikan.
+
+Fungsi replacer dapat digunakan untuk menyaring nilai, karena nilai yang dikembalikan sebagai undefined akan dikeluarkan dari string yang dikembalikan:
+
+Contoh :
+const user = {
+    id: 229,
+    name: 'Sammy',
+    email: 'Sammy@domain.com'
+  };
+  
+  function replacer(key, value) {
+    console.log(typeof value);
+    if (key === 'email') {
+      return undefined;
+    }
+    return value;
+  }
+  
+  const userStr = JSON.stringify(user, replacer);
+  // "{"id":229,"name":"Sammy"}"
+
+Hasil :
+object
+number
+string
+string
+
+
+
+2.Express.json() dan Express.urlencoded()
+Source : https://stackoverflow.com/questions/23259168/what-are-express-json-and-express-urlencoded
+
+=> Berikut adalah penjelasan yang seharusnya menghilangkan keraguan tentang express.json()dan express.urlencoded() dan penggunaan body-parser. Butuh beberapa waktu untuk mencari tahu ini.
+1.Apa itu Middleware? Metode/fungsi/operasi itulah yang disebut ANTARA memproses Permintaan dan mengirim Respons dalam metode aplikasi Anda.
+2.Ketika membicarakan express.json() dan express.urlencoded() memikirkan secara khusus tentang permintaan POST (yaitu objek permintaan .post) dan Permintaan PUT (yaitu objek permintaan .put)
+3.Anda TIDAK MEMBUTUHKAN express.json() dan express.urlencoded() untuk GET Requests atau DELETE Requests.
+4.Anda MEMBUTUHKAN express.json()dan express.urlencoded() untuk permintaan POST dan PUT, karena dalam kedua permintaan ini Anda mengirim data (dalam bentuk beberapa objek data) ke server dan Anda meminta server untuk menerima atau menyimpan data (objek) itu, yang disertakan dalam tubuh (yaitu req.body) dari Permintaan (POST atau PUT) itu
+5.Express memberi Anda middleware untuk menangani data (objek) (masuk) di badan permintaan.
+6.sebuah. express.json()adalah metode bawaan di express untuk mengenali Objek Permintaan yang masuk sebagai Objek JSON . Metode ini disebut sebagai middleware dalam aplikasi Anda menggunakan kode:app.use(express.json());
+7.b. express.urlencoded()adalah metode bawaan di express untuk mengenali Objek Permintaan yang masuk sebagai string atau array . Metode ini disebut sebagai middleware dalam aplikasi Anda menggunakan kode:app.use(express.urlencoded());
+8.ALTERNATIF, saya sarankan menggunakan body-parser (ini adalah paket NPM) untuk melakukan hal yang sama. Ini dikembangkan oleh peeps yang sama yang membuat express dan dirancang untuk bekerja dengan express. body-parser dulunya adalah bagian dari express. Pikirkan body-parser khusus untuk Permintaan POST (yaitu objek permintaan .post) dan/atau Permintaan PUT (yaitu objek permintaan .put).
+9.Di body-parser Anda bisa melakukannya
+
+Contoh :
+// calling body-parser to handle the Request Object from POST requests
+var bodyParser = require('body-parser');
+// parse application/json, basically parse incoming Request Object as a JSON Object 
+app.use(bodyParser.json());
+// parse application/x-www-form-urlencoded, basically can only parse incoming Request Object if strings or arrays
+app.use(bodyParser.urlencoded({ extended: false }));
+// combines the 2 above, then you can parse incoming Request Object if object, with nested objects, or generally any type.
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+7.app.use()
+=> 

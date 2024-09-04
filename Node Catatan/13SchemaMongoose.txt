@@ -1,0 +1,517 @@
+Schema Mongoose
+https://mongoosejs.com/docs/schematypes.html
+
+1.Pengertian
+=> SchemaTypes menangani definisi default jalur,validasi,getter,setter,default pemilihan bidang untuk kueri dan karakteristik umum lainnya untuk properti dokumen mongoose.
+
+2.Schema type option
+=> Terdapat beberapa opsi yang umum untuk menentukan skema model mongoose,yaitu :
+1.String : Jenis ini digunakan untuk mewakili nilai string
+2.Number : Jenis ini digunakan untuk mewakili nilai numerik
+3.Date : Jenis ini digunakan untuk mewakili nilai tanggal
+4.Buffer : Jenis ini digunakan untuk mewakili buffer(Urutan byte)
+5.Boolean : Tipe ini digunakan untuk mewakili nilai boolean(Benar atau salah)
+6.Mixed : Tipe ini digunakan untuk mewakili nilai yang bisa berupa tipe apapun
+7.ObjectId : Jenis ini digunakan untuk mewakili ObjectId MongoDB
+8.Array : Jenis ini digunakan untuk mewakili nilai array
+9.Decimal128 : Digunakan untuk mewakili angka floating point 128-bit.Berguna untuk menyimpan nilai desimal presisi yang membutuhkan tingkat presisi lebih tinggi daripada tipe angka standar
+10.Map : Digunakan untuk mewakili struktur data peta,diman kunci dipetakan ke nilai.Jenis ini mirip dengan objek,tetapi memungkikan ada menggunakan nilai apapun (Termasuk objek,larik dan fungsi) sebagai kunci untuk peta.
+11.Schema : Adalah kelas yang digunakan untuk mendefinisikan skema untuk model Mongoose. Skema menentukan struktur dan tipe data dokumen yang akan disimpan dalam koleksi MongoDB.
+
+
+3.Type Key
+=> Type kunci adalah properti khusus dalam skema Mongoose.Saat Mongoose menemukan properti bersarang yang dinamai type dalam skema anda,Mongoose berasumsi bahwa ia perlu mendefinisikan SchemaType dengan tipe yang diberikan.
+Contoh :
+//3 string SchemaTypes: 'name', 'nested.firstName','nested.lastName'
+const schema = new Schema({
+  name: { type: String },
+  nested: {
+    firstName: { type: String },
+    lastName: { type: String }
+  }
+});
+
+=> Akibatnya,anda perlu sedikit kerja ekstra untuk menentukan properti yang dinamai type dalam skema anda.Misalnya anda sedang membuat aplikasi portofolio sahammdan ingin menyimpan aset type(saham,obligasi,ETF,dll).Secara naif,anda dapat menentukan skema anda.
+Contoh :
+const holdingSchema = new Schema({
+  // Anda mungkin berharap `asset` menjadi objek yang memiliki 2 properti,tapi sayangnya `type` spesial di Mongoose jadi mongoose,menafsirkan skema ini berarti bahwa `aset` adalah string
+  asset: {
+    type: String,
+    ticker: String
+  }
+});
+
+=> Namun, ketika Mongoose melihat type: String, diasumsikan bahwa maksud Anda assetharus berupa string, bukan objek dengan properti type. Cara yang benar untuk mendefinisikan objek dengan properti type ditunjukkan di bawah ini.
+Contoh :
+const holdingSchema = new Schema({
+  asset: {
+    // Solusi untuk memastikan Mongoose mengetahui `asset` adalah objek,dan `asset.type` adalah sebuah string, bukan memikirkan `asset`,adalah sebuah string.
+    type: { type: String },
+    ticker: String
+  }
+});
+
+
+
+4.Opsi Jenis Skema
+=> Anda dapat mendeklarasikan tipe skema menggunakan tipe secara langsung, atau objek dengan type properti.
+Contoh :
+const schema1 = new Schema({
+  test: String // `test` is a path of type String
+});
+
+const schema2 = new Schema({
+  // The `test` object contains the "SchemaType options"
+  test: { type: String } // `test` is a path of type string
+});
+
+=> Selain properti tipe, Anda dapat menentukan properti tambahan untuk jalur. Misalnya, jika Anda ingin menggunakan huruf kecil sebelum menyimpan string.
+Contoh :
+const schema2 = new Schema({
+  test: {
+    type: String,
+    lowercase: true // Always convert `test` to lowercase
+  }
+});
+
+=> Anda dapat menambahkan properti apa pun yang Anda inginkan ke opsi SchemaType Anda. Banyak plugin mengandalkan opsi SchemaType khusus. Misalnya, plugin mongoose-autopopulate secara otomatis mengisi jalur jika Anda mengatur autopopulate: trueopsi SchemaType Anda. Mongoose hadir dengan dukungan untuk beberapa opsi SchemaType bawaan, seperti lowercasepada contoh di atas.
+
+=> Opsi ini lowercasehanya berfungsi untuk string. Ada opsi tertentu yang berlaku untuk semua jenis skema, dan beberapa yang berlaku untuk jenis skema tertentu.
+
+
+5.Semua Jenis Skema
+- required : Boolean atau fungsi,jika benar tambahkan validator yang diperlukan untuk properti ini.
+- default : Setiap atau fungsi,menetapkan nilai default untuk jalur.Jika nilainya adalah fungsi,nilai kembalian dari fungsi tersebut digunakan sebagai default.
+- select : boolean,menentukan proyeksi default untuk kueri
+- validate : fungsi,tambahkan fungsi validator untuk properti ini.
+- get : fungsi,tentukan pengambil khusus untuk properti ini menggunakan Object.defineProperty()
+- set : fungsi,tentukan penyetel khusus untuk properti ini menggunakan Object.defineProperty()
+- alias : String,mongoose >= 4.10.0 saja.Menentukan virtual dengan nama yang diberikan yang mendapatkan/menetapkan jalur ini.
+- immutable : Boolean,mendefinisikan path sebagai tidak dapat diubah.Mongoose mencegah anda mengubah jalur yang tidak dapat diubah kecuali dokumen induk memiliki isNew : true.
+- transform : fungsi,Mongoose memanggil fungsi ini saat anda memanggil Document#toJSON() fungsi,termasuk saat anda JSON.stringify() membuat dokumen.
+
+Contoh :
+const numberSchema = new Schema({
+  integerOnly: {
+    type: Number,
+    get: v => Math.round(v),
+    set: v => Math.round(v),
+    alias: 'i'
+  }
+});
+
+const Number = mongoose.model('Number', numberSchema);
+
+const doc = new Number();
+doc.integerOnly = 2.001;
+doc.integerOnly; // 2
+doc.i; // 2
+doc.i = 3.001;
+doc.integerOnly; // 3
+doc.i; // 3
+
+
+6.Indexes 
+=> Anda juga dapat menentukan indeks MongoDB menggunakan opsi tipe skema.
+- index : Boolean,apakah akan menentukan indeks pada properti ini.
+- unique : Boolean,apakah akan menentukan indeks unik pada properti ini.
+- sparse : Boolean,apakah akan menentukan indeks jarang pada properti ini.
+
+Contoh :
+const schema2 = new Schema({
+  test: {
+    type: String,
+    index: true,
+    unique: true // Indeks unik. Jika Anda menentukan `unique: true`
+    // menentukan `index: true` adalah opsional jika Anda menggunakan `unique: true`
+  }
+});
+
+
+7.String
+- lowercase : Boolean,apakah akan selalu memanggil .toLowerCase() nilainya.
+- uppercase : Boolean,apakah akan selalu memanggil .toUpperCase() nilainya
+- trim : Boolean,apakah akan selalu memanggil .trim() nilainya.
+- match : RegExp,membuat validator yang memeriksa apakah nilainya cocok dengan ekspresi reguler yang diberikan.
+- enum : Array,membuat validator yang memeriksa apakah nilainya ada dalam array yang diberikan
+- minLength : Angka,membuat validator yang memeriksa apakah panjang nilai tidak kurang dari angka yang diberikan.
+- maxLength : Angka,membuat validator yang memeriksa apakah panjang nilai tidak lebih besar dari angka yang diberikan.
+- populate : Objek,menyetel opsi populasi standar.
+
+
+8.Number 
+- min : Angka,membuat validator yang memeriksa apakah nilainya lebih besar atau sama dengan minimum yang diberikan.
+- max : Angka,membuat validator yang memeriksa apakah nilainya kurang dari atau sama dengan maksimum yang diberikan.
+- enum : Array membuat validator yang memeriksa apakah nilainya benar-benar sama dengan salah satu nilai dalam larik yang diberikan.
+- populate : Objek,menyetel opsi populasi standar.
+
+
+9.Date
+- min : Tanggal,membuat validator yang memeriksa apakah nilainya lebih besar atau sama dengan mininum yang diberikan.
+- max : Tanggal,membuat validator yang memeriksa apakah nilainya kurang dari atau sama dengan maksimum yang diberikan.
+- expires : Angka atau String,membuat indeks TTL dengan nilai yang dinyatakan dalam detik.
+
+
+10.ObjectId
+=> populate : Objek,menyetel opsi populasi standar
+
+
+11.Catatan Penggunaan 
+1.String
+=> Untuk mendeklarasikan jalur sebagai string,Anda dapat menggunakan string konstruktor global atau string "String".
+Contoh :
+const schema1 = new Schema({ name: String }); // name will be cast to string
+const schema2 = new Schema({ name: 'String' }); // Equivalent
+
+const Person = mongoose.model('Person', schema2);
+
+=> Jika Anda melewatkan elemen yang memiliki toString()fungsi, Mongoose akan memanggilnya, kecuali jika elemen tersebut adalah larik atau toString()fungsinya benar-benar sama dengan Object.prototype.toString().
+Contoh :
+new Person({ name: 42 }).name; // "42" as a string
+new Person({ name: { toString: () => 42 } }).name; // "42" as a string
+
+// "undefined", will get a cast error if you `save()` this document
+new Person({ name: { foo: 42 } }).name;
+
+
+2.Number 
+=> Untuk mendeklarasikan jalur sebagai angka,Anda dapat menggunakan Number konstruktor global atau string "Number".
+Contoh :
+const schema1 = new Schema({ age: Number }); // age will be cast to a Number
+const schema2 = new Schema({ age: 'Number' }); // Equivalent
+
+const Car = mongoose.model('Car', schema2);
+
+=> Ada beberapa jenis nilai yang akan berhasil dilemparkan ke Angka.
+Contoh :
+new Car({ age: '15' }).age; // 15 as a Number
+new Car({ age: true }).age; // 1 as a Number
+new Car({ age: false }).age; // 0 as a Number
+new Car({ age: { valueOf: () => 83 } }).age; // 83 as a Number
+
+=> Jika Anda meneruskan objek dengan valueOf()fungsi yang mengembalikan Angka, Mongoose akan memanggilnya dan menetapkan nilai yang dikembalikan ke jalur.
+
+Nilai nulldan undefinedtidak dilemparkan.
+
+NaN, string yang ditransmisikan ke NaN, array, dan objek yang tidak memiliki valueOf()fungsi semuanya akan menghasilkan CastError setelah divalidasi, artinya tidak akan dilempar saat inisialisasi, hanya saat divalidasi.
+
+
+3.Date
+=> Metode Tanggal bawaan tidak terhubung ke logika pelacakan perubahan mongoose yang dalam bahasa Inggris berarti bahwa jika Anda menggunakan Tanggal dalam dokumen Anda dan memodifikasinya dengan metode seperti setMonth(), mongoose tidak akan mengetahui perubahan ini dan doc.save( ) tidak akan mempertahankan modifikasi ini. Jika Anda harus mengubah tipe Tanggal menggunakan metode bawaan, beri tahu mongoose tentang perubahan tersebut dengan doc.markModified('pathToYourDate') sebelum menyimpan.
+Contoh :
+const Assignment = mongoose.model('Assignment', { dueDate: Date });
+Assignment.findOne(function (err, doc) {
+  doc.dueDate.setMonth(3);
+  doc.save(callback); // THIS DOES NOT SAVE YOUR CHANGE
+
+  doc.markModified('dueDate');
+  doc.save(callback); // works
+})
+
+
+4.Buffer(Penyangga)
+=> Untuk mendeklarasikan jalur sebagai Buffer, Anda dapat menggunakan Bufferkonstruktor global atau string 'Buffer'.
+Contoh :
+const schema1 = new Schema({ binData: Buffer }); // binData will be cast to a Buffer
+const schema2 = new Schema({ binData: 'Buffer' }); // Equivalent
+
+const Data = mongoose.model('Data', schema2);
+
+
+=> Mongoose akan berhasil memberikan nilai dibawah ini ke buffer.
+Contoh :
+const file1 = new Data({ binData: 'test'}); // {"type":"Buffer","data":[116,101,115,116]}
+const file2 = new Data({ binData: 72987 }); // {"type":"Buffer","data":[27]}
+const file4 = new Data({ binData: { type: 'Buffer', data: [1, 2, 3]}}); // {"type":"Buffer","data":[1,2,3]}
+
+
+5.Mixed (Campuran)
+=> SchemaType "apa saja". Mongoose tidak akan melakukan casting di jalur campuran. Anda dapat menentukan jalur campuran menggunakan Schema.Types.Mixedatau dengan meneruskan literal objek kosong. Berikut ini adalah setara.
+Contoh :
+const Any = new Schema({ any: {} });
+const Any = new Schema({ any: Object });
+const Any = new Schema({ any: Schema.Types.Mixed });
+const Any = new Schema({ any: mongoose.Mixed });
+
+=> Karena Campuran adalah tipe tanpa skema, Anda dapat mengubah nilainya menjadi apa pun yang Anda suka, tetapi Mongoose kehilangan kemampuan untuk mendeteksi dan menyimpan perubahan tersebut secara otomatis. Untuk memberi tahu Mongoose bahwa nilai dari tipe Campuran telah berubah, Anda perlu memanggil doc.markModified(path), meneruskan jalur ke tipe Campuran yang baru saja Anda ubah.Untuk menghindari efek samping ini,jalur subdokumen dapat digunakan sebagai gantinya.
+Contoh :
+person.anything = { x: [3, 4, { y: "changed" }] };
+person.markModified('anything');
+person.save(); // Mongoose will save changes to `anything`.
+
+
+6.ObjecId
+=> ObjectId adalah tipe khusus yang biasanya digunakan untuk pengidentifikasi unik. Inilah cara Anda mendeklarasikan skema dengan jalur driveryang merupakan ObjectId.
+Contoh :
+const mongoose = require('mongoose');
+const carSchema = new mongoose.Schema({ driver: mongoose.ObjectId });
+
+=> ObjectId adalah kelas, dan ObjectIds adalah objek. Namun, mereka sering direpresentasikan sebagai string. Saat Anda mengonversi ObjectId menjadi string menggunakan toString(), Anda mendapatkan string heksadesimal 24 karakter:
+Contoh :
+const Car = mongoose.model('Car', carSchema);
+
+const car = new Car();
+car.driver = new mongoose.Types.ObjectId();
+
+typeof car.driver; // 'object'
+car.driver instanceof mongoose.Types.ObjectId; // true
+
+car.driver.toString(); // Something like "5e1a0651741b255ddda996c4"
+
+
+7.Boolean
+=> Boolean di Mongoose adalah boolean Javascript biasa.Secara default,mongoose memberikan nilai dibawah ini ke true :
+- true
+- "true"
+- 1
+- "1"
+- "yes"
+
+=> Mongoose memberikan nilai dibawah ini ke false :
+- false
+- "false"
+- 0
+- "0"
+- "no"
+
+=> Nilai lain apa pun menyebabkan CastError . Anda dapat memodifikasi nilai apa yang dikonversi Mongoose menjadi true atau false menggunakan properti convertToTrueand convertToFalse, yang merupakan himpunan JavaScript .
+Contoh :
+const M = mongoose.model('Test', new Schema({ b: Boolean }));
+console.log(new M({ b: 'nay' }).b); // undefined
+
+// Set { false, 'false', 0, '0', 'no' }
+console.log(mongoose.Schema.Types.Boolean.convertToFalse);
+
+mongoose.Schema.Types.Boolean.convertToFalse.add('nay');
+console.log(new M({ b: 'nay' }).b); // false
+
+
+8.Array
+=> Mongoose mendukung larik SchemaTypes dan larik subdokumen.Array dari SchemaTypes juga disebut array primitif,dan array subdokumen juga disebut array dokumen.
+Contoh :
+const ToySchema = new Schema({ name: String });
+const ToyBoxSchema = new Schema({
+  toys: [ToySchema],
+  buffers: [Buffer],
+  strings: [String],
+  numbers: [Number]
+  // ... etc
+})
+
+=> Array adalah spesial karena secara implisit memiliki nilai default [](array kosong)
+Contoh :
+const ToyBox = mongoose.model('ToyBox', ToyBoxSchema);
+console.log((new ToyBox()).toys); // []
+
+=> Untuk menimpa default ini, Anda perlu menyetel nilai default keundefined
+Contoh :
+const ToyBoxSchema = new Schema({
+  toys: {
+    type: [ToySchema],
+    default: undefined
+  }
+});
+
+CATATAN : Menentukan larik kosong sama dengan Mixed. Berikut ini semua buat array dari Mixed:
+Contoh :
+const Empty1 = new Schema({ any: [] });
+const Empty2 = new Schema({ any: Array });
+const Empty3 = new Schema({ any: [Schema.Types.Mixed] });
+const Empty4 = new Schema({ any: [{}] });
+
+
+9.Map
+=> Sebuah MongooseMap adalah subkelas dari kelas JavaScriptMap . Dalam dokumen ini, kami akan menggunakan istilah 'peta' dan MongooseMapbergantian. Di Mongoose, peta adalah cara Anda membuat dokumen bersarang dengan kunci arbitrer.
+
+Catatan : Di Peta Mongoose, kunci harus berupa string untuk menyimpan dokumen di MongoDB.
+Contoh :
+const userSchema = new Schema({
+  // `socialMediaHandles` is a map whose values are strings. A map's
+  // keys are always strings. You specify the type of values using `of`.
+  socialMediaHandles: {
+    type: Map,
+    of: String
+  }
+});
+
+const User = mongoose.model('User', userSchema);
+// Map { 'github' => 'vkarpov15', 'twitter' => '@code_barbarian' }
+console.log(new User({
+  socialMediaHandles: {
+    github: 'vkarpov15',
+    twitter: '@code_barbarian'
+  }
+}).socialMediaHandles);
+
+=> Contoh di atas tidak secara eksplisit mendeklarasikan githubatau twittersebagai jalur, tetapi, karena socialMediaHandlesmerupakan peta, Anda dapat menyimpan pasangan kunci/nilai arbitrer. Namun, karena socialMediaHandlesini adalah peta, Anda harus menggunakan .get()untuk mendapatkan nilai kunci dan .set()menetapkan nilai kunci
+Contoh :
+const user = new User({
+  socialMediaHandles: {}
+});
+
+// Good
+user.socialMediaHandles.set('github', 'vkarpov15');
+// Works too
+user.set('socialMediaHandles.twitter', '@code_barbarian');
+// Bad, the `myspace` property will **not** get saved
+user.socialMediaHandles.myspace = 'fail';
+
+// 'vkarpov15'
+console.log(user.socialMediaHandles.get('github'));
+// '@code_barbarian'
+console.log(user.get('socialMediaHandles.twitter'));
+// undefined
+user.socialMediaHandles.github;
+
+// Will only save the 'github' and 'twitter' properties
+user.save();
+
+=> Tipe peta disimpan sebagai objek BSON di MongoDB . Kunci dalam objek BSON diurutkan, jadi ini berarti properti urutan penyisipan peta dipertahankan.
+
+Mongoose mendukung $*sintaks khusus untuk mengisi semua elemen di peta. Misalnya, misalkan socialMediaHandlespeta Anda berisi ref:
+Contoh :
+const userSchema = new Schema({
+  socialMediaHandles: {
+    type: Map,
+    of: new Schema({
+      handle: String,
+      oauth: {
+        type: ObjectId,
+        ref: 'OAuth'
+      }
+    })
+  }
+});
+const User = mongoose.model('User', userSchema);
+
+=> Untuk mengisi properti setiap socialMediaHandlesentri oauth, Anda harus mengisi di socialMediaHandles.$*.oauth:
+Contoh :
+const user = await User.findOne().populate('socialMediaHandles.$*.oauth');
+
+
+10.Getter
+=> Getter seperti virtual untuk jalur yang ditentukan dalam skema Anda. Misalnya, Anda ingin menyimpan gambar profil pengguna sebagai jalur relatif, lalu menambahkan nama host di aplikasi Anda. Di bawah ini adalah bagaimana Anda akan menyusun userSchema.
+Contoh :
+const root = 'https://s3.amazonaws.com/mybucket';
+
+const userSchema = new Schema({
+  name: String,
+  picture: {
+    type: String,
+    get: v => `${root}${v}`
+  }
+});
+
+const User = mongoose.model('User', userSchema);
+
+const doc = new User({ name: 'Val', picture: '/123.png' });
+doc.picture; // 'https://s3.amazonaws.com/mybucket/123.png'
+doc.toObject({ getters: false }).picture; // '/123.png'
+
+=> Umumnya, Anda hanya menggunakan getter pada jalur primitif sebagai lawan dari array atau subdokumen. Karena pengambil mengesampingkan apa yang dikembalikan oleh akses jalur Mongoose, mendeklarasikan pengambil pada objek dapat menghapus pelacakan perubahan Mongoose untuk jalur tersebut.
+Contoh :
+const schema = new Schema({
+  arr: [{ url: String }]
+});
+
+const root = 'https://s3.amazonaws.com/mybucket';
+
+// Bad, don't do this!
+schema.path('arr').get(v => {
+  return v.map(el => Object.assign(el, { url: root + el.url }));
+});
+
+// Later
+doc.arr.push({ key: String });
+doc.arr[0]; // 'undefined' because every `doc.arr` creates a new array!
+
+=> Alih-alih mendeklarasikan pengambil pada array seperti yang ditunjukkan di atas, Anda harus mendeklarasikan pengambil pada urlstring seperti yang ditunjukkan di bawah ini. Jika Anda perlu mendeklarasikan pengambil pada dokumen atau larik bersarang, berhati-hatilah!
+Contoh :
+const schema = new Schema({
+  arr: [{ url: String }]
+});
+
+const root = 'https://s3.amazonaws.com/mybucket';
+
+// Good, do this instead of declaring a getter on `arr`
+schema.path('arr.0.url').get(v => `${root}${v}`);
+
+
+11.Skema
+=> Untuk mendeklarasikan jalur sebagai skema lain , setel typeke instance sub-skema.
+
+Untuk menetapkan nilai default berdasarkan bentuk sub-skema, cukup tetapkan nilai default, dan nilai tersebut akan dilemparkan berdasarkan definisi sub-skema sebelum ditetapkan selama pembuatan dokumen.
+Contoh :
+const subSchema = new mongoose.Schema({
+  // some schema definition here
+});
+
+const schema = new mongoose.Schema({
+  data: {
+    type: subSchema
+    default: {}
+  }
+});
+
+
+12.Membuat Jenis Kostum 
+=> Mongoose juga dapat diperpanjang dengan SchemaTypes khusus . Telusuri situs plugin untuk jenis yang kompatibel seperti luwak-panjang , luwak-int32 , dan jenis lainnya .
+
+=> Baru di Mongoose 4.4.0: Mongoose mendukung tipe khusus. Namun, sebelum Anda mencapai jenis khusus, ketahuilah bahwa jenis khusus terlalu banyak untuk sebagian besar kasus penggunaan. Anda dapat melakukan sebagian besar tugas dasar dengan pengambil/penyetel khusus , virtual , dan dokumen tersemat tunggal .
+
+Mari kita lihat contoh tipe skema dasar: integer 1-byte. Untuk membuat jenis skema baru, Anda perlu mewarisi dari mongoose.SchemaTypedan menambahkan properti yang sesuai ke mongoose.Schema.Types. Satu metode yang perlu Anda terapkan adalah cast()metode.
+Contoh :
+class Int8 extends mongoose.SchemaType {
+  constructor(key, options) {
+    super(key, options, 'Int8');
+  }
+
+  // `cast()` takes a parameter that can be anything. You need to
+  // validate the provided `val` and throw a `CastError` if you
+  // can't convert it.
+  cast(val) {
+    let _val = Number(val);
+    if (isNaN(_val)) {
+      throw new Error('Int8: ' + val + ' is not a number');
+    }
+    _val = Math.round(_val);
+    if (_val < -0x80 || _val > 0x7F) {
+      throw new Error('Int8: ' + val +
+        ' is outside of the range of valid 8-bit ints');
+    }
+    return _val;
+  }
+}
+
+// Don't forget to add `Int8` to the type registry
+mongoose.Schema.Types.Int8 = Int8;
+
+const testSchema = new Schema({ test: Int8 });
+const Test = mongoose.model('CustomTypeExample', testSchema);
+
+const t = new Test();
+t.test = 'abc';
+assert.ok(t.validateSync());
+assert.equal(t.validateSync().errors['test'].name, 'CastError');
+assert.equal(t.validateSync().errors['test'].message,
+  'Cast to Int8 failed for value "abc" (type string) at path "test"');
+assert.equal(t.validateSync().errors['test'].reason.message,
+  'Int8: abc is not a number');
+
+
+13.Fungsi "schema.path()"
+=> Ini mengembalikan tipe skema yang dipakai untuk jalur tertentu.
+Contoh :
+const sampleSchema = new Schema({ name: { type: String, required: true } });
+console.log(sampleSchema.path('name'));
+// Output looks like:
+/**
+ * SchemaString {
+ *   enumValues: [],
+  *   regExp: null,
+  *   path: 'name',
+  *   instance: 'String',
+  *   validators: ...
+  */
+
+=> Anda dapat menggunakan fungsi ini untuk memeriksa jenis skema untuk jalur tertentu, termasuk validator yang dimilikinya dan jenisnya.

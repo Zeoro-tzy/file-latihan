@@ -1,0 +1,227 @@
+Express Middleware
+- Middleware
+- express.use
+- Application-Level Middleware
+- Router-Level Middleware
+- Error-Handling Middleware
+- Built-in Middleware
+- Third-Party Middleware
+
+
+1.Pengenalan Middleware
+=> Middleware adalah sebuah fungsi yang dapat mengakses request dan response. Middleware merupakan penengah, kalau di dalam aplikasi middleware adalah sebuah aturan yang harus dilewati oleh sistem terlebih dahulu untuk masuk atau keluar dari sistem.
+Dengan Middleware kita dapat melakukan :
+- Menjalankan kode apapun
+- Mengubah objek request dan response
+- Mengakhiri request dan response
+- Panggil fungsi middleware berikutnya di tumpukan
+
+=> Jika fungsi middleware saat ini tidak mengakhiri siklus permintaan-respons,ia harus memanggil next() untuk meneruskan kontrol ke fungsi middleware berikutnya.Jika tidak,permintaan akan dibiarkan menggantung atau loading tanpa henti.Misalnya kita menggunakan middleware use.
+Contoh :
+##Tanpa next()
+const express = require("express")
+const app = express()
+
+app.use("",(req,res)=>{
+    console.log("Middleware sukses berjalan")
+})
+
+app.listen(3000,()=>{
+    console.log("Server 3000 sudah berjalan")
+})
+
+Hasil : 
+(Masih dalam loading) => Dia tidak berhenti
+
+
+
+##Dengan Next()
+const express = require("express")
+const app = express()
+
+app.use("/",(req,res,next)=>{
+    console.log("Middleware sukses berjalan")
+    next()
+})
+
+app.get("/akun",(req,res) => {
+    res.status(200).json({message : "Sudah berjalan dengan baik"})
+})
+
+app.listen(3000,()=>{
+    console.log("Server 3000 sudah berjalan")
+})
+
+=> Di kode atas "use" menggunakan parameter tambahan yaitu next. 
+next() digunakan ketika program sudah selesai maka dia akan melanjutkan ke middleware selanjutnya.Jika misalnya kita tidak menambahkan next() maka program akan bingung selanjutnya mau ngapain krna dia tidak akan berhenti sampai dia pergi ke middleware berikutnya maka dari itu dia loading terus tanpa henti.Terdapat beberapa middleware yang tidak perlu dimasukan next,yaitu : get,put,post,delete,dll.Ini merupakan middleware yang akan berhenti secara otomatis tanpa harus pergi ke middleware selanjutnya.
+
+Terdapat beberapa jenis middleware pada express,yaitu :
+- Application-level middleware
+- Router-level middleware
+- Error-handling middleware
+- Built-in middleware
+- Third-party middleware
+
+
+
+2.express.use()
+=> Dalam konteks kerangka web Express.js untuk Node.js, fungsi app.use digunakan untuk mendaftarkan fungsi middleware dengan aplikasi. Fungsi middleware adalah fungsi yang dipanggil oleh aplikasi Express sebagai bagian dari siklus permintaan-respons untuk melakukan tugas tertentu atau serangkaian tugas.
+
+Fungsi app.use mengambil fungsi middleware sebagai argumen dan mendaftarkannya dengan aplikasi Express. Saat permintaan diterima oleh aplikasi, fungsi middleware terdaftar dipanggil sesuai urutan pendaftarannya.
+
+Misalnya, Anda mungkin menggunakan fungsi app.use untuk mendaftarkan fungsi middleware yang mem-parsing badan permintaan yang masuk, seperti ini.
+Contoh :
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.json());
+
+=> Dalam contoh ini, fungsi bodyParser.json mengembalikan fungsi middleware yang akan mengurai isi permintaan yang masuk sebagai JSON dan membuat data yang dihasilkan tersedia di properti req.body dari objek permintaan.
+
+Anda juga dapat menggunakan fungsi app.use untuk menentukan jalur atau metode HTTP untuk fungsi middleware yang akan diterapkan.
+Contoh :
+app.use('/users', (req, res, next) => {
+  // middleware function logic goes here
+  next();
+});
+
+=> Dalam contoh ini, fungsi middleware akan dijalankan untuk semua permintaan ke jalur /users. Anda juga dapat menentukan metode HTTP.
+Contoh :
+app.use('/users', (req, res, next) => {
+  // middleware function logic goes here
+  next();
+}, 'POST');
+
+=> Dalam contoh ini, fungsi middleware hanya akan dijalankan untuk permintaan POST ke jalur /users.
+
+
+
+3.Application Middleware
+=> Middleware tingkat aplikasi adalah middleware yang didefinisikan dan diterapkan secara global ke aplikasi Express, bukan khusus untuk rute atau grup rute tertentu. Artinya akan dieksekusi untuk setiap request yang diterima oleh aplikasi.
+
+Berikut adalah contoh cara mendefinisikan dan menggunakan middleware level aplikasi dalam aplikasi Express:
+Contoh :
+const express = require('express');
+const app = express();
+
+// Application-level middleware to log request details
+app.use((req, res, next) => {
+  console.log(`${req.method} request received for ${req.url}`);
+  next();
+});
+
+// Route handler for the home page
+app.get('/', (req, res) => {
+  res.send('Welcome to the home page');
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+=> Dalam contoh ini, fungsi middleware dijalankan untuk semua permintaan ke aplikasi, dan mencatat metode permintaan dan URL ke konsol. Penangan rute untuk halaman beranda kemudian mengirimkan respons ke klien.
+
+Contoh tugas lain yang dapat dilakukan oleh middleware tingkat aplikasi meliputi penguraian isi permintaan, pengaturan header respons, atau mengautentikasi pengguna.
+
+
+
+4.Router-level middleware
+=> Middleware tingkat router adalah middleware yang didefinisikan dan diterapkan ke router tertentu dalam aplikasi Express, bukannya didefinisikan dan diterapkan secara global ke seluruh aplikasi. Ini berarti bahwa itu akan dijalankan hanya untuk permintaan yang dikirim ke rute yang ditangani oleh router itu.
+
+Router adalah turunan dari kelas Router di Express, yang dapat digunakan untuk menentukan sekumpulan rute yang memiliki middleware atau perilaku yang sama. Berikut adalah contoh cara mendefinisikan dan menggunakan middleware tingkat router dalam aplikasi Express.
+Contoh :
+const express = require('express');
+const app = express();
+
+// Create a router for the /users route
+const usersRouter = express.Router();
+
+// Router-level middleware to log request details
+usersRouter.use((req, res, next) => {
+  console.log(`${req.method} request received for ${req.url}`);
+  next();
+});
+
+// Route handler for the /users/:id route
+usersRouter.get('/:id', (req, res) => {
+  res.send(`User ${req.params.id} details`);
+});
+
+// Mount the router on the /users route
+app.use('/users', usersRouter);
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+=> Dalam contoh ini, fungsi middleware level router dijalankan untuk semua permintaan ke rute /users. Ini mencatat metode permintaan dan URL ke konsol. Penangan rute untuk rute /users/:id kemudian mengirimkan respons ke klien.
+
+Middleware tingkat router dapat digunakan untuk melakukan tugas seperti mem-parsing badan permintaan, menyetel header respons, atau mengautentikasi pengguna, tetapi hanya untuk permintaan yang dikirim ke rute yang ditangani oleh router tersebut. Ini bisa berguna jika Anda ingin menerapkan perilaku umum ke grup rute tanpa memengaruhi keseluruhan aplikasi.
+
+
+
+5.Error-handling middleware
+=> Error-handling middleware is middleware in an Express application that is specifically designed to handle errors that occur during the request-response cycle. It can be used to catch errors that are thrown by route handlers or other middleware, and to send a response to the client indicating that an error has occurred.
+
+Error-handling middleware has a signature of (err, req, res, next), where err is the error that was thrown, and req, res, and next are the request, response, and next objects that are passed to regular middleware. It is typically defined after all other middleware and route handlers, so that it is only executed if an error is thrown during the request-response cycle.
+
+Here's an example of how to define and use error-handling middleware in an Express application.
+Contoh :
+const express = require('express');
+const app = express();
+
+// Middleware function to parse the request body
+app.use((req, res, next) => {
+  req.body = req.body || {};
+  next();
+});
+
+// Route handler for the home page
+app.get('/', (req, res) => {
+  throw new Error('Something went wrong');
+});
+
+// Error-handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong');
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+=> Dalam contoh ini, pengendali rute untuk halaman beranda melontarkan kesalahan. Kesalahan ini ditangkap oleh middleware penanganan kesalahan, yang mencatat jejak tumpukan kesalahan ke konsol dan mengirimkan respons ke klien dengan kode status 500 (Kesalahan Server Internal).
+
+Penting untuk dicatat bahwa middleware penanganan kesalahan hanya dijalankan jika terjadi kesalahan, dan harus ditentukan setelah semua middleware dan penangan rute lainnya untuk memastikan bahwa itu hanya dijalankan sebagai pilihan terakhir.
+
+
+6.Third-Party Middleware
+=> Dalam konteks kerangka web Express.js untuk Node.js, middleware pihak ketiga mengacu pada komponen perangkat lunak apa pun yang dapat dipasang ke aplikasi Express untuk menyediakan fungsionalitas tambahan. Ini dapat mencakup hal-hal seperti mem-parsing badan permintaan yang masuk, melayani file statis, menangani autentikasi, dan banyak tugas lain yang umum dalam pengembangan web.
+
+Middleware pihak ketiga biasanya diinstal menggunakan manajer paket npm dan kemudian diimpor ke aplikasi Express menggunakan fungsi yang diperlukan. Itu kemudian dapat digunakan dengan memanggil fungsi middleware sebagai bagian dari siklus permintaan-respons di aplikasi Express.
+
+Sebagai contoh, middleware body-parser dapat digunakan untuk mengurai isi permintaan HTTP yang masuk dan membuat data yang ada di dalamnya tersedia untuk fungsi penangan rute. Ini mungkin terlihat seperti berikut ini.
+Contoh :
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.post('/users', (req, res) => {
+  const user = req.body;
+  console.log(user);
+  res.send('User created successfully');
+});
+
+app.listen(3000,()=>{
+    console.log("Server 3000 sudah berjalan")
+})
+
+=> Dalam contoh ini, fungsi app.use digunakan untuk mendaftarkan middleware body-parser dengan aplikasi Express. Ini berarti bahwa middleware akan dijalankan untuk setiap permintaan masuk yang cocok dengan jalur atau metode yang ditentukan. Fungsi body-parser.json mengembalikan fungsi middleware yang akan mengurai isi permintaan sebagai JSON dan membuat data yang dihasilkan tersedia di properti req.body dari objek permintaan.

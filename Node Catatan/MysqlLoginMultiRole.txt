@@ -1,0 +1,413 @@
+Login Multi Role
+
+1.Backend
+- Pertama kita buat folder Utama untuk menyimpan frontend dan backend nya.Kita buat saja nama missal "LoginMultiRole"
+- Kemudian kita masuk ke vscode dan drag folder Utama "LoginMultiRole" 
+- Lalu didalam folder tersebut buat folder lagi bernama "backend"
+- Lalu masuk ke folder "backend" melalui terminal.
+1.Lalu dalam folder tersebut ketik : npm init -y
+2.Kemudian kita tambahkan dependensi yaitu : 
+  npm i express mysql2 sequelize argon2 cors dotenv nodemon
+
+
+Penjelasan :
+A. Express => framework web minimalis untuk Node.js yang memudahkan pembuatan aplikasi web atau API. Express membantu dalam mengatur rute, middleware, dan respons HTTP.
+B. Mysql2 => Package untuk berinteraksi dengan database MySQL dari Node.js. MySQL2 adalah versi yang lebih cepat dan lebih modern dari package mysql.
+C. Sequelize => Sebuah ORM (Object-Relational Mapping) untuk Node.js yang mendukung berbagai database SQL, termasuk MySQL. Dengan Sequelize, kamu bisa mengelola database menggunakan kode JavaScript alih-alih menulis query SQL secara langsung.
+D. Argon2 => Library untuk hashing password. Argon2 adalah salah satu algoritma hashing yang aman dan sering digunakan untuk melindungi kata sandi pengguna.Bisa pakai bcrypt juga.
+E. Cors : Middleware untuk mengaktifkan Cross-Origin Resource Sharing (CORS) di Express. Ini berguna jika aplikasi kamu perlu diakses dari domain yang berbeda, seperti ketika frontend dan backend berada di server yang berbeda.
+F. Dotenv : Package yang memungkinkan kamu untuk mengelola konfigurasi sensitif (seperti password database atau secret key) dalam file .env. Dengan dotenv, kamu bisa memuat variabel lingkungan ke dalam aplikasi Node.js dengan mudah.
+G.Nodemon : Digunakan untuk secara otomatis me-restart aplikasi Node.js setiap kali ada perubahan pada file sumber dalam proyek.
+
+3.Selanjutnya kita install lagi : npm i express-session
+
+Penjelasan :
+- Express-Session => Digunakan untuk mengelola sesi (session) dalam aplikasi Express. Sesi memungkinkan server untuk menyimpan data pengguna antara berbagai permintaan HTTP.
+
+
+4.Selanjutnya dalam "package.json" {} yang paling atas dibawah "description" dan diatas "main" tambahkan sebuah "type" : "module".Agar kita bisa menggunakan ES6 sintaks untuk import dan export module.
+
+Cth :
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "type" : "module",
+  "main": "index.js",
+
+
+- Selanjutnya kita membuat file baru didalam "backend" yaitu "index.js"
+5. Lalu didalamnya berisi kode seperti ini :
+Cth :
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+
+const app = express();
+
+app.listen()
+
+
+6. Selanjutnya kita buat file baru ".env" dalam folder "backend" juga,yang pertama kita simpan port nya disini
+
+Cth .env :
+APP_PORT = 5000
+
+- Selanjutnya kita Kembali ke index.js dan tambahkan di listen menjadi seperti ini :
+ app.listen(process.env.APP_PORT,() => {
+    console.log("Server up and running...")
+})
+
+
+7.Selanjutnya dalam "package.json" tedapat "scripts",nah dalam "scripts" tersebut tambahkan "start" : "nodemon index.js:
+Cth :
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "nodemon index.js"
+  }
+
+- Lalu dalam terminal tadi yang masih di folder backend kita tinggal ketik : npm start
+
+
+
+8.Selanjutnya dalam index tambahkan Middleware,seprti kode dibawah ini.
+Cth :
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import dotenv from "dotenv";
+dotenv.config();
+
+const app = express();
+
+app.use(session({
+    //Secret ini berasal dari .env
+    secret : process.env.SESS_SECRET,
+    resave : false,
+    saveUninitialized : true,
+    cookie : {
+        //Nilai utamanya adalah boolean antara true dan false.Jika kita pakai http kita pakai false,kalo pakai https pakai true.'auto' adalah tambahan dan ini otomatis menyesuaikan antara http dan https.
+        secure : 'auto'
+    }
+}))
+
+
+app.use(cors({
+    //1.Fungsinya agar frontend dapat mengirimmkan request beserta cookie dengan menyertakan credentialsnya
+    credentials : true,
+    
+    //2.Adalah domain yang kita izinkan untuk dapat mengakses API kita,dapat berupa Array jika kita memiliki banyak domain
+    origin : "http://localhost:3000"
+}))
+
+//Agar kita bisa menerima data dalam bentuk json
+app.use(express.json())
+
+app.listen(process.env.APP_PORT,() => {
+    console.log("Server up and running...")
+})
+
+
+
+- Selanjutnya kita buat beberapa folder didalam folder backend,yang pertama adalah folder "config" lalu buat folder "controllers" ,lalu "models",lalu folder "routes" dan terakhir adalah "middleware"
+
+9.Didalam folder "config" buat file baru bernama "Database.js" dan didalamnya kita buat kode seperti ini.
+
+Cth:
+import { Sequelize } from "sequelize";
+
+//sequelize('namaDatabase',"user","password",opsi)
+const db = new Sequelize('auth_db',"root","",{
+    host : 'localhost',
+    dialect : "mysql"
+})
+
+export default db;
+
+
+- Nah database diatas akan kita buat di phpMyAdmin.Disini kita pakai XAMPP dan pastikan "Apache" dan "MySQL" berjalan dengan baik.
+- Selanjutnya pergi ke browser dan kunjungi : localhost/phpmyadmin
+- Selanjutnya kita pergi ke "New" dan create dengan nama "auth_db" sesuaikan dengan yang no 9.Lalu sudah selesai dan Kembali ke vscode.
+
+10.Lalu didalam file "models" kita buat beberapa file,pertama adalah "UserModel.js".
+
+Cth :
+import { Sequelize } from "sequelize";
+import db from "../config/Database.js";
+
+const {DataTypes} = Sequelize;
+
+//db.define("namaTable",field,opsi)
+const Users = db.define("users",{
+    uuid : {
+        type : DataTypes.STRING,
+        defaultValue : DataTypes.UUIDV4, //digenerate otomatis oleh sequilize
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    },
+    name : {
+        type : DataTypes.STRING,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true,
+            //len : [minimal,maksimal karakter]
+            len : [3,100]
+        }
+    } ,
+    email : {
+        type : DataTypes.STRING,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true,
+            isEmail : true
+        }
+    },
+    password : {
+        type : DataTypes.STRING,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    },
+    role : {
+        type : DataTypes.STRING,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    } 
+},{
+    freezeTableName : true
+})
+
+export default Users;
+
+
+11.Kita buat file lagi difolder "models",kita beri nama "ProductModel.js",pertama kita copy semua kode dari "UserModel.js" lalu kita paste di "ProductModel.js".
+
+Lalu buat kode seperti dibawah ini :
+import { Sequelize } from "sequelize";
+import db from "../config/Database.js";
+import Users from "./UserModel.js";
+const {DataTypes} = Sequelize;
+
+//db.define("namaTable",field,opsi)
+const Products = db.define("product",{
+    uuid : {
+        type : DataTypes.STRING,
+        defaultValue : DataTypes.UUIDV4, //digenerate otomatis oleh sequilize
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    },
+    name : {
+        type : DataTypes.STRING,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true,
+            //len : [minimal,maksimal karakter]
+            len : [3,100]
+        }
+    } ,
+    price : {
+        type : DataTypes.INTEGER,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    },
+    //Saya ingin tabel product memiliki relasi dengan table user
+    userId : {
+        type : DataTypes.INTEGER,
+        //Field tidak boleh bernilai null
+        allowNull : false,
+        //Dan juga tidak boleh bernilai empty string
+        validate : {
+            notEmpty : true
+        }
+    } 
+},{
+    freezeTableName : true
+})
+
+//Relasi one to many.Satu user bisa punya banyak product.Foreign Key 'userId' berasal dari 'userId' yang diatas.
+Users.hasMany(Products);
+Products.belongsTo(Users,{foreignKey : 'userId'})
+
+export default Products;
+
+
+
+- Selanjutnya kita buat beberapa file controllers,pertama buat file "Products.js",lalu buat file "Users.js"
+
+12. Pertama di file "Product.js" kita buat kode seperti ini :
+
+Cth :
+
+import Products from "../models/ProductModel.js";
+
+export const getProducts = (req,res) => {
+    
+}
+
+export const getProductById = (req,res) => {
+
+}
+
+export const createProduct = (req,res) => {
+
+}
+
+export const updateProduct = (req,res) => {
+
+}
+
+export const deleteProduct = (req,res) => {
+
+}
+
+
+
+13. Lalu kita copy kode ini dan paste kan di "Users.js" juga.
+Cth :
+import User from "../models/UserModel.js" ;
+
+export const getUser = (req,res) => {
+    
+}
+
+export const getUserById = (req,res) => {
+
+}
+
+export const createUser = (req,res) => {
+
+}
+
+export const updateUser = (req,res) => {
+
+}
+
+export const deleteUser = (req,res) => {
+
+}
+
+
+- Selanjutnya kita buat file di folder "routes" yang pertama adalah "UserRoute.js",kemudian "ProductRoute.js"
+
+
+14. Selanjutnya dalam "UserRoute.js" kita buat kode seperti ini.
+
+Cth :
+import express from "express"
+import {
+    getUser,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser
+} from "../controllers/Users.js"
+
+const router = express.Router()
+
+router.get("/users",getUser);
+router.get("/users/:id",getUserById);
+router.post("/users/",createUser);
+router.patch("/users/:id",updateUser);
+router.delete("/users/:id",deleteUser);
+
+export default router;
+
+
+
+15. Selanjutnya kita copy kode diatas dan paste juga di "ProductRoute.js" dan kemudian ubah kodenya seperti ini :
+
+Cth :
+
+import express from "express"
+import {
+    getProducts,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProduct    
+} from "../controllers/Products.js"
+
+const router = express.Router()
+
+router.get("/products",getProducts);
+router.get("/products/:id",getProductById);
+router.post("/products/",createProduct);
+router.patch("/products/:id",updateProduct);
+router.delete("/products/:id",deleteProduct);
+
+export default router;
+
+
+- Selanjutnya kita pergi ke "index.js" lalu kita import : UserRoute,ProductRoute.Lalu kita buat middleware juga didalamnya dan kita import juga db Database.js agar bisa mengenerate table.
+
+Cth :
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import dotenv from "dotenv";
+
+import UserRoute from "./routes/UserRoute.js";
+import ProductRoute from "./routes/ProductRoute.js";
+dotenv.config();
+
+//Import koneksi agar bisa sign model untuk mengenerate tabel secara otomatis.
+import db from "./config/Database.js";
+
+const app = express();
+
+(async() => {
+    await db.sync();
+})();
+
+app.use(session({
+    //Secret ini berasal dari .env
+    secret : process.env.SESS_SECRET,
+    resave : false,
+    saveUninitialized : true,
+    cookie : {
+        //Nilai utamanya adalah boolean antara true dan false.Jika kita pakai http kita pakai false,kalo pakai https pakai true.'auto' adalah tambahan dan ini otomatis menyesuaikan antara http dan https.
+        secure : 'auto'
+    }
+}))
+
+
+app.use(cors({
+    //1.Fungsinya agar frontend dapat mengirimmkan request beserta cookie dengan menyertakan credentialsnya
+    credentials : true,
+    
+    //2.Adalah domain yang kita izinkan untuk dapat mengakses API kita,dapat berupa Array jika kita memiliki banyak domain
+    origin : "http://localhost:3000"
+}))
+
+//Agar kita bisa menerima data dalam bentuk json
+app.use(express.json())
+app.use(UserRoute);
+app.use(ProductRoute);
+
+app.listen(process.env.APP_PORT,() => {
+    console.log("Server up and running...")
+})

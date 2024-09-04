@@ -1,0 +1,66 @@
+Mongoose
+1.Apa itu Mongose
+2.Tipe Data
+3.Kesimpulan
+4.Cara menginstall
+
+1.Apa itu Mongoose
+=> Adalah sebuah Object Document Mapper(ODM).Ini berarti Mongoose mengizinkan Anda untuk mendefinisikan obyek dengan skema yang benar-benar di ketik yang dipetakan ke sebuah dokumen MongoDB.
+
+Mongoose menyediakan jumlah fungsionalitas yang luarbiasa yang berkaitan dengan pembuatan dan pengerjaan skema.Mongoose saat ini memiliki delapan tipe skema dimana propertinya disimpan seperti saat berada di MongoDB.Diantaranya :
+1.String
+2.Number
+3.Date
+4.Buffer
+5.Boolean
+6.Mixed
+7.ObjectId
+8.Array
+
+
+2 Setiap tipe data memungkinkan anda untuk menentukan :
+- Sebuah nilai default
+- Sebuah fungsi validasi custom
+- Menunjukan field yang dibutuhkan
+- Fungsi get yang memungkinkan anda untuk memanipulasi data seblum dikembalikan sebagai objek
+- Sebuah set fungsi yang memungkinkan anda untuk memanipulasi data sebelum disimpan ke database
+- Membuat indeks yang memungkinkan data agar ditarik secara lebih cepat.
+
+
+3.Selanjutnya untuk opsi umum ini,tipe data tertentu memungkinkan anda untuk menyesuikan lebih lanjut bagaimana data disimpan dan diambil dari database.Sebagai contoh,sebuah tipe data string juga memungkinkan anda untuk menentukan pilihan tambahan sebagai berikut : 
+- Mengubah menjadi hruf kecil
+- Mengubah menjadi huruf besar
+- Memangkas data sebelum disimpan
+- Reguler-Expression yang dapat membatasi data yang diizinkan untuk disimpan selama dalam proses validasi
+- Sebuah enum yang dapat menentukan daftar string yang valid
+
+4.Properti number dan Date keduanya mendukung penentuan nilai minimal dan maksimal yang diizinkan untuk field tersebut.
+
+5.Sebagian besar dari 8 jenis data yang diizinkan seharusnya cukup familiar untuk anda.Namun,ada beberapa pengecualian yang mungkin menjadi pengecualian bagi anda,seperti Buffer,Mixed,ObjectId, dan Array.
+
+- Tipe data Buffer memungkinkan anda untuk menyimpan data biner.Contoh yang umum untuk data biner seperti gambar atau file encodem seperti doukmen pdf.
+
+- Tipe data Mixed mengubah properti menjadi field "dapat menjadi apa saja".Field ini menyerupai berapa banyak pengembang yang menggunakan MongoDB karena tidak ada struktur yag jelas.Berhati-hatilah menggunakan tipe data ini karena tipe ini kehilangan banyak fitur hebat yang disediakan oleh Mongoose,seperti validasi data dan pendeteksi perubahan entitas untuk dapat mengetahui secara otomatis dalam memperbarui properti saat menyimpan.
+
+- Tipe data ObjectId umumnya menentukan sebuah tautan ke dokumen yang lain di dalam database anda.Sebagai contoh,jika anda memiliki sebuah koleksi buku dan penulis,dokumen buku kemungkinan berisi sebuah properti ObjectId yang menunjuk ke penulis tertentu dari dokumen.
+
+- Tipe data Array memungkikan anda untuk menyimpan array yang seperti javascript.Dengan sebuah tipe data array,anda dapat melakukan operasi array js yang umum,seperti push,pop,shift,slice,dll.
+
+
+6.Kesimpulan
+=> MongoDB adalah databse yang memungkinkan anda menyimpan dokumen dengan struktur dinamis.Dokumen-dokumen ini disimpan di dalam koleksi.
+
+- Mongoose adalah pustaka Javascript yang memungkinkan anda menentukan skema dengan data yang strongly-typed.Setelah skema didefinisikan,Mongoose memungkinkan anda membuat Model berdasarkan skema tertentu.Model Mongoose kemudian dipetakan ke Dokumen MongoDB melalui definisi skema Model.
+
+
+7.Cara menginstall Mongoose
+- Pertama anda harus punya dulu node js dan mongodb.
+- Kedua anda buat folder yang digunakan untuk menjalankan mongoose.
+- Ketiga pergi ke cmd lalu jalankan perintah : npm init -y.
+Fungsinya untuk mendefinisikan dari folder yang kita punya sebagai apk berbasis node js.
+- Lalu ketik : npm install mongoose.Pastikan terhubung ke internet
+- Jika berhasil maka folder yang kita buat untuk mongoose tadi akan ada modul baru.
+
+
+8.Perintah
+- ketik mongod : Untuk menjalankan server database mongodb.

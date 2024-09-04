@@ -1,0 +1,461 @@
+JWT(JSON Web Token)
+
+
+1.Untuk membuat sebuah login dan register,maka kita harus membuat midlewarenya juga sama seperti membuat CRUD.
+
+Algoritma :
+- Pertama kita membuat sebuah midleware untuk post data yang di daftarkan oleh user
+- lalu data yang didaftarkan tersebut akan kita cek ke dalam database,apakah datanya sudah ada atau belum,jika belum maka kita masukan,jika ada kita kasih pesan 'data sudah ada'
+- Lalu ketika data belum ada maka kita lakukan pengecekan menggunakan jwt
+
+
+1.Pertama kita membuat Schema untuk userLogin,mulai dari nama,email,password,dll.
+Cth : 
+const mongoose = require('mongoose')
+
+const userSchema = mongoose.Schema({
+  nama : {
+	type : String,
+	required : true,
+	max : 255
+	},
+   email : {
+	type : String,
+	required : true,
+	max : 100
+	},
+   password : {
+	type : String,
+	required : true,
+	min : 6,
+	max : 1024
+	},
+   createdAt : {
+	type : Date,
+	default : Date.mow
+	},
+})
+
+module.exports = mongoose.model('User',userSchema)
+
+
+2.Kedua kita buat post terlebih dahulu yang dimana nanti data yang baru akan di post ke dalam database khusus login.
+Cth : 
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+
+//Register
+router.post("/register",async(req,res) => {
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : req.body.password
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+module.exports = router;
+
+
+3.Lalu kita export lah Rute nomor 2 ini kedalam index utamanya.
+Cth :
+const userRoutes = require('./importRoutes')
+
+app.use('contoh/user',userRoutes)
+
+
+
+4.Nah selanjutnya,kita ubahlah passwordnya ini atau kita enkripsi passwordnya menjadi karakter random.
+
+Package yang akan digunakan adalah bcryptjs.bcryptjs adalah sebuah pustaka atau modul yang digunakan untuk mengenkripsi dan memverifikasi kata sandi (password) dalam bahasa pemrograman JavaScript. 
+
+Caranya : npm install bcryptjs
+
+=> Kemudian kita panggilah packagenya ini kedalam rute post pada userLogin.Sebelum user nge-post data nya,password yang dibuat oleh user itu terlebih dahulu di enkripsi menjadi sebuah karakter random,sebelum dimasukan ke dalam database.
+
+Contoh : 
+const bcrypt = require('bcryptjs')
+
+router.post("/register",async(req,res) => {
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+PENJELASAN : 
+1.genSalt() => genSalt() adalah sebuah fungsi dari modul bcryptjs yang digunakan untuk menghasilkan "salt" yang akan digunakan dalam proses penghash-an password.Salt adalah string acak yang digunakan untuk menambahkan entropi pada password sebelum dihash.
+
+Fungsi genSalt() menerima dua parameter:
+A.Rounds => Angka yang menentukan seberapa lama algoritma hashing dijalankan. Semakin tinggi angka rounds, semakin lama waktu yang dibutuhkan untuk menghasilkan salt dan hash, sehingga semakin sulit bagi penyerang untuk mencoba menebak password dengan serangan brute force. Namun, nilai yang terlalu tinggi juga dapat membuat proses hashing menjadi lebih lambat, yang bisa berpengaruh pada performa aplikasi Anda.
+
+B.Callback => Fungsi callback yang akan dipanggil setelah salt berhasil di-generate. Biasanya, fungsi ini digunakan untuk melakukan hashing password setelah salt selesai dibuat.
+
+Contoh : const bcrypt = require('bcryptjs');
+const password = 'password123';
+
+bcrypt.genSalt(10, (err, salt) => {
+  if (err) throw err;
+  
+  bcrypt.hash(password, salt, (err, hash) => {
+    if (err) throw err;
+    console.log('Password yang di-hash:', hash);
+  });
+});
+
+=> Untuk callback itu opsional
+
+
+2.hash() => Fungsi ini digunakan untuk menghash password dengan menggunakan salt yang telah dihasilkan sebelumnya. Fungsi hash() menerima tiga parameter: data (data yang akan dihash, dalam kasus ini, password), salt (salt yang telah dihasilkan sebelumnya), dan callback (fungsi untuk menangani hasil hash yang dihasilkan secara asinkron).
+
+Cth : 
+const bcrypt = require('bcryptjs');
+const password = 'password123';
+const saltRounds = 10;
+
+bcrypt.genSalt(saltRounds, (err, salt) => {
+  if (err) throw err;
+
+  bcrypt.hash(password, salt, (err, hash) => {
+    if (err) throw err;
+    console.log('Password yang di-hash:', hash);
+  });
+});
+
+=> Untuk callback itu opsional
+
+
+3.compare(password,hash,callback) => Fungsi ini digunakan untuk membandingkan password yang dimasukkan oleh pengguna dengan hash yang tersimpan di database. Fungsi ini akan membandingkan password yang diberikan dengan hash, dan jika cocok, akan memanggil callback dengan parameter true, dan false jika tidak cocok.
+Contoh : 
+const bcrypt = require('bcryptjs');
+const password = 'password123';
+const hashFromDB = '$2a$10$vGCMfNqUjECmH2Tva6By/.rRoEDK/hm9i92R3SzPWeaLcB6tvJSL2'; // Contoh hash dari password123
+
+bcrypt.compare(password, hashFromDB, (err, isMatch) => {
+  if (err) throw err;
+  if (isMatch) {
+    console.log('Password cocok!');
+  } else {
+    console.log('Password tidak cocok!');
+  }
+});
+
+
+
+
+5.Selanjutnya kita akan melakukan pengecekan terhadap email.Jika emailnya sudah ada dalam database maka kita kasih warning agar user menggunakan email yang lain.
+
+Contoh :
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+router.post("/register",async(req,res) => {
+
+  //Cek email 
+    const emailExist = await User.findOne({email : req.body.email})
+    if(emailExist) return res.status(400).json({
+	status : res.statusCode,
+	message : "Email sudah digunakan"
+    })
+  
+
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+PENJELASAN :
+1.findOne => findOne adalah salah satu metode dari MongoDB yang digunakan untuk melakukan pencarian atau query data dalam koleksi (collection) dokumen. Metode ini digunakan untuk mencari dokumen pertama yang sesuai dengan kriteria pencarian yang diberikan.
+
+Sintaks :
+ db.collection.findOne(query, projection);
+=> Ini jika kita mencarinya bukan pakai js,tapi langsung pakai mongodb.
+
+
+6.Selanjutnya kita melakukan validasi,ketika kita membuat user.Misalya email yang kita inputkan itu tidak sesuai format yang sebenarnya.Kita pakai package namanya : @hapi/joi.
+
+=> Pustaka @hapi/joi sangat populer dan sering digunakan untuk melakukan validasi data yang masuk ke dalam aplikasi web atau API sebelum data tersebut diproses lebih lanjut atau disimpan di database. Dengan menggunakan @hapi/joi, Anda dapat dengan mudah mendefinisikan skema atau aturan validasi untuk objek JavaScript, baik itu untuk request payload, parameter URL, atau data lainnya.
+
+=> Beberapa fitur dan kemampuan yang dimiliki oleh @hapi/joi antara lain:
+1.Validasi tipe data: Anda dapat mendefinisikan tipe data yang diharapkan untuk setiap field atau properti dalam objek, seperti string, number, boolean, array, dan lain-lain.
+2.Validasi nilai minimum dan maksimum: Anda dapat menentukan nilai minimum dan maksimum untuk field berbasis numerik.
+3.Validasi string: Anda dapat mendefinisikan panjang minimal dan maksimal, atau menggunakan regular expression untuk memvalidasi string.
+4.Validasi array: Anda dapat menentukan panjang minimal dan maksimal, serta jenis data yang diharapkan dalam array.
+5.Validasi objek bersarang: Anda dapat dengan mudah melakukan validasi untuk objek yang memiliki struktur yang bersarang atau kompleks.
+6.Pesan kustom: Anda dapat menentukan pesan kustom yang akan ditampilkan jika validasi gagal.
+
+
+Cara instal : npm install @hapi/joi
+
+- Pertama kita bisa saja langsung buat validasi di file yang sama,tapi alangkah baiknya kita buat di file terpisah,biar rapi.Nah kita buat ada 2 validasi,yaitu pada saat register dan login.
+
+Contoh :
+const Joi = require('@hapi/joi')
+
+const registerValidation = (data) => {
+ const schema = Joi.object({
+   nama : Joi.string().required()
+   email : Joi.string().email().required()
+   password : Joi.string().min(6).required()
+  })
+ 
+ return schema.validate(data)
+
+}
+
+PENJELASAN : 
+- Joi.string().required() => Artinya data yang wajib adalah string,jadi jika user mengisi misalnya numerik maka dia akan warning dan menyuruh user untuk masukan karakter string,kemudian ini bentuknya adalah required atau wajib diisi.
+- Joi.string().min(6) => Artinya password wajib diisi dengan tipe string dan minimal ada 6 karakter.Jika kurang dari situ maka akan ada warning.
+- schema.validate => Dalam Joi, Anda mendefinisikan skema (schema) yang menggambarkan aturan atau struktur data yang valid. Setelah Anda mendefinisikan skema, Anda dapat menggunakan metode schema.validate() untuk memeriksa apakah data yang diberikan sesuai dengan skema yang ditentukan.
+
+=> Selanjutnya kita buat juga untuk loginnya. 
+
+const loginValidation = (data) => {
+ const schema = Joi.object({
+   email : Joi.string().email().required()
+   password : Joi.string().min(6).required()
+  })
+ 
+ return schema.validate(data)
+}
+
+module.exports.registerValidation = registerValidation;
+module.exports.loginValidation = loginValidation;
+
+
+
+
+
+6.Selanjutnya kita gunakan registerValidation dan loginValidation kedalam file midleware post sebelumnya.
+
+- Pertama kita import terlebih dahulu registerValidation dan LoginValidation.
+Cth :
+const express = require("express")
+const router = express.Router()
+const User = require("../tempatSchemaUserLogin)
+
+//Import Validation
+const {registerValidation} = require('../fileValidation')
+
+router.post("/register",async(req,res) => {
+
+  //const validation = registerValidation(req.body)
+  //res.send(validation)
+
+  !!!Matikan semua yang ada dibawah lalu jalankan diatas agar send nya bisa berfungsi
+  
+
+  const {error} = registerValidation(req.body)
+  //res.send(error.details[0].messages)
+
+  if(error) return res.status(400).json({
+    status : res.statusCode,
+    message : error.details[0].messages
+  })
+
+
+  //Cek email 
+    const emailExist = await User.findOne({email : req.body.email})
+    if(emailExist) return res.status(400).json({
+	status : res.statusCode,
+	message : "Email sudah digunakan"
+    })
+  
+
+
+  //Hash Password
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+
+  const user = new User({
+	nama : req.body.nama,
+	email : req.body.email,
+	password : hashPassword
+	})
+	try {
+	const saveUser = await user.save()
+	res.json(saveUser)
+	}catch(err){
+	  res.status(400).json({
+	  status :res.statusCode,
+	  message : "Gagal membuat user baru"
+	})
+
+	}
+})
+
+
+
+
+
+7.Selanjutnya kita membuat yang login.
+
+=> Kita membuat di file yang sama juga. tapi kita buat untuk router baru.
+
+Cth :
+router.post('/login',async(req,res) => {
+  //if email exist
+  const user = await User.findOne({email : req.body.email})
+  if(!user) return res.status(400).json({
+   status : res.statusCode,
+   message : "Email Salah"
+  })
+
+  //Cek Password
+  const validPwd = await bcrypt.compare(req.body.password,user.password)
+  if(!validPwd) return res.status(400).json({
+   status : res.statusCode,
+   message : "Password anda Salah"
+  })
+  
+ res.send("berhasil login")
+
+})
+
+
+
+8.Terakhir setelah berhasil login,kita akan membuat token dengan menggunakan JWT.
+
+Cara install : npm install jsonwebtoken
+
+=> Kita tambahkan jwt dalam file midleware sebelumnya.
+Cth : const jwt = require('jsonwebtoken');
+
+
+Lalu tambhakan token dalam post login tadi.
+
+
+router.post('/login',async(req,res) => {
+  //if email exist
+  const user = await User.findOne({email : req.body.email})
+  if(!user) return res.status(400).json({
+   status : res.statusCode,
+   message : "Email Salah"
+  })
+
+  //Cek Password
+  const validPwd = await bcrypt.compare(req.body.password,user.password)
+  if(!validPwd) return res.status(400).json({
+   status : res.statusCode,
+   message : "Password anda Salah"
+  })
+  
+
+  //Membuat token menggunakan JWT
+  const token = jwt.sign({_id : user._id},process.env.SECRET_KEY) 
+  res.header('nama-token',token).json({
+   token : token
+  })
+
+})
+
+PENJELASAN :
+1.jwt.sign() => dalah metode yang digunakan untuk membuat token JSON Web Token (JWT) di Node.js. JWT adalah standar terbuka (RFC 7519) yang digunakan untuk mewakili klaim (claims) antara dua pihak secara aman. Token JWT terdiri dari tiga bagian, yaitu header, payload (klaim), dan tanda tangan (signature).
+
+2.Kita bisa membuat Secret_key dalam file .env yang dimana isinya bebas.
+Contoh : 
+SECRET_KEY = akraeiraermamrnarnaer
+
+
+
+
+9.Selanjutnya kita pasang autentikasi untuk setiap rootnya.
+
+- Pertama kita membuat sebuah file baru dengan nama bebas.js
+- Dalam file tersebut kita panggil jwt nya
+Cth : 
+const jwt = require('jsonwebtoken')
+
+const verifyToken = (req,res,next) => {
+  const token = req.header('nama-token')
+
+  if(!token) return   res.status(400).json({
+     status : res.statusCode,
+     message : "Access Denied!"
+   })
+  try{
+  const verified = jwt.verify(token,process.env.SECRET_KEY)
+  req.user = verified
+  next()
+  }catch(err){
+   res.status(400).json({
+     status : res.statusCode,
+     message : "Invalid Token !"
+   })
+  }
+}
+
+module.exports = verifyToken
+
+
+PENJELASAN :
+- jwt.verify() => jwt.verify() adalah metode yang digunakan untuk memverifikasi dan memecahkan token JSON Web Token (JWT) yang diterima di Node.js. JWT adalah standar terbuka (RFC 7519) yang digunakan untuk mewakili klaim (claims) antara dua pihak secara aman. Token JWT terdiri dari tiga bagian, yaitu header, payload (klaim), dan tanda tangan (signature).
+
+
+
+10.Selanjutnya kita bisa pasang di dalam Midleware di file lain.Misalnya untuk midleware getData pemasaran dalam database pemasaran barang.
+
+Contoh : 
+
+const verifyToken = require('../letakfileVerify')
+
+route.get("/dataTes",verifyToken,async(req,res) => {
+    try{
+        const data = await DataTes.find()
+        res.status(200).json(data)
+    }catch(err){
+        console.log(err)
+    }
+})

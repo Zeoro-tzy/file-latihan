@@ -1,0 +1,365 @@
+Backend
+File Models :
+const mongoose = require("mongoose");
+
+const schemaImg = new mongoose.Schema({
+    filename : String,
+    path : String,
+    originalName : String
+})
+
+module.exports = mongoose.model("Image",schemaImg);
+
+
+========================================================
+
+File Controllers input3Img.js :
+const express = require("express")
+const rute = express.Router();
+const schemaImg = require("../Models/3inputImg");
+const multer = require("multer");
+const path = require("path")
+
+//Konfigurasi Multer untuk upload file
+const storage = multer.diskStorage({
+    destination : (req,file,cb) => {
+        cb(null,'uploadsGambar/');
+    },
+    filename : (req,file,cb) => {
+        cb(null,Date.now() + path.extname(file.originalname));
+    }
+})
+
+const upload = multer({storage});
+
+
+rute.post("/dataImg",upload.single('image'),async(req,res) => {
+    try{
+        const newImage = new schemaImg({
+            filename : req.file.filename,
+            path : req.file.path,
+            originalname : req.file.originalname
+        });
+        await newImage.save()
+        res.status(200).json(newImage);
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+
+rute.get("/dataImg",async(req,res) => {
+    try{
+        const images = await schemaImg.find();
+        res.status(200).json(images)
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+rute.get("/dataImg/:id",async(req,res) => {
+    try{
+        const Id = req.params.id;
+        const getData = await schemaImg.findById(Id);
+        res.status(200).json(getData);
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+module.exports = rute;
+
+
+========================================================
+
+Jangan lupa membuat folder "uploadsGambar" secara manual dalam backend agar jalur gambar yang diupload bisa tersimpan disini nantinya.
+
+========================================================
+File Index.js : 
+
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const mongoString = process.env.DATABASE_URL;
+const app = express();
+const cors = require("cors");
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
+//1.Input Teks
+const inputTeksRute = require('./Controllers/input1Teks.js');
+
+//2.Input Radio
+const inputRadioRute = require("./Controllers/input2radio.js");
+
+//3.Input Image
+const inputImageRute = require("./Controllers/input3Img.js");
+
+app.use(cors());
+
+//Koneksi ke mongodb
+mongoose.connect(mongoString);
+const db = mongoose.connection;
+
+db.once("connected",() => {
+    console.log("Database Connected")
+})
+
+db.on("error",(err) => {
+    console.log(err)
+})
+
+//1.Input Teks,Checkbox
+app.use("/input",inputTeksRute);
+
+//2.Input Radio Button
+app.use("/inRad",inputRadioRute);
+
+
+//Menyajikan file statis dari folder 'uploads" agar bisa tampil di browser
+app.use("/uploadDonk",express.static('uploadsGambar'))
+
+//3.Input Image
+app.use("/inImg",inputImageRute)
+
+
+app.listen(3001,() => {
+    console.log("Server sudah berjalan")
+})
+
+
+
+========================================================
+
+
+
+Frontend :
+
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+
+const Input3Img = () => {
+  const [imgData,setImgData] = useState([]);
+
+  const getDataImg = async() => {
+    const res = await axios.get("http://localhost:3001/inImg/dataImg");
+    setImgData(res.data);
+    console.log(res.data);
+  }
+
+  useEffect(() => {
+    getDataImg();
+  },[])
+
+  return (
+    <div>
+      <h1 className='border-2 border-black p-2 text-xl m-4'>3. Input Image</h1>
+      <div className=' bg-orange-200 mt-4 mx-3 pb-5'>
+          
+          <div className='flex p-3'>
+            <input type="file" name="" id="" />
+          </div>
+
+          <div className='mx-auto flex w-28'>
+            <input type="checkbox" name="" id="" />
+            <span className='mx-3'>Select All</span>
+          </div>
+
+
+          {imgData.map(img => (
+              <div class=" bg-blue-200 flex justify-between px-5 mt-3 py-2 mx-3">
+              {/* {imgData.map(img)} */}
+              <div className='flex w-1/4 items-center'>
+                <input type="checkbox" name="" id="" className=' mt-1' />
+                <img src={`http://localhost:3001/uploadDonk/${img.filename}`} alt="tes" className=' w-40 h-40 ml-3' style={{ width : '300px',height:'300px' }} />
+              </div>
+
+              <div class=" w-1/4 flex justify-around items-center">
+                <button className=' bg-gray-300 px-5 py-1 h-10'>Edit</button>
+                <button className='bg-red-300 px-5 py-1 h-10'>Hapus</button>
+              </div>
+            </div>
+          ))}
+
+        </div>
+    </div>
+  )
+}
+
+export default Input3Img
+
+
+===============================================================
+
+
+Tambahan 
+
+const path = require("path")
+const fs = require("fs") // untuk menghapus file dari sistem
+
+Patch :
+rute.patch("/dataImg/:id",upload.single('image'),async(req,res) => {
+    try{
+        const image = await schemaImg.findById(req.params.id);
+        //Jika gambar ada maka hapus gambar lama
+        if(image){
+            if(image.path){
+                fs.unlink(image.path,(err)=> {
+                    if(err) console.log(err);
+                })
+            }
+
+            //Update dengan gambar baru
+            image.filename = req.file.filename;
+            image.path = req.file.path;
+            image.originalName = req.file.originalName
+            await image.save();
+            res.status(200).json(image);
+        }
+    }catch(err){
+        console.log(err)
+    }
+})
+
+
+===============================================================
+
+Delete :
+
+rute.delete("/dataImg/:id",async(req,res) => {
+    try{
+        const Id = req.params.id;
+        const delData = await schemaImg.findByIdAndDelete(Id);
+        
+        //Hapus file dari sistem
+        if(delData && delData.path){
+            fs.unlink(delData.path,(err) => {
+                if(err) console.log("Error deleting file :",err)
+            })
+        }
+        
+        res.status(200).json(delData);
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+
+=================================================================
+
+
+Frontend :
+
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import "../dist/output.css";
+
+const Input3Img = () => {
+  const [imgData,setImgData] = useState([]);
+  const [selectFile,setSelectFile] = useState(null);
+  const [editImg,setEditImg] = useState(null);
+  const [editFile,setEditFile] = useState(null);
+
+  const getDataImg = async() => {
+    const res = await axios.get("http://localhost:3001/inImg/dataImg");
+    setImgData(res.data);
+    console.log(res.data);
+  }
+
+  const handleFileChange = (e) => {
+    setSelectFile(e.target.files[0]);
+  }
+
+  const handleUpload = async() => {
+    try{
+      if(!selectFile) return;
+
+      const formData = new FormData();
+      formData.append('image',selectFile);
+
+      await axios.post("http://localhost:3001/inImg/dataImg",formData);
+      getDataImg();
+      setSelectFile(null)
+      document.getElementById("file-input").value = "";
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const delData = async(id) => {
+    try{
+      axios.delete("http://localhost:3001/inImg/dataImg/" + id);
+      setImgData((prevData) => prevData.filter(img => img._id !== id))
+    }catch(err){  
+      console.log(err)
+    }
+  }
+  
+  //Handle file 
+  const handleEditFileChange = (e) => {
+    setEditFile(e.target.files[0]);
+  }
+
+  //Edit Image
+  const handleEdit = async (id) => {
+    if(!editFile) return;
+
+    const formData = new FormData();
+    formData.append("image",editFile);
+
+    try{
+      await axios.patch("http://localhost:3001/inImg/dataImg/" + id,formData);
+      setEditFile(null);
+      setEditImg(null);
+      getDataImg();
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(() => {
+    console.log(selectFile)
+  },[selectFile])
+
+  useEffect(() => {
+    getDataImg();
+  },[])
+
+  return (
+    <div>
+      <h1 className='border-2 border-black p-2 text-xl m-4'>3. Input Image </h1>
+      <div className=' mt-4 mx-3 pb-5'>
+          
+          <div className='p-3 flex justify-evenly'>
+            <input type="file" name="" id="file-input" onChange={handleFileChange}/>
+            <button className=' bg-green-300 p-2 px-5 hover:bg-green-400' onClick={handleUpload}>Upload</button>
+          </div>
+
+          <div className='mx-auto flex w-28'>
+            <input type="checkbox" name="" id="" />
+            <span className='mx-3'>Select All</span>
+          </div>
+
+
+          {imgData.map(img => (
+              <div class=" bg-blue-200 flex justify-between px-5 mt-3 py-2 mx-3" key={img._id}>
+              <div className='flex w-1/4 items-center'>
+                <input type="checkbox" name="" id="" className=' mt-1' />
+                <img src={`http://localhost:3001/uploadDonk/${img.filename}`} alt="tes" className=' w-64 h-48 ml-3' />
+              </div>
+
+              <div class=" w-2/4 flex justify-around items-center">
+                <input type='file' id={`file-input-${img._id}`} style={{ display : 'none' }}/>
+                <input type="file" onChange={handleEditFileChange} />
+                <button className=' bg-gray-200 px-5 py-1 h-10 hover:bg-gray-300' onClick={() => handleEdit(img._id)} >Edit</button>
+                <button className='bg-red-200 px-5 py-1 h-10 hover:bg-red-300' onClick={() => delData(img._id)}>Hapus</button>
+              </div>
+            </div>
+          ))}
+
+        </div>
+    </div>
+  )
+}
+
+export default Input3Img

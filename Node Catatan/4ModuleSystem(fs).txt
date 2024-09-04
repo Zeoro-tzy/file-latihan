@@ -1,0 +1,359 @@
+Module System
+https://www.petanikode.com/nodejs-file/
+1.Modules
+....
+8.Cara menggunakan Modul File System untuk baca Tulis File
+9.Membuat File di Node JS
+10.Mengubah file node js
+11.Menghapus File node js
+
+1.Modules
+=> Sekumpulan kode yang dapat digunakan kembali dengan antarmuka yang terdefinisi.
+
+2.Node Modules
+=> Fungsionalitas yang simpel ataupun kompleks yang tersimpan didalam sebuah file javascript yang dapat digunkan kembali pada aplikasi node js.
+
+=> Setiap modul di dalam node js memiliki konteksnya masing-masing,tidak bisa saling bercampur dengan modul lain pada lingkup global Kecuali melakukan expor dan import.
+
+
+3.ada 3 tipe modules.
+- Core Modules => Modules yang sudah dimiliki node js di dalam library nya jadi kita bisa pakai misal:mengakses file system kita tinggal manggil modulesnya,network,dll.
+- Local Modules => File yang kita bikin sendiri.Nah dalam membuat local modules kita perlu lakukan 2 hal yaitu : mengekspor dan require.
+- Third Party Modules => Modules yang dibikin orang lain dan bisa dipakai biasa disebut NPM modules dan semua modules ini sudah dikumpulin oleh pihak node.
+
+
+
+4.require()
+=> Digunakan untuk 3 modul diatas.
+- Fungsi require mencari modul dengan urutan sebagai berikut : 
+1.Core Modules => Dia mencari ada gak core module yang dipanggil jika tidak ada 
+maka dia akan mencari di 
+2.local modules file atau direktori (./ atau / atau ../)
+3.Lalu mencari folder "node_modules" untuk Third Party Modules.
+
+=> Jika menggunakan ketiganya maka akan dimulai dari core modules lalu local modul dan terakhir npm modules
+
+
+
+5.Membuat lebih dari 1 exports dalam 1 modul
+=> Kita juga bisa membuat lebih dari 1 exports dalam 1 modul.Misalnya kita ingin memiliki 3 fungsi dan 2 variabel dalam 1 modul dan kita ingin semuanya itu di ekspor supaya modul lain bisa menggunakannya.Jika kita mengekspor semuanya itu ada caranya,jika menggunakan cara biasa itu akan error karena banyaknya nilai yang di ekspor dan menjadi tidak terdefinisi.
+
+Ilustrasi: 
+  Pada saat membuat module.exports Tambahkan method atau properti kedalam module exports tersebut sehingga pada saat di ekspor nilai terdefinsi.
+
+Caranya : 
+script1.js : 
+  module.exports.Percobaan = fungsiCoba;
+  module.exports.var = varB;
+
+script2.js :
+  const simpanNilai = require("./script1.js")
+
+ console.log(simpanNilai.Percobaan("Sang Penulis",20),var)
+
+- Lalu pada saat kita ingin mengimpor semua fungsi atau variabel dalam 1 modul tersebut,kita tidak perlu menulis banyak require.Cukup 1 require aja dan disimpan dalam 1 variabel.
+- Jika ingin mencetaknya maka caranya adalah memanggil variabel yang menyimpan modul yang diimpor lalu tambah . dan masukan nama nilai yang ingin di panggil.
+
+
+
+Cth : 
+ms.js : 
+
+const coba = (nama,umur) => {
+        return `Nama saya adalah ${nama},berumur ${umur} tahun`;
+    }
+    
+module.exports.Percobaan = coba ;
+
+
+//2.Variabel
+let nama = "Sang sutradara";
+
+module.exports.nama = nama;
+
+
+//3.Fungsi lain
+function hobi(hobi){
+    return `Hobi saya adalah ${hobi}`;
+}
+
+module.exports.Hobi = hobi;
+
+
+index.js :
+const eksporModul = require("./ms")
+
+console.log(eksporModul.Percobaan("Sang Penulis",20), eksporModul.nama,eksporModul.Hobi("Main Game"))
+
+
+
+
+
+6.Mengekspor function,var,object,arr,class
+
+Cth : 
+
+ms.js
+
+const coba = (nama,umur) => {
+    return `Nama saya adalah ${nama},berumur ${umur} tahun`;
+}
+
+module.exports.Percobaan = coba ;
+
+
+//2.Variabel
+let nama = "Sang sutradara";
+
+module.exports.nama = nama;
+
+
+//3.Array
+const arr = ["Actor",25]
+
+module.exports.array = arr;
+
+
+//4.Object
+const Orang = {
+    nama : "Leo Cristiano",
+    hobi : "Bermain PS",
+    ctkhsl() {
+        return `Nama saya adalah ${this.nama},hobi saya adalah ${this.hobi}`;
+    }
+}
+
+module.exports.orang = Orang;
+
+
+//Class
+class mhs {
+    constructor(){
+        console.log("Hallo semua")
+    }
+}
+
+module.exports.mahasiswa = mhs;
+
+
+
+index.js :
+
+const eksporModul = require("./ms")
+console.log(eksporModul.Percobaan("Sang Penulis",20), eksporModul.nama,eksporModul.array[1],eksporModul.orang.ctkhsl(),new eksporModul.mahasiswa())
+
+
+
+
+7.Jika sebanyak ini kita bisa menyingkat dengan menggunakan object.
+Cth : 
+
+script 1 : 
+
+const coba = (nama,umur) => {
+    return `Nama saya adalah ${nama},berumur ${umur} tahun`;
+}
+
+//2.Variabel
+let nama = "Sang sutradara";
+
+
+//3.Array
+const arr = ["Actor",25]
+
+
+//4.Object
+const Orang = {
+    nama : "Leo Cristiano",
+    hobi : "Bermain PS",
+    ctkhsl() {
+        return `Nama saya adalah ${this.nama},hobi saya adalah ${this.hobi}`;
+    }
+}
+
+
+//Class
+class mhs {
+    constructor(){
+        console.log("Hallo semua")
+    }
+}
+
+module.exports = {coba,nama,arr,Orang,mhs}
+
+=> Ini jika property dan method namanya sama jadi tidak perlu mengulangi lagi seperti coba : coba.Js sudah tahu bahwa property nya itu = methodnya.
+
+
+
+
+
+8.Cara menggunakan Modul File System untuk baca Tulis File
+=> Pada NodeJS,terdapat modul file system('fs') yang memungkinkan kita untuk mengakses file system.
+
+ Modul ini biasanya digunakan untuk : 
+- Baca File
+- Tulis File
+- Rename File
+- Hapus File
+- Dll.
+
+=> Modul ini sudah ada di Node js dan kita tidak perlu menginstalnya lagi.Untuk bisa menggunakan modul 'fs' kita harus mengimpornya terlebih dahulu dengan fungsi 'require()'.
+Cth :
+const fs = require('fs');
+const http = require("http")
+const port = 1234
+
+http.createServer(function(req,res){
+    //Baca File
+    fs.readFile('3coba.html',function(error,data){
+        if(error) throw error;
+
+        //kirim respon
+        res.writeHead(200,{
+            'Content-Type' : 'text/html'
+        })
+        res.write(data)
+        res.end()
+    })
+}).listen(port,function(){
+    console.log(`Server sudah berjalan http://${port}...`)
+})
+
+!!!Materi http sudah ada di 7webServer
+
+=> Method 'readFile()' adalah method yang digunakan untuk membaca file.Lalu method ini memiliki 2 parameter,yaitu :
+1.Nama File
+2.Fungsi yang akan di eksekusi saat file dibaca dan Ada 2 parameter dalam fungsi ini,yaitu : (error,data).
+3.error akan berisi erorr ketika file gagal dibaca oleh program
+4.data akan berisi data dari file yang kita baca misalnya : html yang kita baca seperti contoh diatas.
+
+
+
+9.Membuat File di Node JS
+=> Selain untuk membaca file,modul 'fs' juga digunakan untuk membuat file baru.Terdapat beberapa method yang dapat digunakan untuk membuat file.
+1.fs.appendFile() => Untuk membuat dan mengisi file
+2.fs.open() => Untuk membuat,membuka dan menulis file
+3.fs.writeFile() => Untuk membuat dan menulis file.
+
+Contoh :
+1.fs.appendFile
+const fs = require('fs');
+
+//Membuat file dengan nama file
+// fs.appendFile('appendFile.txt',"Hello Semuanya",function(err,data){
+    if(err) throw err
+
+    console.log('Tersimpan!');
+})
+
+=> Jika kita mengeksekusinya sebanyak 10 kali maka teks Hello semuanya akan ditambahkan sebanyak 10 kali.Lalu kita juga bisa mengganti teks nya menjadi seperti nilai dalam txt ataupun seperti js jika yang kita buat adalah js.
+
+Ini merupakan sifat dari method fs.appendFile(), ia akan selalu menambah isi dari file disetiap eksekusi.
+
+
+
+2.fs.open
+=> Fungsi/method berikutnya adalah fs.open(). Fungsi ini memiliki dua fungsi, yaitu untuk membuka dan menulis file.
+Cth :
+const fs = require('fs')
+
+fs.open('appendFile.js','w',function(err,data){
+    if(err) throw err;
+    console.log("Tersimpan")
+})
+
+=> Fungsi fs.open() memiliki 3 parameter :
+1.nama file
+2.flag
+3.Fungsi yang akan dieksekusi saat file dibuka.
+
+- Pada contoh diatas kita memberikan flag 'w' (write) untuk memberitahu fungsi fs.open() kalau kita ingin menulis atau membuat file baru.Maka fungsi fs.open() akan membuat file kosong apabila belum ada file dengan nama yang ditentukan.Namun apabila disana sudah ada file maka fungsi fs.open() akan menindihnya.
+
+- Lalu saat kita ingin membaca file saja maka kita bisa berikan flag 'r'(read).
+
+  Selain r dan wada beberapa flag yang bisa diberikan :
+- 'r' buka file untuk dibaca.Jika file tidak ada maka akan terjadi error.
+- 'r+' buka file untuk dibaca dan ditulis.Apabila file tidak ada maka akan terjadi error.
+- 'rs' buka file untuk dibaca dalam mode synchronous
+- 'rs+' buka file untuk dibaca dan ditulis dalam mode synchronous
+- 'w' buka file untuk ditulis
+- 'wx' sama seperti 'w' tetapi akan error jika sudah ada filenya.
+- 'w+' Buka file untuk ditulis dan dibaca
+- 'wx+' sama seperti 'w+' tapi akan error jika sudah ada filenya.
+- 'a' buka file untuk diisi
+- 'ax' sama seperti 'a' tapi akan error jika sudah ada filenya
+- 'a+' buka file untuk diisi
+- 'ax+' sama seperti 'a+' tapi akan error jika sudah ada filenya.
+
+
+Contoh :
+const fs = require('fs')
+
+fs.open('appendFile.js','w+',function(err,file){
+    if(err) throw err;
+
+    //Kontent yang akan ita tulis ke file
+    let konten = "Hallo Sang Penanya"
+
+    //tulis kontent ke file
+    fs.writeFile(file,konten,function(err){
+        if (err) throw err;
+        console.log("Tersimpan")
+    });
+
+    //Baca file
+    fs.readFile(file,function(err,data){
+        if (err) throw err;
+        console.log(data.toString("utf8"))
+    })
+
+})
+
+
+=> Pada kode di atas, kita akan menulis ke file appendFile.js. Terdapat dua fungsi fs yang kita gunakan:
+- fs.writeFile() untuk menulis ke file;
+- fs.readFile() untuk membaca file.
+
+Pada fungsi fs.readFile(), kita menggunakan fungsi toString('utf8') untuk mengubah buffer menjadi teks dengan encode UTF-8.
+
+
+
+
+10.Mengubah Nama file dengan node js
+=> Pada modul 'fs' terdapat fungsi 'rename()' untuk mengubah nama.
+Fungsi ini memiliki 3 parameter :
+1.Nama File
+2.Nama Baru
+3.Fungsi yang akan dieksekusi saat nama diubah.
+
+Cth :
+const fs = require("fs");
+
+fs.rename("appendFile.js","append.js",function(err){
+    if(err) throw err;
+    console.log("Tersimpan")
+})
+
+
+
+11.Menghapus File dengan Node JS
+=> Modul 'fs' memiliki fungsi 'unlink()' untuk menghapus file.Fungsi ini memiliki 2 parameter :
+1.Nama file yang akan dihapus
+2.Fungsi yang akan dieksekusi saat file dihapus.
+
+Cth : 
+const fs = require("fs");
+
+fs.unlink("append.js",function(err){
+    if(err) throw err;
+    console.log("Tersimpan")
+})
+
+
+
+
+
+
+
+
+

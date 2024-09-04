@@ -1,0 +1,135 @@
+1.Untuk membuat aplikasi MERN yang memungkinkan setiap pengguna melihat daftar tugas (to-do list) mereka sendiri, tanpa akses ke daftar tugas pengguna lain, berikut adalah langkah-langkahnya:
+
+1. Buat Schema MongoDB:
+
+Anda akan memerlukan dua koleksi dalam basis data MongoDB Anda: satu untuk pengguna (users) dan satu lagi untuk daftar tugas (tasks).
+
+Schema Pengguna (users):
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+});
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
+
+
+
+2.schema tugas(tasks)
+const mongoose = require('mongoose');
+
+const taskSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+});
+
+const Task = mongoose.model('Task', taskSchema);
+
+module.exports = Task;
+
+
+
+3.react
+import React, { useEffect, useState } from 'react';
+
+function ToDoList({ user }) {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    // Ambil daftar tugas untuk pengguna yang login
+    fetch(`/api/tasks?userId=${user._id}`)
+      .then((response) => response.json())
+      .then((data) => setTasks(data));
+  }, [user]);
+
+  return (
+    <div>
+      <h1>Daftar Tugas</h1>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task._id}>{task.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default ToDoList;
+
+
+
+
+
+
+
+
+Tambahan
+
+1.Cara agar 3 database atau collection saling terhubung
+=> Jika Anda ingin menghubungkan tiga basis data MongoDB secara langsung dan memiliki saling terkait dalam aplikasi MERN, Anda perlu merancang skema yang memungkinkan relasi antara ketiganya. Untuk itu, mari kita lihat contoh di mana kita memiliki tiga koleksi (collections) yang saling terhubung: pengguna (users), tugas (tasks), dan proyek (projects).
+
+Berikut adalah contoh bagaimana Anda dapat menghubungkan ketiga basis data ini:
+1.Buat koneksi ke basis data
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/users_db', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Koneksi database gagal:'));
+db.once('open', () => {
+  console.log('Koneksi database berhasil.');
+});
+
+
+2.Buat schema untuk setiap koleksi
+// Skema untuk Pengguna (Users)
+const userSchema = new mongoose.Schema({
+  username: String,
+  email: String,
+  // Menambahkan field untuk menyimpan ID tugas yang dimiliki pengguna
+  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+});
+
+// Skema untuk Tugas (Tasks)
+const taskSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  // Menambahkan field untuk menyimpan ID proyek yang terkait dengan tugas
+  project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
+});
+
+// Skema untuk Proyek (Projects)
+const projectSchema = new mongoose.Schema({
+  name: String,
+  // Menambahkan field untuk menyimpan ID pengguna yang terkait dengan proyek
+  users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+});
+
+const User = mongoose.model('User', userSchema);
+const Task = mongoose.model('Task', taskSchema);
+const Project = mongoose.model('Project', projectSchema);
+
+
+
+3.Menggunakan relasi antara koleksi
+Dengan skema di atas, Anda dapat mengaitkan pengguna dengan tugas dan proyek, serta menghubungkan tugas dengan proyek. Misalnya, untuk menambahkan tugas ke pengguna tertentu:
+const user = new User({ username: 'user1', email: 'user1@example.com' });
+const task = new Task({ title: 'Tugas 1', description: 'Deskripsi tugas 1' });
+
+user.tasks.push(task);
+user.save();
+
+
+=> Selain itu, Anda juga dapat menambahkan pengguna ke dalam proyek:
+const project = new Project({ name: 'Proyek 1' });
+project.users.push(user);
+
+project.save();

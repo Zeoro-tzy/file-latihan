@@ -1,0 +1,32 @@
+Bagaimana Cara mengambil data dari form
+
+
+1.Cara mengambil data dari form
+=> Pada tutorial sebelumnya kita sudah membuat webserver statis yang melayani request dengan file html.
+
+  Kekurangannya :
+- Web server tidak bisa menerima data dari client.Misalnya : kita ingin kirim data ke server melalui form.
+- Pertanyaannya : Bagaimana cara kita mengambil data dari form?
+=> Banyak yang merekomendasikan menggunakan body-parser.Body-Parser merupakan modul nodejs yang digunakan untuk mengambil data dari form pada framework express.Namun agar lebih paham bagaimana form diproses pada Nodejs kita tidak akan menggunakan modul tersebut.
+
+
+- Metode Pengiriman Data Form 
+=> Secara umum ada 2 metode pengiriman data pada form :
+1.Metode GET
+2.Metode POST
+
+=>  Metode ini dapat kita definisikan saat membuat form.
+Cth :
+<form method="GET" action="/send/"> 
+...
+</form>
+
+
+Penjelasan :
+- Metode GET akan mengirim data melalui URL,sedangkan metode POST akan mengirim data melalui latar belakang.
+- Metode GET cocok digunakan untuk pencarian,karena dia mengirim data melalui URL.Sedangkan POST cocok digunakan pada form login.
+
+
+
+2.Mengambil data menggunakan Metode GET
+=> Untuk mengambil data dari metode form dengan GET kita bisa menggunakan modul url.Karena kita akan mengambil data dari parameter URL.

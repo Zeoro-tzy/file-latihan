@@ -1,0 +1,19 @@
+Arsitektur Node JS
+
+
+1.Node js 
+=> Adalah lingkungan runtime untuk mengeksekusi kode javascript.
+Berjalan di engine v8 chrome.
+- Node js konteksnya sudah berada di dalam OS dan bukan dalam web browser lagi.Jadi kita tidak bisa menggunakan getElementById(),querySelector(),dll.
+
+2.Jika kita mau mengambil data maka kita menggunakan seperti ini :
+- fs.writeFile()
+- os.platform()
+- http.createServer()
+- path.dirname()
+
+
+3.Cara kerja Node Js
+=> Node js itu Asynchronous,Non-Blocking,Single Thread.Ilustrasi dari Asyn,non-block dan single thread seperti ini : Sebuah restoran memiliki 1 chef dan 1 pelayan dan memiliki 2 meja untuk pelanggan.Nah ketika meja 1 ada pelanggan maka pelayan tersebut akan mencatat pesanannya misalnya:nasi goreng dan memberikan pesanan tersebut kepada chef.Pelayan tadi akan kembali ketempatnya untuk menunggu pelanggan berikutnya atau jika pesanan meja 1 sudah selesai akan diantarkan.Karena belum selesai maka dia akan menunggu,kemudian datanglah pelanggan baru ke meja 2,pelayan tadi akan mencatat pesanan dari meja 2 misalnya:teh manis.kemudian pelayan tadi memberikan pesanan kepada chef.Karena teh manis lebih cepat dibuat dan lebih mudah maka yang terjadi adalah pelayan tadi akan mengantarkan teh manis terlebih dahulu ke meja 2 dan setelah itu nasi goreng yang dipesan di meja pertama akhirnya selesai dan pelayan tadi akan mengantarkan nasi goreng ke meja pertama.
+
+=> Inilah Async,Non-Blocking,Single Thread.Dia tidak akan menunggu meja 1 selesai dulu nasi gorengnya baru dia akan menuju ke meja 2 untuk mencatat pesanannya.Tapi dia akan mengerjakan 2 hal sekaligus dan jika hal 1 belum selesai dan hal 2 sudah selesai maka dia akan mengantarkan hal 2.Intinya nilainya ini dinamis.

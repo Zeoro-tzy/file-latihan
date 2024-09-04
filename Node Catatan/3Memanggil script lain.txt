@@ -1,0 +1,77 @@
+Menjalankan Script yang berbeda halaman
+
+!!! Cara manggil node js di vscode : 
+- pergi terminal lalu ketik node (namafile)
+
+1.Menjalankan script tanpa node atau menggunakan web browser
+=> Jika kita punya 1 halaman html,kita bisa memanggil halaman script lebih dari 1 kali.Caranya kita tambahkan kode <scriptnya></script>.
+
+=> Lalu kita bisa membuat script 1 dan script 2 itu terhubung.Misalnya saja kita membuat sebuah function dengan parameter di script 1.Nah kita bisa mengisi nilai dari parameter tersebut di script 2.Pada saat kita tampilkan di web browser maka hasilnya sama seperti ketika membuat function pada umumnya hanya saja yang ini berbeda halaman script.
+
+Cth : 
+HTML : 
+<body>
+  <script src="script1.js"></script>
+  <script src="script2.js"></script>
+</body>
+
+
+script1.js :
+
+const sayHello = (nama,hobi,umur) => {
+    return (`Halo nama saya ${nama} hobi saya ${hobi} umur saya ${umur}`);
+}
+
+script2.js :
+console.log(sayHello("Sang Penanya","Menulis",20))
+
+
+!!!Jika Kita membuat function atau variabel tidak boleh menggunakan nama yang sama karna nanti bentrok.
+
+
+=> Dalam node js kita tidak bisa menggunakan hal ini.Kita juga bisa membuat hal seperti ini tapi dengan cara lain.
+
+
+2.Menggabungkan file-file js menjadi satu dengan Node.
+=> Jika kita ingin menggabungkan file-file js atau memanggil file js lain kita bisa menggunakan : 
+  syntaks : 
+ 	require(./(namafile)) => untuk memanggil kode lain dari script berbeda
+- require() => Mengeksekusi file dari script yang berbeda.
+Cth : 
+script1.js :
+console.log("Hello world apa kabar kalian")
+
+script2.js : 
+require("./script1.js")
+
+// Hello world apa kabar kalian
+
+=> Jika dia berada di file lain bisa seperti : require("../script1.js") atau jika lebih jauh require("../../script1.js").Tergantung dimana anda menyimpan filenya.Nah jika dia dalam 1 folder yang sama maka : require("./script1.js")
+
+
+
+3.Memanggil file js dengan node yang lebih tepat.
+=> Misalnya saja kita ingin memanggil function sayHello dari script 1 melalui script 2 maka yang terjadi adalah error.Script 2 tidak mengetahui function sayHello itu apa walau kita sudah kasih require().Ini terjadi karena node js menganut sistem module yaitu node js menganggap 1 file itu sebagai 1 module sendiri.Apa yang ada dimodul 1 tidak bisa begitu aja diakses oleh modul lain.Nah,function itu tidak dicetak di modul pertama tapi dicetak di modul ke 2 otomatis error karena require("") hanya mengeksekusi file yang dicetak di modul pertama.Jika dia di cetak di modul pertama dan di modul ke 2 dieksekusi melalui require() maka hal tersebut bisa berjalan.
+
+- Nah jika misalnya ingin di cetak di script 2 maka hal itu bisa diatasi.Untuk mengatasi hal tersebut kita bisa melakukan export kode.Supaya setiap kode yang kita export itu bisa dipakai di file manapun.
+
+Caranya : module.exports = (apa yang mau di export)
+
+- Nah untuk modul yang menangkap export tersebut,require nya dimasukan kedalam variabel karena jika kita langsung mencetak nilai di modul ke-2,modul ke-2 masih belum tau apa yang kita cetak itu.Makanya dengan memasukan ke dalam variabel hal tersebut bisa teratasi
+
+
+Cth : 
+
+script1 :
+const panggilFungsi = (nama) => {
+    console.log(`Nama saya adalah ${nama}`);
+}
+
+module.exports = panggilFungsi;
+
+
+script2 : 
+const fungsiPanggil = require('./3jalankanmodule');
+
+
+fungsiPanggil("Sang penanya")
